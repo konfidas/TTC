@@ -1,10 +1,11 @@
 # TTC
+----
 
 Der (T)SE (T)ar File (C)hecker ist eine Java-Applikation für die Kommandozeile (in Form einer JAR Datei) zur Prüfung von Tar Dateien aus dem Export einer Technischen Sicherheitseinrichtung (TSE)
 
 Was kann TTC
 - TAR Dateien aus dem Export einer TSE parsen
-- Log-Messages aus der TAR Datei einlesen und auf Konformität zur ASN.1 Struktur prüfen, die in TTTTT definiert wird
+- Log-Messages aus der TAR Datei einlesen und auf Konformität zur ASN.1 Struktur prüfen, die in der [BSI TR-03151](https://www.bsi.bund.de/DE/Themen/Unternehmen-und-Organisationen/Standards-und-Zertifizierung/Technische-Richtlinien/TR-nach-Thema-sortiert/tr03151/tr03151_node.html) definiert wird
 - Log-Messages auf ihre Inhaltsdaten prüfen (z.B. kkkkkkkkkk) 
 - Die Signatur der Log-Messages prüfen (noch buggy)
 - Zertifikate des TAR Archivs prüfen 
