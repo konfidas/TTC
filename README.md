@@ -15,7 +15,7 @@ Was kann TTC nicht
 - Prüfung der Inhaltsdaten von Transaktionen 
 
 Das Ziel von TTC ist es
-- ein einheitliches Verständnis zum Aufbau der Log-Messages gemäß TTTTT zu gewinnen,
+- ein einheitliches Verständnis zum Aufbau der Log-Messages gemäß [BSI TR-03151](https://www.bsi.bund.de/DE/Themen/Unternehmen-und-Organisationen/Standards-und-Zertifizierung/Technische-Richtlinien/TR-nach-Thema-sortiert/tr03151/tr03151_node.html) zu gewinnen,
 - Spass an der Entwicklung zu haben,
 - Als Framework und Building-Block für weitere Entwicklungen zu dienen
 
