@@ -52,6 +52,11 @@ public class LogMessage {
     final static Logger logger = LoggerFactory.getLogger(TTC.class);
 
     int version = 0;
+    String[] allowedCertifiedDataType = {"0.4.0.127.0.7.3.7.1.1", "0.4.0.127.0.7.3.7.1.2", "0.4.0.127.0.7.3.7.1.3"};
+    String[] allowedAlgorithms = {"0.4.0.127.0.7.1.1.4.1.2", "0.4.0.127.0.7.1.1.4.1.3"};
+//FIXME:
+//   | ecdsa-plain-SHA384 | ecdsa-plain-SHA512 | ecdsa-plain-SHA3-224 | ecdsa-plain-SHA3-256 | ecdsa-plain-SHA3-384 | ecdsa-plain-SHA3-512 | ecsdsa-plain-SHA224 | ecsdsa-plain-SHA256 | ecsdsa-plain-SHA384 | ecsdsa-plain-SHA512 | ecsdsa-plain-SHA3-224 | ecsdsa-plain-SHA3-256 | ecsdsa-plain-SHA3-384 | ecsdsa-plain-SHA3-512 ),
+
     String certifiedDataType = "";
     ArrayList<ASN1Primitive> certifiedData = new ArrayList<ASN1Primitive>();
     String serialNumber = "";
@@ -89,6 +94,11 @@ public class LogMessage {
                     throw new BadFormatForLogMessage(String.format("Error while parsing %s Could not find the version element in log message.", filename));
                 }
 
+                // Die Versionsnummer muss 2 sein
+                if (this.version != 2){
+                    throw new BadFormatForLogMessage(String.format("Error while parsing %s Die Versionsnummer ist nicht 2", filename));
+                }
+
                 element = (ASN1Primitive) test.nextElement();
 
                 // Then, the object identifier for the certified data type shall follow
@@ -100,6 +110,13 @@ public class LogMessage {
                 } else {
                     throw new BadFormatForLogMessage(String.format("Error while parsing %s Could not find the object identifier in log message.", filename));
                 }
+
+                // Prüfen, dass der certifiedDataType ein erlaubter Wert ist
+                if (!Arrays.asList(allowedCertifiedDataType).contains(this.certifiedDataType)){
+                    throw new BadFormatForLogMessage(String.format("Error while parsing %s. Der Wert von certifiedDataType ist nicht erlaubt. er lautet %s", filename, this.certifiedDataType));
+
+                }
+
 
                 // Now, we will enter a while loop and collect all the certified data
                 element = (ASN1Primitive) test.nextElement();
@@ -122,6 +139,11 @@ public class LogMessage {
                     throw new BadFormatForLogMessage(String.format("Error while parsing %s Could not find the object identifier in log message.", filename));
                 }
 
+                // Prüfen, dass die Serial Number auch da ist.
+                if (this.serialNumber == null){
+                    throw new BadFormatForLogMessage(String.format("Error while parsing %s. Die Serial Number ist null", filename));
+                }
+
                 element = (ASN1Primitive) test.nextElement();
                 // Then, the sequence for the signatureAlgorithm  is expected
                 if (element instanceof ASN1Sequence) {
@@ -138,6 +160,11 @@ public class LogMessage {
 
                     } else {
                         throw new BadFormatForLogMessage(String.format("Error while parsing %s Could not find the signatureAlgorithm", filename));
+                    }
+
+                    if (!Arrays.asList(allowedAlgorithms).contains(this.signatureAlgorithm)){
+                        throw new BadFormatForLogMessage(String.format("Error while parsing %s. Die OID für den Signaturalgorithmus lautet %s. Dies ist keine erlaubte OID", filename, this.signatureAlgorithm));
+
                     }
 
                     //Then, we loop over the rest of the sequence for the options
@@ -173,6 +200,11 @@ public class LogMessage {
                     throw new BadFormatForLogMessage(String.format("Error while parsing %s Could not find the signature counter", filename));
                 }
 
+                if (signatureCounter == null){
+                    throw new BadFormatForLogMessage(String.format("Error while parsing %s . Der signatureCounter ist nicht vorhanden", filename));
+
+                }
+
                 element = (ASN1Primitive) test.nextElement();
                 // Now, we expect the logTime as one of three typey
                 if (element instanceof ASN1Integer) {
@@ -192,6 +224,10 @@ public class LogMessage {
                     this.logTimeType = "generalizedTime";
                 } else {
                     throw new BadFormatForLogMessage(String.format("Error while parsing %s Could not find the logTime", filename));
+                }
+
+                if (logTimeType == null){
+                    throw new BadFormatForLogMessage(String.format("Error while parsing %s. Es ist kein Typ für die LogZeit vorhanden", filename));
                 }
 
                 element = (ASN1Primitive) test.nextElement();
