@@ -53,9 +53,9 @@ public class LogMessage {
 
     int version = 0;
     String[] allowedCertifiedDataType = {"0.4.0.127.0.7.3.7.1.1", "0.4.0.127.0.7.3.7.1.2", "0.4.0.127.0.7.3.7.1.3"};
-    String[] allowedAlgorithms = {"0.4.0.127.0.7.1.1.4.1.2", "0.4.0.127.0.7.1.1.4.1.3"};
+    String[] allowedAlgorithms = {"0.4.0.127.0.7.1.1.4.1.2", "0.4.0.127.0.7.1.1.4.1.3","0.4.0.127.0.7.1.1.4.1.4"};
 //FIXME:
-//   | ecdsa-plain-SHA384 | ecdsa-plain-SHA512 | ecdsa-plain-SHA3-224 | ecdsa-plain-SHA3-256 | ecdsa-plain-SHA3-384 | ecdsa-plain-SHA3-512 | ecsdsa-plain-SHA224 | ecsdsa-plain-SHA256 | ecsdsa-plain-SHA384 | ecsdsa-plain-SHA512 | ecsdsa-plain-SHA3-224 | ecsdsa-plain-SHA3-256 | ecsdsa-plain-SHA3-384 | ecsdsa-plain-SHA3-512 ),
+//   | ecdsa-plain-SHA512 | ecdsa-plain-SHA3-224 | ecdsa-plain-SHA3-256 | ecdsa-plain-SHA3-384 | ecdsa-plain-SHA3-512 | ecsdsa-plain-SHA224 | ecsdsa-plain-SHA256 | ecsdsa-plain-SHA384 | ecsdsa-plain-SHA512 | ecsdsa-plain-SHA3-224 | ecsdsa-plain-SHA3-256 | ecsdsa-plain-SHA3-384 | ecsdsa-plain-SHA3-512 ),
 
     String certifiedDataType = "";
     ArrayList<ASN1Primitive> certifiedData = new ArrayList<ASN1Primitive>();
@@ -117,7 +117,6 @@ public class LogMessage {
 
                 }
 
-
                 // Now, we will enter a while loop and collect all the certified data
                 element = (ASN1Primitive) test.nextElement();
                 while (!(element instanceof ASN1OctetString)) {
@@ -166,6 +165,7 @@ public class LogMessage {
                         throw new BadFormatForLogMessage(String.format("Error while parsing %s. Die OID für den Signaturalgorithmus lautet %s. Dies ist keine erlaubte OID", filename, this.signatureAlgorithm));
 
                     }
+
 
                     //Then, we loop over the rest of the sequence for the options
                     while (sigAlgorithmEnumeration.hasMoreElements()) {
