@@ -29,9 +29,9 @@ public class TTC {
     public static void main(String[] args) throws IOException {
         Security.addProvider(new BouncyCastleProvider());
 
-        options.addOption("i", "InputTAR", true, "Das TAR Archiv, das geprüft werden soll.");
-        options.addOption("t", "TrustAnker", true, "Trust Anker in Form eines X.509 Zertifikats für die Root-CA");
-        options.addOption("o", "OverwriteCertCheck", false, "Wenn diese Option gesetzt wird, werden die Zertifikate im TAR Archiv nicht gegen eine Root-CA geprüft");
+        options.addOption("i", "inputTAR", true, "Das TAR Archiv, das geprüft werden soll.");
+        options.addOption("t", "trustAnker", true, "Trust Anker in Form eines X.509 Zertifikats für die Root-CA");
+        options.addOption("o", "overwriteCertCheck", false, "Wenn diese Option gesetzt wird, werden die Zertifikate im TAR Archiv nicht gegen eine Root-CA geprüft");
 
         CommandLineParser parser = new GnuParser();
         CommandLine cmd = null;
