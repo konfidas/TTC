@@ -188,7 +188,6 @@ public class TTC {
         }
     }
 
-
     /**
      * Diese Funktion lädt ein X059Certificat aus einem ByteArray und kümmert sich um die Fehlerbehandlung
      *

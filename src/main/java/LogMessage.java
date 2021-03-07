@@ -53,9 +53,8 @@ public class LogMessage {
 
     int version = 0;
     String[] allowedCertifiedDataType = {"0.4.0.127.0.7.3.7.1.1", "0.4.0.127.0.7.3.7.1.2", "0.4.0.127.0.7.3.7.1.3"};
-    String[] allowedAlgorithms = {"0.4.0.127.0.7.1.1.4.1.2", "0.4.0.127.0.7.1.1.4.1.3","0.4.0.127.0.7.1.1.4.1.4"};
-//FIXME:
-//   | ecdsa-plain-SHA512 | ecdsa-plain-SHA3-224 | ecdsa-plain-SHA3-256 | ecdsa-plain-SHA3-384 | ecdsa-plain-SHA3-512 | ecsdsa-plain-SHA224 | ecsdsa-plain-SHA256 | ecsdsa-plain-SHA384 | ecsdsa-plain-SHA512 | ecsdsa-plain-SHA3-224 | ecsdsa-plain-SHA3-256 | ecsdsa-plain-SHA3-384 | ecsdsa-plain-SHA3-512 ),
+    String[] allowedAlgorithms = {"0.4.0.127.0.7.1.1.4.1.2", "0.4.0.127.0.7.1.1.4.1.3", "0.4.0.127.0.7.1.1.4.1.4", "0.4.0.127.0.7.1.1.4.1.5","0.4.0.127.0.7.1.1.4.1.8", "0.4.0.127.0.7.1.1.4.1.9", "0.4.0.127.0.7.1.1.4.1.10", "0.4.0.127.0.7.1.1.4.1.11","0.4.0.127.0.7.1.1.4.4.1", "0.4.0.127.0.7.1.1.4.4.2", "0.4.0.127.0.7.1.1.4.4.3", "0.4.0.127.0.7.1.1.4.4.4", "0.4.0.127.0.7.1.1.4.4.5", "0.4.0.127.0.7.1.1.4.4.6", "0.4.0.127.0.7.1.1.4.4.7", "0.4.0.127.0.7.1.1.4.4.8" };
+
 
     String certifiedDataType = "";
     ArrayList<ASN1Primitive> certifiedData = new ArrayList<ASN1Primitive>();
@@ -90,12 +89,13 @@ public class LogMessage {
                     this.version = ((ASN1Integer) element).intValueExact();
                     byte[] elementValue = Arrays.copyOfRange(((ASN1Integer) element).getEncoded(), 2, ((ASN1Integer) element).getEncoded().length);
                     this.dtbsStream.write(elementValue);
-                } else {
+                }
+                else {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. Das version Element in der logMessage konnte nicht gefunden werden.", filename));
                 }
 
                 // Die Versionsnummer muss 2 sein
-                if (this.version != 2){
+                if (this.version != 2) {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. Die Versionsnummer ist nicht 2", filename));
                 }
 
@@ -107,12 +107,13 @@ public class LogMessage {
                     byte[] elementValue = Arrays.copyOfRange(((ASN1ObjectIdentifier) element).getEncoded(), 2, ((ASN1ObjectIdentifier) element).getEncoded().length);
                     this.dtbsStream.write(elementValue);
 
-                } else {
+                }
+                else {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. certifiedDataType Element wurde nicht gefunden.", filename));
                 }
 
                 // Prüfen, dass der certifiedDataType ein erlaubter Wert ist
-                if (!Arrays.asList(allowedCertifiedDataType).contains(this.certifiedDataType)){
+                if (!Arrays.asList(allowedCertifiedDataType).contains(this.certifiedDataType)) {
                     throw new BadFormatForLogMessage(String.format("Error while parsing %s. Der Wert von certifiedDataType ist nicht erlaubt. er lautet %s", filename, this.certifiedDataType));
 
                 }
@@ -134,12 +135,13 @@ public class LogMessage {
                     this.serialNumber = ((ASN1OctetString) element).toString().toUpperCase().substring(1);
                     byte[] elementValue = Arrays.copyOfRange(((ASN1OctetString) element).getEncoded(), 2, ((ASN1OctetString) element).getEncoded().length);
                     this.dtbsStream.write(elementValue);
-                } else {
+                }
+                else {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. serialNumber wurde nicht gefunden.", filename));
                 }
 
                 // Prüfen, dass die Serial Number auch da ist.
-                if (this.serialNumber == null){
+                if (this.serialNumber == null) {
                     throw new BadFormatForLogMessage(String.format("Error while parsing %s. Die Serial Number ist null", filename));
                 }
 
@@ -157,11 +159,12 @@ public class LogMessage {
                         byte[] elementValue = Arrays.copyOfRange(((ASN1ObjectIdentifier) element).getEncoded(), 2, ((ASN1ObjectIdentifier) element).getEncoded().length);
                         this.dtbsStream.write(elementValue);
 
-                    } else {
+                    }
+                    else {
                         throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. signatureAlgorithm wurde nicht gefunden.", filename));
                     }
 
-                    if (!Arrays.asList(allowedAlgorithms).contains(this.signatureAlgorithm)){
+                    if (!Arrays.asList(allowedAlgorithms).contains(this.signatureAlgorithm)) {
                         throw new BadFormatForLogMessage(String.format("Error while parsing %s. Die OID für signatureAlgorithm lautet %s. Dies ist keine erlaubte OID", filename, this.signatureAlgorithm));
 
                     }
@@ -173,7 +176,8 @@ public class LogMessage {
                         this.signatureAlgorithmParameters.add(element);
                     }
 
-                } else {
+                }
+                else {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. Die Sequenz für den signatureAlgortihm wurde nicht gefunden.", filename));
                 }
 
@@ -186,7 +190,8 @@ public class LogMessage {
                     this.dtbsStream.write(elementValue);
                     element = (ASN1Primitive) test.nextElement();
 
-                } else {
+                }
+                else {
                     logger.info(String.format("Information für %s. seAuditData wurde nicht gefunden.", filename));
                 }
 
@@ -196,11 +201,12 @@ public class LogMessage {
                     byte[] elementValue = Arrays.copyOfRange(((ASN1Integer) element).getEncoded(), 2, ((ASN1Integer) element).getEncoded().length);
                     this.dtbsStream.write(elementValue);
 
-                } else {
+                }
+                else {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von  %s. Der signatureCounter wurde nicht gefunden", filename));
                 }
 
-                if (signatureCounter == null){
+                if (signatureCounter == null) {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s . Der signatureCounter ist nicht vorhanden", filename));
 
                 }
@@ -212,21 +218,24 @@ public class LogMessage {
                     byte[] elementValue = Arrays.copyOfRange(((ASN1Integer) element).getEncoded(), 2, ((ASN1Integer) element).getEncoded().length);
                     this.dtbsStream.write(elementValue);
                     this.logTimeType = "unixTime";
-                } else if (element instanceof ASN1UTCTime) {
+                }
+                else if (element instanceof ASN1UTCTime) {
                     this.logTimeUTC = ((ASN1UTCTime) element).getTime();
                     byte[] elementValue = Arrays.copyOfRange(((ASN1UTCTime) element).getEncoded(), 2, ((ASN1UTCTime) element).getEncoded().length);
                     this.dtbsStream.write(elementValue);
                     this.logTimeType = "utcTime";
-                } else if (element instanceof ASN1GeneralizedTime) {
+                }
+                else if (element instanceof ASN1GeneralizedTime) {
                     this.logTimeGeneralizedTime = ((ASN1GeneralizedTime) element).getTime();
                     byte[] elementValue = Arrays.copyOfRange(((ASN1GeneralizedTime) element).getEncoded(), 2, ((ASN1GeneralizedTime) element).getEncoded().length);
                     this.dtbsStream.write(elementValue);
                     this.logTimeType = "generalizedTime";
-                } else {
+                }
+                else {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. logTime Element wurde nicht gefunden.", filename));
                 }
 
-                if (logTimeType == null){
+                if (logTimeType == null) {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. Es ist kein Typ für die LogZeit vorhanden", filename));
                 }
 
@@ -236,14 +245,16 @@ public class LogMessage {
                 if (element instanceof ASN1OctetString) {
                     byte[] elementValue = Arrays.copyOfRange(((ASN1OctetString) element).getEncoded(), 2, ((ASN1OctetString) element).getEncoded().length);
                     this.signatureValue = elementValue;
-                } else {
+                }
+                else {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. signature wurde nicht gefunden.", filename));
                 }
 
                 this.dtbs = this.dtbsStream.toByteArray();
             }
 
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
     }
@@ -291,7 +302,7 @@ public class LogMessage {
         return_value += String.format("logTimeFormat:: %s", this.logTimeType);
         return_value += System.lineSeparator();
 
-        switch (this.logTimeType){
+        switch (this.logTimeType) {
             case "unixTime":
                 return_value += String.format("logTime: %d", this.logTimeUnixTime);
                 return_value += System.lineSeparator();
@@ -312,7 +323,7 @@ public class LogMessage {
         return_value += String.format("dtbs:: %s", Hex.encodeHexString(this.dtbs));
         return_value += System.lineSeparator();
 
-        return(return_value);
+        return (return_value);
     }
 
 }
