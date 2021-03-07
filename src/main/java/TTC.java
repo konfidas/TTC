@@ -90,7 +90,7 @@ public class TTC {
                  ** TransactionLog Message *
                  ***************************/
                 if (individualFileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+(Start|Update|Finish)_Client-.+log")) {
-                    logger.info("{} seems to be a transaction log. Will process it now.", individualFileName);
+                    logger.info("{} scheint eine TransactionLog zu sein. Starte Verarbeitung.", individualFileName);
                     TransactionLogMessage log = new TransactionLogMessage(content, individualFileName);
                     all_log_messages.add(log);
                 }
@@ -98,7 +98,7 @@ public class TTC {
                  ** SystemLog Message *
                  **********************/
                 else if (individualFileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")) {
-                    logger.info("{} seems to be a system log. Will process it now.", individualFileName);
+                    logger.info("{} scheint ein systemLog zu sein. Starte Verarbeitung ", individualFileName);
                     SystemLogMessage log = new SystemLogMessage(content, individualFileName);
                     all_log_messages.add(log);
 
@@ -107,7 +107,7 @@ public class TTC {
                  ** AuditLog Message *
                  *********************/
                 else if (individualFileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Aud.+log")) {
-                    logger.info("{} seems to be a audit log. Will process it now.", individualFileName);
+                    logger.info("{} scheint ein auditLog zu sein. Starte Verarbeitung.", individualFileName);
                     AuditLogMessage log = new AuditLogMessage(content, individualFileName);
                     all_log_messages.add(log);
 
@@ -123,7 +123,7 @@ public class TTC {
                  ** X.509 Certificate *
                  **********************/
                 else if (individualFileName.contains("X509")) {
-                    logger.info("{} seems to be an X509 certificate. Will process it now.", individualFileName);
+                    logger.info("{} schein ein X.509 Zertifikat zu sein. Starte Verarbeitung.", individualFileName);
 
                     try {
                         X509Certificate cer = loadCertificate(content);
@@ -153,7 +153,7 @@ public class TTC {
             }
 
             /***************************************************************************************
-             ** Sofern nicht darauf verzichtet wid, prüfen wir die Gültikeit der Client-Zertifikate*
+             ** Sofern nicht darauf verzichtet wid, prüfen wir die Gültigkeit der Client-Zertifikate*
              ***************************************************************************************/
             if (cmd.hasOption("o") == false) {
                 for (X509Certificate cert : allClientCertificates.values()) {
@@ -210,10 +210,10 @@ public class TTC {
 
         }
         catch (CertificateExpiredException e) {
-            logger.error("The byte buffer contains an expired certificate");
+            logger.error("Das Zertifikat ist abgelaufen.");
         }
         catch (CertificateNotYetValidException e) {
-            logger.error("The byte buffer contains a certificate that is not yet valid");
+            logger.error("Das Zertifikat ist noch nicht gültig.");
         }
         catch (java.security.cert.CertificateException e) {
             throw new RuntimeException(e);
