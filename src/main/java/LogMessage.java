@@ -51,11 +51,13 @@ import org.slf4j.LoggerFactory;
 public class LogMessage {
     final static Logger logger = LoggerFactory.getLogger(TTC.class);
 
-    int version = 0;
+
+
+
     String[] allowedCertifiedDataType = {"0.4.0.127.0.7.3.7.1.1", "0.4.0.127.0.7.3.7.1.2", "0.4.0.127.0.7.3.7.1.3"};
     String[] allowedAlgorithms = {"0.4.0.127.0.7.1.1.4.1.2", "0.4.0.127.0.7.1.1.4.1.3", "0.4.0.127.0.7.1.1.4.1.4", "0.4.0.127.0.7.1.1.4.1.5","0.4.0.127.0.7.1.1.4.1.8", "0.4.0.127.0.7.1.1.4.1.9", "0.4.0.127.0.7.1.1.4.1.10", "0.4.0.127.0.7.1.1.4.1.11","0.4.0.127.0.7.1.1.4.4.1", "0.4.0.127.0.7.1.1.4.4.2", "0.4.0.127.0.7.1.1.4.4.3", "0.4.0.127.0.7.1.1.4.4.4", "0.4.0.127.0.7.1.1.4.4.5", "0.4.0.127.0.7.1.1.4.4.6", "0.4.0.127.0.7.1.1.4.4.7", "0.4.0.127.0.7.1.1.4.4.8" };
 
-
+    int version = 0;
     String certifiedDataType = "";
     ArrayList<ASN1Primitive> certifiedData = new ArrayList<>();
     String serialNumber = "";
@@ -74,6 +76,10 @@ public class LogMessage {
 
 
     public LogMessage(byte[] _content, String filename) {
+
+        /*****************************************************
+         ** Zunächst lesen wir alle Felder der LogMessage ein*
+         ****************************************************/
         try {
             final ASN1InputStream decoder = new ASN1InputStream(_content);
             ASN1Primitive primitive = decoder.readObject();
@@ -94,11 +100,6 @@ public class LogMessage {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. Das version Element in der logMessage konnte nicht gefunden werden.", filename));
                 }
 
-                // Die Versionsnummer muss 2 sein
-                if (this.version != 2) {
-                    throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. Die Versionsnummer ist nicht 2", filename));
-                }
-
                 element = test.nextElement();
 
                 // Then, the object identifier for the certified data type shall follow
@@ -110,12 +111,6 @@ public class LogMessage {
                 }
                 else {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. certifiedDataType Element wurde nicht gefunden.", filename));
-                }
-
-                // Prüfen, dass der certifiedDataType ein erlaubter Wert ist
-                if (!Arrays.asList(allowedCertifiedDataType).contains(this.certifiedDataType)) {
-                    throw new BadFormatForLogMessage(String.format("Error while parsing %s. Der Wert von certifiedDataType ist nicht erlaubt. er lautet %s", filename, this.certifiedDataType));
-
                 }
 
                 // Now, we will enter a while loop and collect all the certified data
@@ -140,11 +135,6 @@ public class LogMessage {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. serialNumber wurde nicht gefunden.", filename));
                 }
 
-                // Prüfen, dass die Serial Number auch da ist.
-                if (this.serialNumber == null) {
-                    throw new BadFormatForLogMessage(String.format("Error while parsing %s. Die Serial Number ist null", filename));
-                }
-
                 element = test.nextElement();
                 // Then, the sequence for the signatureAlgorithm  is expected
                 if (element instanceof ASN1Sequence) {
@@ -158,7 +148,6 @@ public class LogMessage {
                         this.signatureAlgorithm = element.toString();
                         byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                         this.dtbsStream.write(elementValue);
-
                     }
                     else {
                         throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. signatureAlgorithm wurde nicht gefunden.", filename));
@@ -166,7 +155,6 @@ public class LogMessage {
 
                     if (!Arrays.asList(allowedAlgorithms).contains(this.signatureAlgorithm)) {
                         throw new BadFormatForLogMessage(String.format("Error while parsing %s. Die OID für signatureAlgorithm lautet %s. Dies ist keine erlaubte OID", filename, this.signatureAlgorithm));
-
                     }
 
 
@@ -235,10 +223,6 @@ public class LogMessage {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. logTime Element wurde nicht gefunden.", filename));
                 }
 
-                if (logTimeType == null) {
-                    throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. Es ist kein Typ für die LogZeit vorhanden", filename));
-                }
-
                 element = test.nextElement();
 
                 // Now, the last element shall be the signature
@@ -249,7 +233,33 @@ public class LogMessage {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. signature wurde nicht gefunden.", filename));
                 }
 
+                //Speichern des DTBS aus dem BufferedWriter
                 this.dtbs = this.dtbsStream.toByteArray();
+                this.dtbsStream.close();
+
+                /**********************************************************
+                 ** Dann prüfen wir die Felder auf den notwendigen Inhalt *
+                 *********************************************************/
+
+                // Die Versionsnummer muss 2 sein
+                if (this.version != 2) {
+                    throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. Die Versionsnummer ist nicht 2", filename));
+                }
+
+                // Prüfen, dass der certifiedDataType ein erlaubter Wert ist
+                if (!Arrays.asList(allowedCertifiedDataType).contains(this.certifiedDataType)) {
+                    throw new BadFormatForLogMessage(String.format("Error while parsing %s. Der Wert von certifiedDataType ist nicht erlaubt. er lautet %s", filename, this.certifiedDataType));
+                }
+
+                // Prüfen, dass die Serial Number auch da ist.
+                if (this.serialNumber == null) {
+                    throw new BadFormatForLogMessage(String.format("Error while parsing %s. Die Serial Number ist null", filename));
+                }
+
+                if (logTimeType == null) {
+                    throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. Es ist kein Typ für die LogZeit vorhanden", filename));
+                }
+
             }
 
         }
