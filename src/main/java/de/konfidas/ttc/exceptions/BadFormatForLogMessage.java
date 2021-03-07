@@ -7,7 +7,6 @@ public class BadFormatForLogMessage extends Exception {
     private String message;
 
     public BadFormatForLogMessage(String message) {
-
         this.message = message;
     }
 
