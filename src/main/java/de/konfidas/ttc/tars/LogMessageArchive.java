@@ -1,6 +1,6 @@
 package de.konfidas.ttc.tars;
 
-import de.konfidas.ttc.exceptions.CerticateLoadException;
+import de.konfidas.ttc.exceptions.CertificateLoadException;
 import de.konfidas.ttc.exceptions.SignatureValidationException;
 import de.konfidas.ttc.messages.*;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -20,19 +20,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TarFile {
-    final static Logger logger = LoggerFactory.getLogger(TarFile.class);
+public class LogMessageArchive {
+    final static Logger logger = LoggerFactory.getLogger(LogMessageArchive.class);
 
     ArrayList<LogMessage> all_log_messages = new ArrayList<LogMessage>();
     HashMap<String, X509Certificate> allClientCertificates = new HashMap<String, X509Certificate>();
     HashMap<String, X509Certificate> allIntermediateCertificates = new HashMap<String, X509Certificate>();
 
 
-    public  TarFile() throws IOException {
+    public LogMessageArchive() throws IOException {
         this(null);
     }
 
-    public TarFile(File tarFile) throws IOException {
+    public LogMessageArchive(File tarFile) throws IOException {
         if( null != tarFile){
             this.parse(tarFile);
         }
@@ -96,7 +96,7 @@ public class TarFile {
                         } else {
                             allIntermediateCertificates.put(individualFileName.split("_")[0].toUpperCase(), cer);
                         }
-                    } catch (CerticateLoadException e) {
+                    } catch (CertificateLoadException e) {
                         logger.error("Fehler beim Laden des Zertifikats {}", individualFileName);
                     }
                 } else {
@@ -104,17 +104,16 @@ public class TarFile {
                 }
             }
 
-            /***********************************************
-             ** Nun geben wir alle Nachrichten einmal aus.*
-             **********************************************/
-            for (LogMessage message : all_log_messages) {
-                System.out.println(message.prettyPrint());
-            }
+
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
             System.exit(1);
         }
+    }
+
+    public ArrayList<LogMessage> getAll_log_messages(){
+        return this.all_log_messages;
     }
 
 
@@ -154,9 +153,9 @@ public class TarFile {
      *
      * @param certContent Ein Byte-Array, das das Zertifikat enthält
      * @return das X509Certificate Objekt
-     * @throws CerticateLoadException
+     * @throws CertificateLoadException
      */
-    public static X509Certificate loadCertificate(byte[] certContent) throws CerticateLoadException {
+    public static X509Certificate loadCertificate(byte[] certContent) throws CertificateLoadException {
         X509Certificate cer = null;
         try {
             CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");

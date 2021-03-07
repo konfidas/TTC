@@ -1,7 +1,8 @@
 package de.konfidas.ttc;
 
-import de.konfidas.ttc.exceptions.CerticateLoadException;
-import de.konfidas.ttc.tars.TarFile;
+import de.konfidas.ttc.exceptions.CertificateLoadException;
+import de.konfidas.ttc.messages.LogMessage;
+import de.konfidas.ttc.tars.LogMessageArchive;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -51,14 +52,19 @@ public class TTC {
                 trustCertPath = cmd.getOptionValue("t");
                 try {
                     byte[] certFileContent = Files.readAllBytes(Path.of(trustCertPath));
-                    trustedCert = TarFile.loadCertificate(certFileContent);
+                    trustedCert = LogMessageArchive.loadCertificate(certFileContent);
                 }
-                catch (CerticateLoadException | IOException e) {
+                catch (CertificateLoadException | IOException e) {
                     e.printStackTrace();
                 }
             }
 
-            TarFile tar = new TarFile(new File(cmd.getOptionValue("i")));
+            LogMessageArchive tar = new LogMessageArchive(new File(cmd.getOptionValue("i")));
+
+            for (LogMessage message : tar.getAll_log_messages()) {
+                System.out.println(message.prettyPrint());
+            }
+
             tar.verify(trustedCert, cmd.hasOption("o"));
 
         }
