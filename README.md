@@ -45,4 +45,8 @@ Optionale Parameter:
 java -jar TTC.tar -i test.tar -t trust.cer
 ```
 
+## Das JAR selbst bauen 
+```
+mvn package 
+```
 ## Übersicht über die wichtigsten Klassen 
