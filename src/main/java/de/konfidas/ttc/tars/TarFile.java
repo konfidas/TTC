@@ -2,10 +2,7 @@ package de.konfidas.ttc.tars;
 
 import de.konfidas.ttc.exceptions.CerticateLoadException;
 import de.konfidas.ttc.exceptions.SignatureValidationException;
-import de.konfidas.ttc.messages.AuditLogMessage;
-import de.konfidas.ttc.messages.LogMessage;
-import de.konfidas.ttc.messages.SystemLogMessage;
-import de.konfidas.ttc.messages.TransactionLogMessage;
+import de.konfidas.ttc.messages.*;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -45,8 +42,7 @@ public class TarFile {
         /********************************************************************
          ** Wir lesen nun einmal durch das TAR Archiv (ohne es zu entpacken)*
          ********************************************************************/
-        try {
-            TarArchiveInputStream myTarFile = new TarArchiveInputStream(new FileInputStream(tarFile));
+        try(TarArchiveInputStream myTarFile = new TarArchiveInputStream(new FileInputStream(tarFile))) {
             TarArchiveEntry entry = null;
             String individualFileName;
             int offset;
@@ -61,32 +57,14 @@ public class TarFile {
 
                 myTarFile.read(content, offset, content.length - offset);
 
-                /***************************
-                 ** TransactionLog Message *
-                 ***************************/
-                if (individualFileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+(Start|Update|Finish)_Client-.+log")) {
-                    logger.info("{} scheint eine TransactionLog zu sein. Starte Verarbeitung.", individualFileName);
-                    TransactionLogMessage log = new TransactionLogMessage(content, individualFileName);
-                    all_log_messages.add(log);
-                }
-                /**********************
-                 ** SystemLog Message *
-                 **********************/
-                else if (individualFileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")) {
-                    logger.info("{} scheint ein systemLog zu sein. Starte Verarbeitung ", individualFileName);
-                    SystemLogMessage log = new SystemLogMessage(content, individualFileName);
-                    all_log_messages.add(log);
 
+                // TODO: simplify RegExes to one:
+                if (individualFileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+(Start|Update|Finish)_Client-.+log") ||
+                    individualFileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")||
+                    individualFileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Aud.+log") ) {
+                    all_log_messages.add(LogMessageFactory.createLogMessage(individualFileName,content));
                 }
-                /**********************
-                 ** AuditLog Message *
-                 *********************/
-                else if (individualFileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Aud.+log")) {
-                    logger.info("{} scheint ein auditLog zu sein. Starte Verarbeitung.", individualFileName);
-                    AuditLogMessage log = new AuditLogMessage(content, individualFileName);
-                    all_log_messages.add(log);
 
-                }
                 /**************
                  ** info.csv *
                  *************/
@@ -115,17 +93,13 @@ public class TarFile {
                         boolean[] keyUsage = cer.getKeyUsage();
                         if (keyUsage == null || keyUsage[5] == false) {
                             allClientCertificates.put(individualFileName.split("_")[0].toUpperCase(), cer);
-                        }
-                        else {
+                        } else {
                             allIntermediateCertificates.put(individualFileName.split("_")[0].toUpperCase(), cer);
                         }
-                    }
-                    catch (CerticateLoadException e) {
+                    } catch (CerticateLoadException e) {
                         logger.error("Fehler beim Laden des Zertifikats {}", individualFileName);
                     }
-
-                }
-                else {
+                } else {
                     logger.error("{} sollte nicht in der TAR Datei vorhanden sein. Es wird ignoriert.", individualFileName);
                 }
             }
@@ -136,8 +110,6 @@ public class TarFile {
             for (LogMessage message : all_log_messages) {
                 System.out.println(message.prettyPrint());
             }
-
-            myTarFile.close();
         }
         catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -146,7 +118,7 @@ public class TarFile {
     }
 
 
-    public void verify(   X509Certificate trustedCert, boolean ignoreCertificate){
+    public void verify(X509Certificate trustedCert, boolean ignoreCertificate){
         /***************************************************************************************
          ** Sofern nicht darauf verzichtet wid, prüfen wir die Gültigkeit der Client-Zertifikate*
          ***************************************************************************************/
@@ -214,7 +186,7 @@ public class TarFile {
 
 
     /**
-     * @param certToCheck       Das Zertifikat, dessen Gültigkeit geprüft ewrden soll
+     * @param certToCheck       Das Zertifikat, dessen Gültigkeit geprüft werden soll
      * @param trustedCert        Ein TrustStore, der das Root-Zertifikat enthält
      * @param intermediateCerts Die Liste der Intermediate-Zertifikate, die für eine Chain zwischen certToCheck und dem Zertifikat im TrustStore benötigt werden.
      * @return
@@ -288,9 +260,5 @@ public class TarFile {
         catch (InvalidKeyException e) {
             logger.error("Der Schlüssel zur Prüfung der Signatur konnte nicht eingelesen werden.", e);
         }
-
     }
-
-
-
 }
