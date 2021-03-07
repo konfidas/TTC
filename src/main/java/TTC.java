@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.*;
 import java.security.cert.*;
@@ -8,8 +9,10 @@ import java.io.File;
 import java.nio.file.Files;
 
 import org.apache.commons.cli.*;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.*;
 import org.bouncycastle.operator.AlgorithmNameFinder;
 import org.bouncycastle.operator.DefaultAlgorithmNameFinder;
@@ -111,6 +114,16 @@ public class TTC {
                     AuditLogMessage log = new AuditLogMessage(content, individualFileName);
                     all_log_messages.add(log);
 
+                }
+                /**************
+                 ** info.csv *
+                 *************/
+                else if (individualFileName.matches("^info.csv")) {
+                    logger.info("info.csv gefunden. Starte Verarbeitung.", individualFileName);
+                    String info_string = new String(content, StandardCharsets.UTF_8);
+                    logger.info("Description laut info.csv: {}", StringUtils.substringsBetween(info_string, "description:\",\"", "\"," )[0]);
+                    logger.info("Manufacturer laut info.csv: {}", StringUtils.substringsBetween(info_string, "manufacturer:\",\"", "\"," )[0]);
+                    logger.info("Version laut info.csv: {}", StringUtils.substringsBetween(info_string, "version:\",\"", "\"" )[0]);
                 }
                 /*********************
                  ** CVC Certificate *
