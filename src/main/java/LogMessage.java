@@ -57,10 +57,10 @@ public class LogMessage {
 
 
     String certifiedDataType = "";
-    ArrayList<ASN1Primitive> certifiedData = new ArrayList<ASN1Primitive>();
+    ArrayList<ASN1Primitive> certifiedData = new ArrayList<>();
     String serialNumber = "";
     String signatureAlgorithm = "";
-    ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<ASN1Primitive>();
+    ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<>();
     String logTimeType = "";
     String logTimeUTC = "";
     String logTimeGeneralizedTime = "";
@@ -80,14 +80,14 @@ public class LogMessage {
 
             this.filename = filename;
             if (primitive instanceof ASN1Sequence) {
-                Enumeration test = ((ASN1Sequence) primitive).getObjects();
+                Enumeration<ASN1Primitive> test = ((ASN1Sequence) primitive).getObjects();
 
-                ASN1Primitive element = (ASN1Primitive) test.nextElement();
+                ASN1Primitive element = test.nextElement();
 
                 //The first element has to be the version number
                 if (element instanceof ASN1Integer) {
                     this.version = ((ASN1Integer) element).intValueExact();
-                    byte[] elementValue = Arrays.copyOfRange(((ASN1Integer) element).getEncoded(), 2, ((ASN1Integer) element).getEncoded().length);
+                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                     this.dtbsStream.write(elementValue);
                 }
                 else {
@@ -99,12 +99,12 @@ public class LogMessage {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. Die Versionsnummer ist nicht 2", filename));
                 }
 
-                element = (ASN1Primitive) test.nextElement();
+                element = test.nextElement();
 
                 // Then, the object identifier for the certified data type shall follow
                 if (element instanceof ASN1ObjectIdentifier) {
                     this.certifiedDataType = ((ASN1ObjectIdentifier) element).getId();
-                    byte[] elementValue = Arrays.copyOfRange(((ASN1ObjectIdentifier) element).getEncoded(), 2, ((ASN1ObjectIdentifier) element).getEncoded().length);
+                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                     this.dtbsStream.write(elementValue);
 
                 }
@@ -119,21 +119,21 @@ public class LogMessage {
                 }
 
                 // Now, we will enter a while loop and collect all the certified data
-                element = (ASN1Primitive) test.nextElement();
+                element = test.nextElement();
                 while (!(element instanceof ASN1OctetString)) {
                     // Then, the object identifier for the certified data type shall follow
                     this.certifiedData.add(element);
-                    byte[] elementValue = Arrays.copyOfRange(((ASN1Primitive) element).getEncoded(), 2, ((ASN1Primitive) element).getEncoded().length);
+                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                     this.dtbsStream.write(elementValue);
 
-                    element = (ASN1Primitive) test.nextElement();
+                    element = test.nextElement();
                 }
 
                 // Then, the serial number is expected
                 if (element instanceof ASN1OctetString) {
                     //FIXME: I have no idea, why the first charater shows
-                    this.serialNumber = ((ASN1OctetString) element).toString().toUpperCase().substring(1);
-                    byte[] elementValue = Arrays.copyOfRange(((ASN1OctetString) element).getEncoded(), 2, ((ASN1OctetString) element).getEncoded().length);
+                    this.serialNumber = element.toString().toUpperCase().substring(1);
+                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                     this.dtbsStream.write(elementValue);
                 }
                 else {
@@ -145,18 +145,18 @@ public class LogMessage {
                     throw new BadFormatForLogMessage(String.format("Error while parsing %s. Die Serial Number ist null", filename));
                 }
 
-                element = (ASN1Primitive) test.nextElement();
+                element = test.nextElement();
                 // Then, the sequence for the signatureAlgorithm  is expected
                 if (element instanceof ASN1Sequence) {
 
-                    Enumeration sigAlgorithmEnumeration = ((ASN1Sequence) element).getObjects();
+                    Enumeration<ASN1Primitive> sigAlgorithmEnumeration = ((ASN1Sequence) element).getObjects();
 
-                    element = (ASN1Primitive) sigAlgorithmEnumeration.nextElement();
+                    element = sigAlgorithmEnumeration.nextElement();
                     // First, we read the signatureAlgorithm itself
 
                     if (element instanceof ASN1ObjectIdentifier) {
-                        this.signatureAlgorithm = ((ASN1ObjectIdentifier) element).toString();
-                        byte[] elementValue = Arrays.copyOfRange(((ASN1ObjectIdentifier) element).getEncoded(), 2, ((ASN1ObjectIdentifier) element).getEncoded().length);
+                        this.signatureAlgorithm = element.toString();
+                        byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                         this.dtbsStream.write(elementValue);
 
                     }
@@ -172,7 +172,7 @@ public class LogMessage {
 
                     //Then, we loop over the rest of the sequence for the options
                     while (sigAlgorithmEnumeration.hasMoreElements()) {
-                        element = (ASN1Primitive) sigAlgorithmEnumeration.nextElement();
+                        element = sigAlgorithmEnumeration.nextElement();
                         this.signatureAlgorithmParameters.add(element);
                     }
 
@@ -181,14 +181,14 @@ public class LogMessage {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. Die Sequenz für den signatureAlgortihm wurde nicht gefunden.", filename));
                 }
 
-                element = (ASN1Primitive) test.nextElement();
+                element = test.nextElement();
                 // Then, we are checking whether we have seAuditData
 
                 if (element instanceof ASN1OctetString) {
                     this.seAuditData = ((ASN1OctetString) element).getOctets();
-                    byte[] elementValue = Arrays.copyOfRange(((ASN1OctetString) element).getEncoded(), 2, ((ASN1OctetString) element).getEncoded().length);
+                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                     this.dtbsStream.write(elementValue);
-                    element = (ASN1Primitive) test.nextElement();
+                    element = test.nextElement();
 
                 }
                 else {
@@ -198,7 +198,7 @@ public class LogMessage {
                 // Then, we are checking whether we have seAuditData
                 if (element instanceof ASN1Integer) {
                     this.signatureCounter = ((ASN1Integer) element).getValue();
-                    byte[] elementValue = Arrays.copyOfRange(((ASN1Integer) element).getEncoded(), 2, ((ASN1Integer) element).getEncoded().length);
+                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                     this.dtbsStream.write(elementValue);
 
                 }
@@ -211,23 +211,23 @@ public class LogMessage {
 
                 }
 
-                element = (ASN1Primitive) test.nextElement();
+                element = test.nextElement();
                 // Now, we expect the logTime as one of three typey
                 if (element instanceof ASN1Integer) {
                     this.logTimeUnixTime = ((ASN1Integer) element).getValue().intValue();
-                    byte[] elementValue = Arrays.copyOfRange(((ASN1Integer) element).getEncoded(), 2, ((ASN1Integer) element).getEncoded().length);
+                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                     this.dtbsStream.write(elementValue);
                     this.logTimeType = "unixTime";
                 }
                 else if (element instanceof ASN1UTCTime) {
                     this.logTimeUTC = ((ASN1UTCTime) element).getTime();
-                    byte[] elementValue = Arrays.copyOfRange(((ASN1UTCTime) element).getEncoded(), 2, ((ASN1UTCTime) element).getEncoded().length);
+                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                     this.dtbsStream.write(elementValue);
                     this.logTimeType = "utcTime";
                 }
                 else if (element instanceof ASN1GeneralizedTime) {
                     this.logTimeGeneralizedTime = ((ASN1GeneralizedTime) element).getTime();
-                    byte[] elementValue = Arrays.copyOfRange(((ASN1GeneralizedTime) element).getEncoded(), 2, ((ASN1GeneralizedTime) element).getEncoded().length);
+                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                     this.dtbsStream.write(elementValue);
                     this.logTimeType = "generalizedTime";
                 }
@@ -239,12 +239,11 @@ public class LogMessage {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. Es ist kein Typ für die LogZeit vorhanden", filename));
                 }
 
-                element = (ASN1Primitive) test.nextElement();
+                element = test.nextElement();
 
                 // Now, the last element shall be the signature
                 if (element instanceof ASN1OctetString) {
-                    byte[] elementValue = Arrays.copyOfRange(((ASN1OctetString) element).getEncoded(), 2, ((ASN1OctetString) element).getEncoded().length);
-                    this.signatureValue = elementValue;
+                    this.signatureValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                 }
                 else {
                     throw new BadFormatForLogMessage(String.format("Fehler beim Parsen von %s. signature wurde nicht gefunden.", filename));
@@ -277,8 +276,8 @@ public class LogMessage {
         return_value += String.format("certifiedDataType: %s", this.certifiedDataType);
         return_value += System.lineSeparator();
 
-        for (int i = 0; i < this.certifiedData.size(); i++) {
-            return_value += String.format("certifiedData: %s", this.certifiedData.get(i).toString());
+        for (ASN1Primitive certifiedDatum : this.certifiedData) {
+            return_value += String.format("certifiedData: %s", certifiedDatum.toString());
             return_value += System.lineSeparator();
         }
 
@@ -287,8 +286,8 @@ public class LogMessage {
         return_value += String.format("signatureAlgorithm: %s", this.signatureAlgorithm);
         return_value += System.lineSeparator();
 
-        for (int i = 0; i < this.signatureAlgorithmParameters.size(); i++) {
-            return_value += String.format("certifiedData: %s", this.signatureAlgorithmParameters.get(i).toString());
+        for (ASN1Primitive signatureAlgorithmParameter : this.signatureAlgorithmParameters) {
+            return_value += String.format("certifiedData: %s", signatureAlgorithmParameter.toString());
             return_value += System.lineSeparator();
         }
         if (this.seAuditData != null) {
@@ -308,11 +307,11 @@ public class LogMessage {
                 return_value += System.lineSeparator();
                 break;
             case "utcTime":
-                return_value += String.format("logTime: %d", this.logTimeUTC.toString());
+                return_value += String.format("logTime: %s", this.logTimeUTC);
                 return_value += System.lineSeparator();
                 break;
             case "generalizedTime":
-                return_value += String.format("logTime: %d", this.logTimeGeneralizedTime.toString());
+                return_value += String.format("logTime: %s", this.logTimeGeneralizedTime);
                 return_value += System.lineSeparator();
                 break;
         }
