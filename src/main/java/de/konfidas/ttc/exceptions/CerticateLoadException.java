@@ -1,15 +1,17 @@
+package de.konfidas.ttc.exceptions;
+
 /**
- * Diese Exception wird aus der Methode assertSignatureOfLogMessageIsValid geworfen. Sie zeigt an,
- * dass bei der Prüfung der Signatur einer LogMessage ein Fehler aufgegtreten ist. Die Exception enthält
+ * Diese Exception wird aus der Methode loadCertificate geworfen. Sie zeigt an,
+ * dass beim Laden des Zertifikats ein Fehler aufgetreten ist. Die Exception enthält
  * eine message mit weitere Infos und eine innerException, die auf die Ursache des Fehlers zeigt
  */
-public class SignatureValidationException extends Exception
-{
+
+public class CerticateLoadException extends Exception{
 
     private String message;
     private Exception innerExcpetion;
 
-    public SignatureValidationException(String message, Exception innerExcpetion){
+    public CerticateLoadException(String message, Exception innerExcpetion){
         this.message = message;
         this.innerExcpetion = innerExcpetion;
     }

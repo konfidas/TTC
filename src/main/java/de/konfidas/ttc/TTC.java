@@ -1,3 +1,5 @@
+package de.konfidas.ttc;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -8,11 +10,16 @@ import java.security.Security;
 import java.io.File;
 import java.nio.file.Files;
 
+import de.konfidas.ttc.exceptions.CerticateLoadException;
+import de.konfidas.ttc.exceptions.SignatureValidationException;
+import de.konfidas.ttc.messages.AuditLogMessage;
+import de.konfidas.ttc.messages.LogMessage;
+import de.konfidas.ttc.messages.SystemLogMessage;
+import de.konfidas.ttc.messages.TransactionLogMessage;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.*;
 import org.bouncycastle.operator.AlgorithmNameFinder;
 import org.bouncycastle.operator.DefaultAlgorithmNameFinder;
@@ -186,11 +193,11 @@ public class TTC {
              ***************************************************************************/
             for (LogMessage message : all_log_messages) {
                 try {
-                    assertSignatureOfLogMessageIsValid(message, allClientCertificates.get(message.serialNumber));
-                    logger.info("Prüfe die Signatur der LogMessage {}", message.filename);
+                    assertSignatureOfLogMessageIsValid(message, allClientCertificates.get(message.getSerialNumber()));
+                    logger.info("Prüfe die Signatur der LogMessage {}", message.getFileName());
                 }
                 catch (SignatureValidationException signatureValidationException) {
-                    logger.error("Fehler bei der Prüfung der Signatur der Log Message {}", message.filename);
+                    logger.error("Fehler bei der Prüfung der Signatur der Log Message {}", message.getFileName());
                 }
             }
             myTarFile.close();
@@ -238,7 +245,7 @@ public class TTC {
 
     /**
      * @param certToCheck       Das Zertifikat, dessen Gültigkeit geprüft ewrden soll
-     * @param trustStore        Ein TrustStore, der das Root-Zertifikat enthält
+     * @param trustedCert        Ein TrustStore, der das Root-Zertifikat enthält
      * @param intermediateCerts Die Liste der Intermediate-Zertifikate, die für eine Chain zwischen certToCheck und dem Zertifikat im TrustStore benötigt werden.
      * @return
      * @throws NoSuchAlgorithmException
@@ -286,16 +293,16 @@ public class TTC {
             throw new SignatureValidationException("Es wurde keine LogMessage für die Prüfung der Signatur übergeben", new NullPointerException());
         }
         try {
-            ASN1ObjectIdentifier algoIdentifier = new ASN1ObjectIdentifier(logMessageToVerify.signatureAlgorithm);
+            ASN1ObjectIdentifier algoIdentifier = new ASN1ObjectIdentifier(logMessageToVerify.getSignatureAlgorithm());
             AlgorithmNameFinder nameFinder = new DefaultAlgorithmNameFinder();
             String algoName = nameFinder.getAlgorithmName(algoIdentifier);
 
             Signature st = Signature.getInstance(algoName, "BC");
             st.initVerify(certForVerification.getPublicKey());
 
-            st.update(logMessageToVerify.dtbs);
+            st.update(logMessageToVerify.getDTBS());
 
-            byte[] signatureValue = logMessageToVerify.signatureValue;
+            byte[] signatureValue = logMessageToVerify.getSignatureValue();
             st.verify(signatureValue);
 
         }

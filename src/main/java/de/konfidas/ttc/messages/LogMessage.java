@@ -1,4 +1,8 @@
+package de.konfidas.ttc.messages;
 
+import de.konfidas.ttc.MyByteArrayOutputStream;
+import de.konfidas.ttc.TTC;
+import de.konfidas.ttc.exceptions.BadFormatForLogMessage;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.asn1.*;
 
@@ -335,6 +339,27 @@ public class LogMessage {
         return (return_value);
     }
 
+
+
+    public String getSerialNumber(){
+        return this.serialNumber;
+    }
+
+    public String getFileName(){
+        return this.filename;
+    }
+
+    public byte[] getSignatureValue() {
+        return this.signatureValue;
+    }
+
+    public byte[] getDTBS() {
+        return this.dtbs;
+    }
+
+    public String getSignatureAlgorithm(){
+        return this.signatureAlgorithm;
+    }
 }
 
 
