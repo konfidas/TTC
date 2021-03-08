@@ -1,3 +1,5 @@
+package de.konfidas.ttc;
+
 import java.io.ByteArrayOutputStream;
 import static org.apache.commons.codec.binary.Hex.encodeHexString;
 
