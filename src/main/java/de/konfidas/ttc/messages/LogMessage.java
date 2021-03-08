@@ -1,13 +1,15 @@
 package de.konfidas.ttc.messages;
 
-import de.konfidas.ttc.MyByteArrayOutputStream;
+import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.TTC;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.asn1.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -53,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * // ║    signatureValue     │ 0x04 │ OCTET STRING                     │ m          ║
  * // ╚═══════════════════════╧══════╧══════════════════════════════════╧════════════╝
  */
-public class LogMessage {
+public abstract class LogMessage {
     final static Logger logger = LoggerFactory.getLogger(TTC.class);
 
     String[] allowedCertifiedDataType = {"0.4.0.127.0.7.3.7.1.1", "0.4.0.127.0.7.3.7.1.2", "0.4.0.127.0.7.3.7.1.3"};
@@ -76,14 +78,14 @@ public class LogMessage {
     String filename = "";
 
 
-    public LogMessage(byte[] content, String filename){
-        try {
-            this.filename = filename;
-            parse(content);
-            checkContent();
-        }catch(Exception e){
-            logger.error(e.toString());
-        }
+    public LogMessage(File file) throws IOException, BadFormatForLogMessageException {
+        this(Files.readAllBytes(file.toPath()), file.getName());
+    }
+
+    public LogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
+        this.filename = filename;
+        parse(content);
+        checkContent();
     }
 
     /**
@@ -175,18 +177,15 @@ public class LogMessage {
         return this.signatureAlgorithm;
     }
 
-
-
     void parse(byte[] content) throws BadFormatForLogMessageException{
-        try (MyByteArrayOutputStream dtbsStream = new MyByteArrayOutputStream()) {
+        try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
             final ASN1InputStream decoder = new ASN1InputStream(content);
             ASN1Primitive primitive = decoder.readObject();
 
-
             if (primitive instanceof ASN1Sequence) {
-                Enumeration<ASN1Primitive> test = ((ASN1Sequence) primitive).getObjects();
+                Enumeration<ASN1Primitive> asn1Primitives = ((ASN1Sequence) primitive).getObjects();
 
-                ASN1Primitive element = test.nextElement();
+                ASN1Primitive element = asn1Primitives.nextElement();
 
                 //The first element has to be the version number
                 if (element instanceof ASN1Integer) {
@@ -198,29 +197,18 @@ public class LogMessage {
                     throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. Das version Element in der logMessage konnte nicht gefunden werden.", filename));
                 }
 
-                element = test.nextElement();
+                element = asn1Primitives.nextElement();
 
                 // Then, the object identifier for the certified data type shall follow
                 if (element instanceof ASN1ObjectIdentifier) {
                     this.certifiedDataType = ((ASN1ObjectIdentifier) element).getId();
                     byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                     dtbsStream.write(elementValue);
-
-                }
-                else {
+                } else {
                     throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. certifiedDataType Element wurde nicht gefunden.", filename));
                 }
 
-                // Now, we will enter a while loop and collect all the certified data
-                element = test.nextElement();
-                while (!(element instanceof ASN1OctetString)) {
-                    // Then, the object identifier for the certified data type shall follow
-                    this.certifiedData.add(element);
-                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                    dtbsStream.write(elementValue);
-
-                    element = test.nextElement();
-                }
+                element = parseCertifiedData(dtbsStream, asn1Primitives);
 
                 // Then, the serial number is expected
                 if (element instanceof ASN1OctetString) {
@@ -228,12 +216,11 @@ public class LogMessage {
                     this.serialNumber = element.toString().toUpperCase().substring(1);
                     byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                     dtbsStream.write(elementValue);
-                }
-                else {
+                } else {
                     throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. serialNumber wurde nicht gefunden.", filename));
                 }
 
-                element = test.nextElement();
+                element = asn1Primitives.nextElement();
                 // Then, the sequence for the signatureAlgorithm  is expected
                 if (element instanceof ASN1Sequence) {
 
@@ -267,14 +254,14 @@ public class LogMessage {
                     throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. Die Sequenz für den signatureAlgortihm wurde nicht gefunden.", filename));
                 }
 
-                element = test.nextElement();
+                element = asn1Primitives.nextElement();
                 // Then, we are checking whether we have seAuditData
 
                 if (element instanceof ASN1OctetString) {
                     this.seAuditData = ((ASN1OctetString) element).getOctets();
                     byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                     dtbsStream.write(elementValue);
-                    element = test.nextElement();
+                    element = asn1Primitives.nextElement();
 
                 }
                 else {
@@ -297,7 +284,7 @@ public class LogMessage {
 
                 }
 
-                element = test.nextElement();
+                element = asn1Primitives.nextElement();
                 // Now, we expect the logTime as one of three typey
                 if (element instanceof ASN1Integer) {
                     this.logTimeUnixTime = ((ASN1Integer) element).getValue().intValue();
@@ -321,7 +308,7 @@ public class LogMessage {
                     throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. logTime Element wurde nicht gefunden.", filename));
                 }
 
-                element = test.nextElement();
+                element = asn1Primitives.nextElement();
 
                 // Now, the last element shall be the signature
                 if (element instanceof ASN1OctetString) {
@@ -338,6 +325,9 @@ public class LogMessage {
             throw new BadFormatForLogMessageException("failed to parse log message",e);
         }
     }
+
+
+    abstract ASN1Primitive parseCertifiedData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> test) throws IOException, BadFormatForLogMessageException;
 
 
     void checkContent() throws BadFormatForLogMessageException {
