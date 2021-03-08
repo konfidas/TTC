@@ -1,5 +1,7 @@
-package de.konfidas.ttc.tars;
+package de.konfidas.ttc.messages;
 
+import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
+import de.konfidas.ttc.tars.LogMessageArchiveTestParsingSuccessfully;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,9 +18,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 @RunWith(Parameterized.class)
-public class LogMessageArchiveTest {
-    final static Logger logger = LoggerFactory.getLogger(LogMessageArchiveTest.class);
-    final static File correctTarFiles = new File("D:\\testdata"); // TODO: as soon as we have publish-able test data, point path to it.
+public class LogMessageTestParsingSuccessfully {
+    final static Logger logger = LoggerFactory.getLogger(LogMessageArchiveTestParsingSuccessfully.class);
+    final static File correctTarFiles = new File("D:\\testdata\\LogMessages"); // TODO: as soon as we have publish-able test data, point path to it.
 
     File file;
 
@@ -39,17 +41,17 @@ public class LogMessageArchiveTest {
     }
 
 
-    public LogMessageArchiveTest(File file){
+    public LogMessageTestParsingSuccessfully(File file){
         this.file = file;
     }
 
     @Test
-    public void parse() throws IOException{
+    public void parse() throws IOException, BadFormatForLogMessageException {
         logger.info("");
         logger.info("============================================================================");
-        logger.info("testing file {}:", file.getName());
+        logger.info("parsing log message {}:", file.getName());
 
-        LogMessageArchive tar  = new LogMessageArchive(this.file);
-        
+        LogMessage msg  = LogMessageFactory.createLogMessage(this.file);
+
     }
 }
