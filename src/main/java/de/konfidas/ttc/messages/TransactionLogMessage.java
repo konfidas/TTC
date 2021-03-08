@@ -1,6 +1,6 @@
 package de.konfidas.ttc.messages;
 
-import de.konfidas.ttc.MyByteArrayOutputStream;
+import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -15,7 +15,7 @@ public class TransactionLogMessage extends LogMessage {
     }
 
     @Override
-    ASN1Primitive parseCertifiedData(MyByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> test) throws IOException {
+    ASN1Primitive parseCertifiedData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> test) throws IOException {
         ASN1Primitive element;
         // Now, we will enter a while loop and collect all the certified data
         element = test.nextElement();

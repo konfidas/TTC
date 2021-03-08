@@ -20,7 +20,7 @@ import java.util.Collections;
 @RunWith(Parameterized.class)
 public class LogMessageTestParsingSuccessfully {
     final static Logger logger = LoggerFactory.getLogger(LogMessageArchiveTestParsingSuccessfully.class);
-    final static File correctTarFiles = new File("D:\\testdata\\LogMessages"); // TODO: as soon as we have publish-able test data, point path to it.
+    final static File correctTarFiles = new File("D:\\testdata\\logMessages"); // TODO: as soon as we have publish-able test data, point path to it.
 
     File file;
 

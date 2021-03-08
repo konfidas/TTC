@@ -1,5 +1,6 @@
 package de.konfidas.ttc.tars;
 
+import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.exceptions.CertificateLoadException;
 import de.konfidas.ttc.exceptions.SignatureValidationException;
 import de.konfidas.ttc.messages.*;
@@ -106,7 +107,7 @@ public class LogMessageArchive {
 
 
         }
-        catch (FileNotFoundException e) {
+        catch (FileNotFoundException | BadFormatForLogMessageException e) {
             e.printStackTrace();
             System.exit(1);
         }

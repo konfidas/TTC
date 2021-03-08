@@ -1,6 +1,6 @@
 package de.konfidas.ttc.messages;
 
-import de.konfidas.ttc.MyByteArrayOutputStream;
+import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.TTC;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import org.apache.commons.codec.binary.Hex;
@@ -177,13 +177,10 @@ public abstract class LogMessage {
         return this.signatureAlgorithm;
     }
 
-
-
     void parse(byte[] content) throws BadFormatForLogMessageException{
-        try (MyByteArrayOutputStream dtbsStream = new MyByteArrayOutputStream()) {
+        try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
             final ASN1InputStream decoder = new ASN1InputStream(content);
             ASN1Primitive primitive = decoder.readObject();
-
 
             if (primitive instanceof ASN1Sequence) {
                 Enumeration<ASN1Primitive> asn1Primitives = ((ASN1Sequence) primitive).getObjects();
@@ -330,7 +327,7 @@ public abstract class LogMessage {
     }
 
 
-    abstract ASN1Primitive parseCertifiedData(MyByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> test) throws IOException, BadFormatForLogMessageException;
+    abstract ASN1Primitive parseCertifiedData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> test) throws IOException, BadFormatForLogMessageException;
 
 
     void checkContent() throws BadFormatForLogMessageException {
