@@ -33,7 +33,9 @@ public class TestParseSystemLog {
                 "      FF" +
                 "   30 0C" +
                 "      06 0A" +
-                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "         04 00 7F  00 07 01 01 04 01 04" +
+                "   02 01" +
+                "      17" +
                 "   02 04" +
                 "      5F CE 6A 88" +
                 "   04 01" +
@@ -62,7 +64,9 @@ public class TestParseSystemLog {
                 "      FF" +
                 "   30 0C" +
                 "      06 0A" +
-                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "         04 00 7F  00 07 01 01 04 01 04" +
+                "   02 01" +
+                "      17" +
                 "   02 04" +
                 "      5F CE 6A 88" +
                 "   04 01" +
@@ -90,7 +94,9 @@ public class TestParseSystemLog {
                 "      FF" +
                 "   30 0C" +
                 "      06 0A" +
-                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "         04 00 7F  00 07 01 01 04 01 04" +
+                "   02 01" +
+                "      17" +
                 "   02 04" +
                 "      5F CE 6A 88" +
                 "   04 01" +
@@ -122,7 +128,9 @@ public class TestParseSystemLog {
                 "      FF" +
                 "   30 0C" +
                 "      06 0A" +
-                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "         04 00 7F  00 07 01 01 04 01 04" +
+                "   02 01" +
+                "      17" +
                 "   02 04" +
                 "      5F CE 6A 88" +
                 "   04 01" +
@@ -154,7 +162,9 @@ public class TestParseSystemLog {
                 "      FF" +
                 "   30 0C" +
                 "      06 0A" +
-                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "         04 00 7F  00 07 01 01 04 01 04" +
+                "   02 01" +
+                "      17" +
                 "   02 04" +
                 "      5F CE 6A 88" +
                 "   04 01" +
@@ -189,7 +199,9 @@ public class TestParseSystemLog {
                 "      FF" +
                 "   30 0C" +
                 "      06 0A" +
-                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "         04 00 7F  00 07 01 01 04 01 04" +
+                "   02 01" +
+                "      17" +
                 "   02 04" +
                 "      5F CE 6A 88" +
                 "   04 01" +
@@ -222,7 +234,9 @@ public class TestParseSystemLog {
                 "      FF" +
                 "   30 0C" +
                 "      06 0A" +
-                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "         04 00 7F  00 07 01 01 04 01 04" +
+                "   02 01" +
+                "      17" +
                 "   02 04" +
                 "      5F CE 6A 88" +
                 "   04 01" +
@@ -257,7 +271,9 @@ public class TestParseSystemLog {
                 "      FF" +
                 "   30 0C" +
                 "      06 0A" +
-                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "         04 00 7F  00 07 01 01 04 01 04" +
+                "   02 01" +
+                "      17" +
                 "   02 04" +
                 "      5F CE 6A 88" +
                 "   04 01" +
@@ -292,7 +308,9 @@ public class TestParseSystemLog {
                 "      FF" +
                 "   30 0C" +
                 "      06 0A" +
-                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "         04 00 7F  00 07 01 01 04 01 04" +
+                "   02 01" +
+                "      17" +
                 "   02 04" +
                 "      5F CE 6A 88" +
                 "   04 01" +
@@ -325,7 +343,9 @@ public class TestParseSystemLog {
                 "      FF 00 11 22 33 44" +
                 "   30 0C" +
                 "      06 0A" +
-                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "         04 00 7F  00 07 01 01 04 01 04" +
+                "   02 01" +
+                "      17" +
                 "   02 04" +
                 "      5F CE 6A 88" +
                 "   04 01" +
@@ -345,7 +365,7 @@ public class TestParseSystemLog {
 
     @Test
     public void parseMissingSignatureCounter() throws Exception {
-        String hex = "30 46" +
+        String hex = "30 43" +
                 "   02 01" +
                 "      02" +
                 "   06 09" +
@@ -358,8 +378,10 @@ public class TestParseSystemLog {
                 "      FF" +
                 "   30 0C" +
                 "      06 0A" +
-                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "         04 00 7F  00 07 01 01 04 01 04" +
 // Missing Signature counter
+//              "   02 01" +
+//              "      17" +
 // Time:
                 "   02 01" +
                 "      01" +
@@ -388,10 +410,10 @@ public class TestParseSystemLog {
                 "      FF" +
                 "   30 0C" +
                 "      06 0A" +
-                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "         04 00 7F  00 07 01 01 04 01 04" +
 // Signature counter:
                 "   02 01" +
-                "      05" +
+                      "17" +
 // Time:
                 "   02 01" +
                 "      01" +
@@ -402,7 +424,7 @@ public class TestParseSystemLog {
         byte[] systemLog = Hex.decode(hex);
         SystemLogMessage msg = new SystemLogMessage(systemLog, "");
 
-        assert(msg.getSignatureCounter().equals(BigInteger.valueOf(5)));
+        assert(msg.getSignatureCounter().equals(BigInteger.valueOf(23)));
         assert( 1 == msg.getLogTimeUnixTime());
     }
 
