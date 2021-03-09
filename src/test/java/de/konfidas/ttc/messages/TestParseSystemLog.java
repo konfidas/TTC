@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
 
 public class TestParseSystemLog {
@@ -305,4 +306,38 @@ public class TestParseSystemLog {
             // expected
         }
     }
+
+
+    @Test
+    public void checkSerialNumber() throws Exception {
+        String hex = "30 4E" +
+                "   02 01" +
+                "      02" +
+                "   06 09" +
+                "      04 00 7F 00 07 03 07 01 02" +
+                "   80 10" +
+                "      64 65 72 65 67  69 73 74 65 72 43 6C 69 65 6E 74" +
+                "   81 0A" +
+                "      00 01 02 03 04 05 06 07 08 09" +
+// Serial Number:
+                "   04 06" +
+                "      FF 00 11 22 33 44" +
+                "   30 0C" +
+                "      06 0A" +
+                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+                "   02 04" +
+                "      5F CE 6A 88" +
+                "   04 01" +
+                "      FF"
+
+                        .replace("\\\\s+","");
+        byte[] systemLog = Hex.decode(hex);
+
+        byte[] expectedSerialNumber = Hex.decode("FF 00 11 22 33 44");
+
+        SystemLogMessage msg = new SystemLogMessage(systemLog, "");
+
+        assertArrayEquals(msg.getSerialNumber(), expectedSerialNumber);
+    }
+
 }

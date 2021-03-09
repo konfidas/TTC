@@ -65,7 +65,7 @@ public abstract class LogMessage {
     int version = 0;
     oid certifiedDataType;
     ArrayList<ASN1Primitive> certifiedData = new ArrayList<>();
-    String serialNumber = "";
+    byte[] serialNumber;
     String signatureAlgorithm = "";
     ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<>();
     String logTimeType = "";
@@ -158,7 +158,7 @@ public abstract class LogMessage {
 
 
 
-    public String getSerialNumber(){
+    public byte[] getSerialNumber(){
         return this.serialNumber;
     }
 
@@ -199,18 +199,8 @@ public abstract class LogMessage {
                 }
 
                 parseCertifiedDataType(dtbsStream, asn1Primitives);
-
-                element = parseCertifiedData(dtbsStream, asn1Primitives);
-
-                // Then, the serial number is expected
-                if (element instanceof ASN1OctetString) {
-                    //FIXME: I have no idea, why the first character shows
-                    this.serialNumber = element.toString().toUpperCase().substring(1);
-                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                    dtbsStream.write(elementValue);
-                } else {
-                    throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. serialNumber wurde nicht gefunden.", filename));
-                }
+                element = parseCertifiedData(dtbsStream, asn1Primitives); // TODO: CertifiedData ends with optional element. So parseCertifiedData fetches one element to much.
+                parseSerialNumber(dtbsStream,element);
 
                 element = asn1Primitives.nextElement();
                 // Then, the sequence for the signatureAlgorithm  is expected
@@ -319,6 +309,20 @@ public abstract class LogMessage {
         }
     }
 
+    private void parseSerialNumber(ByteArrayOutputStream dtbsStream,ASN1Primitive element) throws IOException, SerialNumberParsingException {
+        if(element == null){
+            throw new SerialNumberParsingException("Failed to Parse Certified Data Type, no more elements in ASN1 Object", null);
+        }
+
+        // Then, the serial number is expected
+        if (element instanceof ASN1OctetString) {
+            this.serialNumber = ((ASN1OctetString) element).getOctets();
+            dtbsStream.write(this.serialNumber);
+        } else {
+            throw new SerialNumberParsingException(String.format("Fehler beim Parsen von %s. serialNumber wurde nicht gefunden.", filename),null);
+        }
+    }
+
     void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, CertifiedDataTypeParsingException {
         if(!asn1Primitives.hasMoreElements()){
             throw new CertifiedDataTypeParsingException("Failed to Parse Certified Data Type, no more elements in ASN1 Object", null);
@@ -372,6 +376,12 @@ public abstract class LogMessage {
 
     public static class CertifiedDataTypeParsingException extends BadFormatForLogMessageException{
         public CertifiedDataTypeParsingException(String message, Exception reason) {
+            super(message, reason);
+        }
+    }
+
+    public static class SerialNumberParsingException extends BadFormatForLogMessageException{
+        public SerialNumberParsingException(String message, Exception reason) {
             super(message, reason);
         }
     }
