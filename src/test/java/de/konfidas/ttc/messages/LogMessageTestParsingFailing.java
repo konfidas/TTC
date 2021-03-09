@@ -22,7 +22,7 @@ import static org.junit.Assert.fail;
 @RunWith(Parameterized.class)
 public class LogMessageTestParsingFailing {
     final static Logger logger = LoggerFactory.getLogger(LogMessageArchiveTestParsingSuccessfully.class);
-    final static File correctTarFiles = new File("D:\\testdata\\BrokenLogMessages"); // TODO: as soon as we have publish-able test data, point path to it.
+    final static File brokenLogs = new File("D:\\testdata\\brokenLogs"); // TODO: as soon as we have publish-able test data, point path to it.
 
     File file;
 
@@ -33,12 +33,14 @@ public class LogMessageTestParsingFailing {
 
 
     @Parameterized.Parameters
-    public static Collection tarFilesToTest(){
+    public static Collection filesToTest(){
 
-        if(null == correctTarFiles || !correctTarFiles.isDirectory()){
+        logger.info("checking for Logs in "+brokenLogs.getName());
+        if(null == brokenLogs || !brokenLogs.isDirectory()){
+            logger.error("not a directory.");
             return Collections.EMPTY_LIST;
         }
-        return Arrays.asList(correctTarFiles.listFiles());
+        return Arrays.asList(brokenLogs.listFiles());
     }
 
 

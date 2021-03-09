@@ -116,6 +116,10 @@ public abstract class LogMessage {
         return this.signatureAlgorithm;
     }
 
+    public int getLogTimeUnixTime() { return logTimeUnixTime; }
+
+    public BigInteger getSignatureCounter(){ return signatureCounter; }
+
     void parse(byte[] content) throws LogMessageParsingException{
         try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
             final ASN1InputStream decoder = new ASN1InputStream(content);
@@ -183,53 +187,30 @@ public abstract class LogMessage {
                     dtbsStream.write(elementValue);
                     element = asn1Primitives.nextElement();
 
-                }
-                else {
+                } else {
                     logger.info(String.format("Information für %s. seAuditData wurde nicht gefunden.", filename));
                 }
 
-                // Then, we are checking whether we have seAuditData
-                if (element instanceof ASN1Integer) {
-                    this.signatureCounter = ((ASN1Integer) element).getValue();
-                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                    dtbsStream.write(elementValue);
-
+                // Then, we are checking whether we have signatureCounter
+                if(! asn1Primitives.hasMoreElements()){
+                    throw new LogMessageParsingException("No More Elements, signature missing!");
                 }
-                else {
-                    throw new LogMessageParsingException("Der signatureCounter wurde nicht gefunden");
-                }
+                ASN1Primitive nextElement = asn1Primitives.nextElement();
 
-                if (signatureCounter == null) {
-                    throw new LogMessageParsingException("Der signatureCounter ist nicht vorhanden");
-
+                boolean hasSignatureCounter = false;
+                // check if nextElement is logTime. If not, element has to be time and no signature counter is present:
+                if(nextElement instanceof  ASN1Integer || nextElement instanceof ASN1UTCTime || nextElement instanceof ASN1GeneralizedTime) {
+                    hasSignatureCounter = true;
+                    parseSignatureCounter(dtbsStream, element);
                 }
 
-                element = asn1Primitives.nextElement();
-                // Now, we expect the logTime as one of three typey
-                if (element instanceof ASN1Integer) {
-                    this.logTimeUnixTime = ((ASN1Integer) element).getValue().intValue();
-                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                    dtbsStream.write(elementValue);
-                    this.logTimeType = "unixTime";
+                if(hasSignatureCounter){
+                    parseTime(dtbsStream, nextElement);
+                    element = asn1Primitives.nextElement();
+                }else {
+                    parseTime(dtbsStream, element);
+                    element = nextElement;
                 }
-                else if (element instanceof ASN1UTCTime) {
-                    this.logTimeUTC = ((ASN1UTCTime) element).getTime();
-                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                    dtbsStream.write(elementValue);
-                    this.logTimeType = "utcTime";
-                }
-                else if (element instanceof ASN1GeneralizedTime) {
-                    this.logTimeGeneralizedTime = ((ASN1GeneralizedTime) element).getTime();
-                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                    dtbsStream.write(elementValue);
-                    this.logTimeType = "generalizedTime";
-                }
-                else {
-                    throw new LogMessageParsingException("logTime Element wurde nicht gefunden.");
-                }
-
-
-                element = asn1Primitives.nextElement();
 
                 // Now, the last element shall be the signature
                 if (element instanceof ASN1OctetString) {
@@ -244,6 +225,44 @@ public abstract class LogMessage {
             }
         }catch(IOException e){
             throw new LogMessageParsingException("failed to parse log message",e);
+        }
+    }
+
+    private void parseSignatureCounter(ByteArrayOutputStream dtbsStream, ASN1Primitive element) throws LogMessageParsingException, IOException {
+        if (!(element instanceof ASN1Integer)) {
+            throw new LogMessageParsingException("SignatureCounter has to be ASN1Integer, but is " + element.getClass());
+        }
+        this.signatureCounter = ((ASN1Integer) element).getValue();
+        byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length); // TODO: fails on extended length.
+        dtbsStream.write(elementValue);
+
+        if (signatureCounter == null) {
+            throw new LogMessageParsingException("SignatureCounter is missing.");
+        }
+    }
+
+    private void parseTime(ByteArrayOutputStream dtbsStream, ASN1Primitive element) throws IOException, LogMessageParsingException {
+        // Now, we expect the logTime as one of three typey
+        if (element instanceof ASN1Integer) {
+            this.logTimeUnixTime = ((ASN1Integer) element).getValue().intValue();
+            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
+            dtbsStream.write(elementValue);
+            this.logTimeType = "unixTime";
+        }
+        else if (element instanceof ASN1UTCTime) {
+            this.logTimeUTC = ((ASN1UTCTime) element).getTime();
+            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
+            dtbsStream.write(elementValue);
+            this.logTimeType = "utcTime";
+        }
+        else if (element instanceof ASN1GeneralizedTime) {
+            this.logTimeGeneralizedTime = ((ASN1GeneralizedTime) element).getTime();
+            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
+            dtbsStream.write(elementValue);
+            this.logTimeType = "generalizedTime";
+        }
+        else {
+            throw new LogMessageParsingException("logTime Element wurde nicht gefunden.");
         }
     }
 
@@ -311,7 +330,6 @@ public abstract class LogMessage {
         }
     }
 
-
     public class LogMessageParsingException extends BadFormatForLogMessageException{
         public LogMessageParsingException(String message) {
             super("Parsing Message "+filename+" failed: "+ message, null);
@@ -321,7 +339,6 @@ public abstract class LogMessage {
             super("Parsing Message "+filename+" failed: "+ message, reason);
         }
     }
-
 
     public class CertifiedDataTypeParsingException extends LogMessageParsingException{
         public CertifiedDataTypeParsingException(String message, Exception reason) {
@@ -334,7 +351,6 @@ public abstract class LogMessage {
             super(message, reason);
         }
     }
-
 }
 
 

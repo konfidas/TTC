@@ -18,7 +18,7 @@ import java.util.Collections;
 @RunWith(Parameterized.class)
 public class LogMessageArchiveTestParsingSuccessfully {
     final static Logger logger = LoggerFactory.getLogger(LogMessageArchiveTestParsingSuccessfully.class);
-    final static File correctTarFiles = new File("D:\\testdata\tars"); // TODO: as soon as we have publish-able test data, point path to it.
+    final static File correctTarFiles = new File("D:\\testdata\\tars\\"); // TODO: as soon as we have publish-able test data, point path to it.
 
     File file;
 
@@ -29,11 +29,14 @@ public class LogMessageArchiveTestParsingSuccessfully {
 
 
     @Parameterized.Parameters
-    public static Collection tarFilesToTest(){
+    public static Collection filesToTest(){
 
+        logger.info("checking for Tars in "+correctTarFiles.getName());
         if(null == correctTarFiles || !correctTarFiles.isDirectory()){
+            logger.error("not a directory.");
             return Collections.EMPTY_LIST;
         }
+
 
         return Arrays.asList(correctTarFiles.listFiles());
     }
@@ -50,6 +53,6 @@ public class LogMessageArchiveTestParsingSuccessfully {
         logger.info("testing tar file {}:", file.getName());
 
         LogMessageArchive tar  = new LogMessageArchive(this.file);
-
+        tar.verify(null,false);
     }
 }

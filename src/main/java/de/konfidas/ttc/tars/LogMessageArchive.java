@@ -2,6 +2,7 @@ package de.konfidas.ttc.tars;
 
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.exceptions.CertificateLoadException;
+import de.konfidas.ttc.exceptions.LogMessageVerificationException;
 import de.konfidas.ttc.exceptions.SignatureValidationException;
 import de.konfidas.ttc.messages.*;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -134,13 +135,14 @@ public class LogMessageArchive {
         /***************************************************************************
          ** Im nächsten Schritt prüfen wir alle Signaturen der Log-Messages einmal *
          ***************************************************************************/
+        LogMessageSignatureVerifier verifier = new LogMessageSignatureVerifier(allClientCertificates);
         for (LogMessage message : all_log_messages) {
             try {
-                assertSignatureOfLogMessageIsValid(message, allClientCertificates.get(message.getSerialNumber()));
                 logger.info("Prüfe die Signatur der LogMessage {}", message.getFileName());
+                verifier.verify(message);
             }
-            catch (SignatureValidationException signatureValidationException) {
-                logger.error("Fehler bei der Prüfung der Signatur der Log Message {}", message.getFileName());
+            catch (LogMessageVerificationException e) {
+                logger.error("Fehler bei der Prüfung der Signatur der Log Message {}", message.getFileName(), e);
             }
         }
     }
