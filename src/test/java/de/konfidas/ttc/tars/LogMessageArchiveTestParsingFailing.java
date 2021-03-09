@@ -20,7 +20,7 @@ import static org.junit.Assert.fail;
 @RunWith(Parameterized.class)
 public class LogMessageArchiveTestParsingFailing {
     final static Logger logger = LoggerFactory.getLogger(LogMessageArchiveTestParsingFailing.class);
-    final static File correctTarFiles = new File("D:\\testdata\brokenTars"); // TODO: as soon as we have publish-able test data, point path to it.
+    final static File brokenTarFiles = new File("D:\\testdata\brokenTars"); // TODO: as soon as we have publish-able test data, point path to it.
 
     File file;
 
@@ -31,13 +31,15 @@ public class LogMessageArchiveTestParsingFailing {
 
 
     @Parameterized.Parameters
-    public static Collection tarFilesToTest(){
+    public static Collection filesToTest(){
 
-        if(null == correctTarFiles || !correctTarFiles.isDirectory()){
+        logger.info("checking for Tars in "+brokenTarFiles.getName());
+        if(null == brokenTarFiles || !brokenTarFiles.isDirectory()){
+            logger.error("not a directory.");
             return Collections.EMPTY_LIST;
         }
 
-        return Arrays.asList(correctTarFiles.listFiles());
+        return Arrays.asList(brokenTarFiles.listFiles());
     }
 
     public LogMessageArchiveTestParsingFailing(File file){
@@ -52,6 +54,7 @@ public class LogMessageArchiveTestParsingFailing {
 
         try {
             LogMessageArchive tar = new LogMessageArchive(this.file);
+
             fail("Log Message parsing successful, but expected to fail");
         }catch(IOException e){
             // expected behaviour

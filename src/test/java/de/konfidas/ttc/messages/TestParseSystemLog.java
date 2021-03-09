@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
 
@@ -338,4 +340,71 @@ public class TestParseSystemLog {
 
         assertArrayEquals(msg.getSerialNumber(), expectedSerialNumber);
     }
+
+
+
+    @Test
+    public void parseMissingSignatureCounter() throws Exception {
+        String hex = "30 46" +
+                "   02 01" +
+                "      02" +
+                "   06 09" +
+                "      04 00 7F 00 07 03 07 01 02" +
+                "   80 10" +
+                "      64 65 72 65 67  69 73 74 65 72 43 6C 69 65 6E 74" +
+                "   81 0A" +
+                "      00 01 02 03 04 05 06 07 08 09" +
+                "   04 01" +
+                "      FF" +
+                "   30 0C" +
+                "      06 0A" +
+                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+// Missing Signature counter
+// Time:
+                "   02 01" +
+                "      01" +
+                "   04 01" +
+                "      FF"
+
+                        .replace("\\\\s+","");
+        byte[] systemLog = Hex.decode(hex);
+        SystemLogMessage msg = new SystemLogMessage(systemLog, "");
+
+        assert(1 == msg.getLogTimeUnixTime());
+    }
+
+    @Test
+    public void parseWithSignatureCounter() throws Exception {
+        String hex = "30 46" +
+                "   02 01" +
+                "      02" +
+                "   06 09" +
+                "      04 00 7F 00 07 03 07 01 02" +
+                "   80 10" +
+                "      64 65 72 65 67  69 73 74 65 72 43 6C 69 65 6E 74" +
+                "   81 0A" +
+                "      00 01 02 03 04 05 06 07 08 09" +
+                "   04 01" +
+                "      FF" +
+                "   30 0C" +
+                "      06 0A" +
+                "         04 00 7F  00 07 01 01 04 01 04 02 01 17" +
+// Signature counter:
+                "   02 01" +
+                "      05" +
+// Time:
+                "   02 01" +
+                "      01" +
+                "   04 01" +
+                "      FF"
+
+                        .replace("\\\\s+","");
+        byte[] systemLog = Hex.decode(hex);
+        SystemLogMessage msg = new SystemLogMessage(systemLog, "");
+
+        assert(msg.getSignatureCounter().equals(BigInteger.valueOf(5)));
+        assert( 1 == msg.getLogTimeUnixTime());
+    }
+
+
 }
