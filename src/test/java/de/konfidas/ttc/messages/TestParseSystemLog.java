@@ -20,10 +20,13 @@ public class TestParseSystemLog {
                 "      02" +
                 "   06 09" +
                 "      04 00 7F 00 07 03 07 01 02" +
+// Operation Type:
                 "   80 10" +
                 "      64 65 72 65 67  69 73 74 65 72 43 6C 69 65 6E 74" +
+// System Operation Data:
                 "   81 0A" +
                 "      00 01 02 03 04 05 06 07 08 09" +
+// No Additional Input
                 "   04 01" +
                 "      FF" +
                 "   30 0C" +
@@ -50,6 +53,7 @@ public class TestParseSystemLog {
                 "      64 65 72 65 67  69 73 74 65 72 43 6C 69 65 6E 74" +
                 "   81 0A" +
                 "      00 01 02 03 04 05 06 07 08 09" +
+// Additional Input:
                 "   82 02" +
                 "      01 02" +
                 "   04 01" +
@@ -75,6 +79,9 @@ public class TestParseSystemLog {
                 "      02" +
                 "   06 09" +
                 "      04 00 7F 00 07 03 07 01 02" +
+// Missing Operation Data:
+//                "   80 10" +
+//               "      64 65 72 65 67  69 73 74 65 72 43 6C 69 65 6E 74" +
                 "   81 0A" +
                 "      00 01 02 03 04 05 06 07 08 09" +
                 "   04 01" +
@@ -92,7 +99,7 @@ public class TestParseSystemLog {
         try {
             SystemLogMessage msg = new SystemLogMessage(systemLog, "");
             fail();
-        }catch(SystemLogParsingException e){
+        }catch(SystemLogMessage.OperationTypeParsingException e){
             // expected!
         }
     }
@@ -104,6 +111,7 @@ public class TestParseSystemLog {
                 "      02" +
                 "   06 09" +
                 "      04 00 7F 00 07 03 07 01 02" +
+// Wrong Tag:
                 "   04 10" +
                 "      64 65 72 65 67  69 73 74 65 72 43 6C 69 65 6E 74 " +
                 "   81 0A" +
@@ -123,7 +131,7 @@ public class TestParseSystemLog {
         try {
             SystemLogMessage msg = new SystemLogMessage(systemLog, "");
             fail();
-        }catch(SystemLogParsingException e){
+        }catch(SystemLogMessage.OperationTypeParsingException e){
             // expected
         }
     }
@@ -137,6 +145,7 @@ public class TestParseSystemLog {
                 "      04 00 7F 00 07 03 07 01 02" +
                 "   80 10" +
                 "      64 65 72 65 67  69 73 74 65 72 43 6C 69 65 6E 74 " +
+// Wrong Tag:
                 "   04 0A" +
                 "      00 01 02 03 04 05 06 07 08 09" +
                 "   04 01" +
@@ -154,7 +163,7 @@ public class TestParseSystemLog {
         try {
             SystemLogMessage msg = new SystemLogMessage(systemLog, "");
             fail();
-        }catch(SystemLogParsingException e){
+        }catch(SystemLogMessage.SystemOperationDataParsingException e){
             // expected
         }
     }
@@ -168,6 +177,10 @@ public class TestParseSystemLog {
                 "      04 00 7F 00 07 03 07 01 02" +
                 "   80 10" +
                 "      64 65 72 65 67  69 73 74 65 72 43 6C 69 65 6E 74" +
+// Missing System Operation Data:
+//                "   81 0A" +
+//                "      00 01 02 03 04 05 06 07 08 09" +
+// Additional Input:
                 "   82 0A" +
                 "      00 01 02 03 04 05 06 07 08 09" +
                 "   04 01" +
@@ -185,7 +198,7 @@ public class TestParseSystemLog {
         try {
             SystemLogMessage msg = new SystemLogMessage(systemLog, "");
             fail();
-        }catch(SystemLogParsingException e){
+        }catch(SystemLogMessage.SystemOperationDataParsingException e){
             // expected
         }
     }
@@ -200,6 +213,9 @@ public class TestParseSystemLog {
                 "      04 00 7F 00 07 03 07 01 02" +
                 "   80 10" +
                 "      64 65 72 65 67  69 73 74 65 72 43 6C 69 65 6E 74" +
+// Missing SystemOperationData:
+//                "   81 0A" +
+//               "       00 01 02 03 04 05 06 07 08 09" +
                 "   04 01" +
                 "      FF" +
                 "   30 0C" +
@@ -215,7 +231,7 @@ public class TestParseSystemLog {
         try {
             SystemLogMessage msg = new SystemLogMessage(systemLog, "");
             fail();
-        }catch(SystemLogParsingException e){
+        }catch(SystemLogMessage.SystemOperationDataParsingException e){
             // expected
         }
     }

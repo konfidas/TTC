@@ -53,16 +53,16 @@ public class SystemLogMessage extends LogMessage {
         return element;
     }
 
-    ASN1Primitive parseSystemOperationData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives, ASN1Primitive element) throws SystemLogParsingException, IOException {
+    ASN1Primitive parseSystemOperationData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives, ASN1Primitive element) throws SystemOperationDataParsingException, IOException {
         int tag;
 
         if(!(element instanceof  DLTaggedObject)){
-            throw new SystemLogParsingException("systemOperationData not found. Expected DLTaggedObject but got "+ element.getClass());
+            throw new SystemOperationDataParsingException("systemOperationData not found. Expected DLTaggedObject but got "+ element.getClass());
         }
 
         tag = ((DLTaggedObject) element).getTagNo() ;
         if (tag != 1){
-            throw new SystemLogParsingException("systemOperationData not found. Expected Element [1] but got ["+tag+"]");
+            throw new SystemOperationDataParsingException("systemOperationData not found. Expected Element [1] but got ["+tag+"]");
         }
 
         dtbsStream.write(element.getEncoded());
@@ -71,14 +71,14 @@ public class SystemLogMessage extends LogMessage {
         return element;
     }
 
-    ASN1Primitive parseOperationType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives, ASN1Primitive element) throws SystemLogParsingException, IOException {
+    ASN1Primitive parseOperationType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives, ASN1Primitive element) throws OperationTypeParsingException, IOException {
         if(!(element instanceof DLTaggedObject)){
-            throw new SystemLogParsingException("operationType not found. Expected DLTaggedObject but got "+ element.getClass());
+            throw new OperationTypeParsingException("operationType not found. Expected DLTaggedObject but got "+ element.getClass());
         }
 
         int tag = ((DLTaggedObject) element).getTagNo() ;
         if (tag != 0){
-            throw new SystemLogParsingException("operationType not found. Expected Element [0] but got ["+tag+"]");
+            throw new OperationTypeParsingException("operationType not found. Expected Element [0] but got ["+tag+"]");
         }
 
         dtbsStream.write(element.getEncoded());
@@ -86,4 +86,18 @@ public class SystemLogMessage extends LogMessage {
         element = asn1Primitives.nextElement();
         return element;
     }
+
+
+    public static class OperationTypeParsingException extends SystemLogParsingException{
+        public OperationTypeParsingException(String message) {
+            super(message);
+        }
+    }
+
+    public static class SystemOperationDataParsingException extends SystemLogParsingException{
+        public SystemOperationDataParsingException(String message) {
+            super(message);
+        }
+    }
+
 }
