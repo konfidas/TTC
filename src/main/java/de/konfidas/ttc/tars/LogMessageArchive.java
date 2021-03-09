@@ -59,11 +59,7 @@ public class LogMessageArchive {
 
                 myTarFile.read(content, offset, content.length - offset);
 
-
-                // TODO: simplify RegExes to one:
-                if (individualFileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+(Start|Update|Finish)_Client-.+log") ||
-                    individualFileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")||
-                    individualFileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Aud.+log") ) {
+                if (individualFileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+log") ) {
                     all_log_messages.add(LogMessageFactory.createLogMessage(individualFileName,content));
                 }
 
