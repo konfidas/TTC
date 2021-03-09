@@ -3,6 +3,7 @@ package de.konfidas.ttc.messages;
 import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.TTC;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
+import de.konfidas.ttc.utilities.oid;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.asn1.*;
 
@@ -62,7 +63,7 @@ public abstract class LogMessage {
     String[] allowedAlgorithms = {"0.4.0.127.0.7.1.1.4.1.2", "0.4.0.127.0.7.1.1.4.1.3", "0.4.0.127.0.7.1.1.4.1.4", "0.4.0.127.0.7.1.1.4.1.5","0.4.0.127.0.7.1.1.4.1.8", "0.4.0.127.0.7.1.1.4.1.9", "0.4.0.127.0.7.1.1.4.1.10", "0.4.0.127.0.7.1.1.4.1.11","0.4.0.127.0.7.1.1.4.4.1", "0.4.0.127.0.7.1.1.4.4.2", "0.4.0.127.0.7.1.1.4.4.3", "0.4.0.127.0.7.1.1.4.4.4", "0.4.0.127.0.7.1.1.4.4.5", "0.4.0.127.0.7.1.1.4.4.6", "0.4.0.127.0.7.1.1.4.4.7", "0.4.0.127.0.7.1.1.4.4.8" };
 
     int version = 0;
-    String certifiedDataType = "";
+    oid certifiedDataType;
     ArrayList<ASN1Primitive> certifiedData = new ArrayList<>();
     String serialNumber = "";
     String signatureAlgorithm = "";
@@ -197,16 +198,7 @@ public abstract class LogMessage {
                     throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. Das version Element in der logMessage konnte nicht gefunden werden.", filename));
                 }
 
-                element = asn1Primitives.nextElement();
-
-                // Then, the object identifier for the certified data type shall follow
-                if (element instanceof ASN1ObjectIdentifier) {
-                    this.certifiedDataType = ((ASN1ObjectIdentifier) element).getId();
-                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                    dtbsStream.write(elementValue);
-                } else {
-                    throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. certifiedDataType Element wurde nicht gefunden.", filename));
-                }
+                parseCertifiedDataType(dtbsStream, asn1Primitives);
 
                 element = parseCertifiedData(dtbsStream, asn1Primitives);
 
@@ -308,6 +300,7 @@ public abstract class LogMessage {
                     throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. logTime Element wurde nicht gefunden.", filename));
                 }
 
+
                 element = asn1Primitives.nextElement();
 
                 // Now, the last element shall be the signature
@@ -326,6 +319,30 @@ public abstract class LogMessage {
         }
     }
 
+    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, CertifiedDataTypeParsingException {
+        if(!asn1Primitives.hasMoreElements()){
+            throw new CertifiedDataTypeParsingException("Failed to Parse Certified Data Type, no more elements in ASN1 Object", null);
+        }
+        ASN1Primitive element = asn1Primitives.nextElement();
+
+        // Then, the object identifier for the certified data type shall follow
+        if (element instanceof ASN1ObjectIdentifier) {
+
+            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
+
+            try {
+                this.certifiedDataType = oid.fromBytes(element.getEncoded());
+            }
+            catch (oid.UnknownOidException e) {
+                throw new CertifiedDataTypeParsingException("OID unknown",e);
+            }
+
+            dtbsStream.write(elementValue);
+        } else {
+            throw new CertifiedDataTypeParsingException(String.format("Fehler beim Parsen von %s. certifiedDataType Element wurde nicht gefunden.", filename), null);
+        }
+    }
+
 
     abstract ASN1Primitive parseCertifiedData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> test) throws IOException, BadFormatForLogMessageException;
 
@@ -336,8 +353,9 @@ public abstract class LogMessage {
             throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. Die Versionsnummer ist nicht 2", filename));
         }
 
+        // TODO: no longer required here. Done as part of parsing.
         // Prüfen, dass der certifiedDataType ein erlaubter Wert ist
-        if (!Arrays.asList(allowedCertifiedDataType).contains(this.certifiedDataType)) {
+        if (!Arrays.asList(allowedCertifiedDataType).contains(this.certifiedDataType.getReadable())) {
             throw new BadFormatForLogMessageException(String.format("Error while parsing %s. Der Wert von certifiedDataType ist nicht erlaubt. er lautet %s", filename, this.certifiedDataType));
         }
 
@@ -350,6 +368,14 @@ public abstract class LogMessage {
             throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. Es ist kein Typ für die LogZeit vorhanden", filename));
         }
     }
+
+
+    public static class CertifiedDataTypeParsingException extends BadFormatForLogMessageException{
+        public CertifiedDataTypeParsingException(String message, Exception reason) {
+            super(message, reason);
+        }
+    }
+
 }
 
 
