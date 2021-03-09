@@ -1,6 +1,5 @@
 package de.konfidas.ttc.messages;
 
-import de.konfidas.ttc.exceptions.SystemLogParsingException;
 import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
@@ -100,14 +99,20 @@ public class SystemLogMessage extends LogMessage {
         return element;
     }
 
+    public class SystemLogParsingException extends LogMessageParsingException{
+        public SystemLogParsingException(String message) { super(message); }
+        public SystemLogParsingException(String message, Exception reason) {
+            super(message, reason);
+        }
 
-    public static class OperationTypeParsingException extends SystemLogParsingException{
+    }
+    public class OperationTypeParsingException extends SystemLogParsingException{
         public OperationTypeParsingException(String message) {
             super(message);
         }
     }
 
-    public static class SystemOperationDataParsingException extends SystemLogParsingException{
+    public class SystemOperationDataParsingException extends SystemLogParsingException{
         public SystemOperationDataParsingException(String message) {
             super(message);
         }

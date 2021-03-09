@@ -2,7 +2,6 @@ package de.konfidas.ttc.messages;
 
 import de.konfidas.ttc.TTC;
 
-import de.konfidas.ttc.exceptions.SystemLogParsingException;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -339,5 +338,4 @@ public class TestParseSystemLog {
 
         assertArrayEquals(msg.getSerialNumber(), expectedSerialNumber);
     }
-
 }

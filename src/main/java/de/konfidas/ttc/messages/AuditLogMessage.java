@@ -24,10 +24,8 @@ public class AuditLogMessage extends LogMessage {
         }
     }
 
-
-
     @Override
-    ASN1Primitive parseCertifiedData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, BadFormatForLogMessageException {
+    ASN1Primitive parseCertifiedData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, LogMessageParsingException {
         ASN1Primitive element;
         // Now, we will enter a while loop and collect all the certified data
         element = asn1Primitives.nextElement();
@@ -41,5 +39,4 @@ public class AuditLogMessage extends LogMessage {
         }
         return element;
     }
-
 }

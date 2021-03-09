@@ -116,7 +116,7 @@ public abstract class LogMessage {
         return this.signatureAlgorithm;
     }
 
-    void parse(byte[] content) throws BadFormatForLogMessageException{
+    void parse(byte[] content) throws LogMessageParsingException{
         try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
             final ASN1InputStream decoder = new ASN1InputStream(content);
             ASN1Primitive primitive = decoder.readObject();
@@ -133,7 +133,7 @@ public abstract class LogMessage {
                     dtbsStream.write(elementValue);
                 }
                 else {
-                    throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. Das version Element in der logMessage konnte nicht gefunden werden.", filename));
+                    throw new LogMessageParsingException("Das version Element in der logMessage konnte nicht gefunden werden.");
                 }
 
                 parseCertifiedDataType(dtbsStream, asn1Primitives);
@@ -155,11 +155,11 @@ public abstract class LogMessage {
                         dtbsStream.write(elementValue);
                     }
                     else {
-                        throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. signatureAlgorithm wurde nicht gefunden.", filename));
+                        throw new LogMessageParsingException("signatureAlgorithm wurde nicht gefunden.");
                     }
 
                     if (!Arrays.asList(allowedAlgorithms).contains(this.signatureAlgorithm)) {
-                        throw new BadFormatForLogMessageException(String.format("Error while parsing %s. Die OID für signatureAlgorithm lautet %s. Dies ist keine erlaubte OID", filename, this.signatureAlgorithm));
+                        throw new LogMessageParsingException(String.format("Die OID für signatureAlgorithm lautet %s. Dies ist keine erlaubte OID", this.signatureAlgorithm));
                     }
 
 
@@ -171,7 +171,7 @@ public abstract class LogMessage {
 
                 }
                 else {
-                    throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. Die Sequenz für den signatureAlgortihm wurde nicht gefunden.", filename));
+                    throw new LogMessageParsingException("Die Sequenz für den signatureAlgortihm wurde nicht gefunden.");
                 }
 
                 element = asn1Primitives.nextElement();
@@ -196,11 +196,11 @@ public abstract class LogMessage {
 
                 }
                 else {
-                    throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von  %s. Der signatureCounter wurde nicht gefunden", filename));
+                    throw new LogMessageParsingException("Der signatureCounter wurde nicht gefunden");
                 }
 
                 if (signatureCounter == null) {
-                    throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s . Der signatureCounter ist nicht vorhanden", filename));
+                    throw new LogMessageParsingException("Der signatureCounter ist nicht vorhanden");
 
                 }
 
@@ -225,7 +225,7 @@ public abstract class LogMessage {
                     this.logTimeType = "generalizedTime";
                 }
                 else {
-                    throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. logTime Element wurde nicht gefunden.", filename));
+                    throw new LogMessageParsingException("logTime Element wurde nicht gefunden.");
                 }
 
 
@@ -236,14 +236,14 @@ public abstract class LogMessage {
                     this.signatureValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                 }
                 else {
-                    throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. signature wurde nicht gefunden.", filename));
+                    throw new LogMessageParsingException("signature wurde nicht gefunden.");
                 }
 
                 //Speichern des DTBS aus dem BufferedWriter
                 this.dtbs = dtbsStream.toByteArray();
             }
         }catch(IOException e){
-            throw new BadFormatForLogMessageException("failed to parse log message",e);
+            throw new LogMessageParsingException("failed to parse log message",e);
         }
     }
 
@@ -286,39 +286,50 @@ public abstract class LogMessage {
     }
 
 
-    abstract ASN1Primitive parseCertifiedData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> test) throws IOException, BadFormatForLogMessageException;
+    abstract ASN1Primitive parseCertifiedData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> test) throws IOException, LogMessageParsingException;
 
 
-    void checkContent() throws BadFormatForLogMessageException {
+    void checkContent() throws LogMessageParsingException {
         // Die Versionsnummer muss 2 sein
         if (this.version != 2) {
-            throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. Die Versionsnummer ist nicht 2", filename));
+            throw new LogMessageParsingException("Die Versionsnummer ist nicht 2");
         }
 
         // TODO: no longer required here. Done as part of parsing.
         // Prüfen, dass der certifiedDataType ein erlaubter Wert ist
         if (!Arrays.asList(allowedCertifiedDataType).contains(this.certifiedDataType.getReadable())) {
-            throw new BadFormatForLogMessageException(String.format("Error while parsing %s. Der Wert von certifiedDataType ist nicht erlaubt. er lautet %s", filename, this.certifiedDataType));
+            throw new LogMessageParsingException(String.format("Der Wert von certifiedDataType ist nicht erlaubt. er lautet %s", this.certifiedDataType));
         }
 
         // Prüfen, dass die Serial Number auch da ist.
         if (this.serialNumber == null) {
-            throw new BadFormatForLogMessageException(String.format("Error while parsing %s. Die Serial Number ist null", filename));
+            throw new LogMessageParsingException("Die Serial Number ist null");
         }
 
         if (logTimeType == null) {
-            throw new BadFormatForLogMessageException(String.format("Fehler beim Parsen von %s. Es ist kein Typ für die LogZeit vorhanden", filename));
+            throw new LogMessageParsingException("Es ist kein Typ für die LogZeit vorhanden");
         }
     }
 
 
-    public static class CertifiedDataTypeParsingException extends BadFormatForLogMessageException{
+    public class LogMessageParsingException extends BadFormatForLogMessageException{
+        public LogMessageParsingException(String message) {
+            super("Parsing Message "+filename+" failed: "+ message, null);
+        }
+
+        public LogMessageParsingException(String message, Exception reason) {
+            super("Parsing Message "+filename+" failed: "+ message, reason);
+        }
+    }
+
+
+    public class CertifiedDataTypeParsingException extends LogMessageParsingException{
         public CertifiedDataTypeParsingException(String message, Exception reason) {
             super(message, reason);
         }
     }
 
-    public static class SerialNumberParsingException extends BadFormatForLogMessageException{
+    public class SerialNumberParsingException extends LogMessageParsingException{
         public SerialNumberParsingException(String message, Exception reason) {
             super(message, reason);
         }
