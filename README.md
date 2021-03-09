@@ -1,5 +1,8 @@
 # TTC
 ----
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 
 Der (T)SE (T)ar File (C)hecker ist eine Java-Applikation für die Kommandozeile (in Form einer JAR Datei) zur Prüfung von Tar Dateien aus dem Export einer Technischen Sicherheitseinrichtung (TSE)
 
