@@ -2,6 +2,7 @@ package de.konfidas.ttc;
 
 import de.konfidas.ttc.exceptions.CertificateLoadException;
 import de.konfidas.ttc.messages.LogMessage;
+import de.konfidas.ttc.messages.LogMessagePrinter;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -62,7 +63,7 @@ public class TTC {
             LogMessageArchive tar = new LogMessageArchive(new File(cmd.getOptionValue("i")));
 
             for (LogMessage message : tar.getAll_log_messages()) {
-                System.out.println(message.prettyPrint());
+                System.out.println(LogMessagePrinter.printMessage(message));
             }
 
             tar.verify(trustedCert, cmd.hasOption("o"));
