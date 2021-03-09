@@ -96,68 +96,6 @@ public abstract class LogMessage {
         return this.filename;
     }
 
-    /**
-     * @return Diese Funktion gibt eine gut lesbare Zusammenfassung der Inhalte der LogMessage aus
-     */
-    public String prettyPrint() {
-        String return_value = String.format("The following log message has been extracted from file %s", this.filename);
-        return_value += System.lineSeparator();
-        return_value += String.format("version: %d", this.version);
-        return_value += System.lineSeparator();
-        return_value += String.format("certifiedDataType: %s", this.certifiedDataType);
-        return_value += System.lineSeparator();
-
-        for (ASN1Primitive certifiedDatum : this.certifiedData) {
-            return_value += String.format("certifiedData: %s", certifiedDatum.toString());
-            return_value += System.lineSeparator();
-        }
-
-        return_value += String.format("serialNumber: %s", this.serialNumber);
-        return_value += System.lineSeparator();
-        return_value += String.format("signatureAlgorithm: %s", this.signatureAlgorithm);
-        return_value += System.lineSeparator();
-
-        for (ASN1Primitive signatureAlgorithmParameter : this.signatureAlgorithmParameters) {
-            return_value += String.format("certifiedData: %s", signatureAlgorithmParameter.toString());
-            return_value += System.lineSeparator();
-        }
-        if (this.seAuditData != null) {
-            return_value += String.format("seAuditData: %s", this.seAuditData.toString());
-            return_value += System.lineSeparator();
-        }
-
-        return_value += String.format("signatureCounter: %d", this.signatureCounter);
-        return_value += System.lineSeparator();
-
-        return_value += String.format("logTimeFormat:: %s", this.logTimeType);
-        return_value += System.lineSeparator();
-
-        switch (this.logTimeType) {
-            case "unixTime":
-                return_value += String.format("logTime: %d", this.logTimeUnixTime);
-                return_value += System.lineSeparator();
-                break;
-            case "utcTime":
-                return_value += String.format("logTime: %s", this.logTimeUTC);
-                return_value += System.lineSeparator();
-                break;
-            case "generalizedTime":
-                return_value += String.format("logTime: %s", this.logTimeGeneralizedTime);
-                return_value += System.lineSeparator();
-                break;
-        }
-
-        return_value += String.format("signatureValue:: %s", Hex.encodeHexString(this.signatureValue));
-        return_value += System.lineSeparator();
-
-        return_value += String.format("dtbs:: %s", Hex.encodeHexString(this.dtbs));
-        return_value += System.lineSeparator();
-
-        return (return_value);
-    }
-
-
-
     public byte[] getSerialNumber(){
         return this.serialNumber;
     }
