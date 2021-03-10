@@ -1,5 +1,6 @@
 package de.konfidas.ttc.tars;
 
+import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -47,7 +48,7 @@ public class LogMessageArchiveTestParsingSuccessfully {
     }
 
     @Test
-    public void parse() throws IOException{
+    public void parse() throws IOException, BadFormatForTARException {
         logger.info("");
         logger.info("============================================================================");
         logger.info("testing tar file {}:", file.getName());
