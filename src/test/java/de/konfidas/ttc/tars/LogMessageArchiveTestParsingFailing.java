@@ -1,5 +1,6 @@
 package de.konfidas.ttc.tars;
 
+import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class LogMessageArchiveTestParsingFailing {
             LogMessageArchive tar = new LogMessageArchive(this.file);
 
             fail("Log Message parsing successful, but expected to fail");
-        }catch(IOException e){
+        }catch(IOException | BadFormatForTARException e){
             // expected behaviour
         }
 

@@ -1,9 +1,7 @@
 package de.konfidas.ttc.tars;
 
-import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
-import de.konfidas.ttc.exceptions.CertificateLoadException;
-import de.konfidas.ttc.exceptions.LogMessageVerificationException;
-import de.konfidas.ttc.exceptions.SignatureValidationException;
+import de.konfidas.ttc.exceptions.*;
+import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import de.konfidas.ttc.messages.*;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -28,19 +26,19 @@ public class LogMessageArchive {
     ArrayList<LogMessage> all_log_messages = new ArrayList<LogMessage>();
     HashMap<String, X509Certificate> allClientCertificates = new HashMap<String, X509Certificate>();
     HashMap<String, X509Certificate> allIntermediateCertificates = new HashMap<String, X509Certificate>();
+    Boolean infoCSVPresent = false;
 
-
-    public LogMessageArchive() throws IOException {
+    public LogMessageArchive() throws IOException, BadFormatForTARException {
         this(null);
     }
 
-    public LogMessageArchive(File tarFile) throws IOException {
+    public LogMessageArchive(File tarFile) throws IOException, BadFormatForTARException {
         if( null != tarFile){
             this.parse(tarFile);
         }
     }
 
-    public void parse(File tarFile) throws IOException {
+    public void parse(File tarFile) throws IOException, BadFormatForTARException{
         /********************************************************************
          ** Wir lesen nun einmal durch das TAR Archiv (ohne es zu entpacken)*
          ********************************************************************/
@@ -70,6 +68,7 @@ public class LogMessageArchive {
                  *************/
                 else if (individualFileName.matches("^info.csv")) {
                     logger.debug("info.csv gefunden. Starte Verarbeitung.", individualFileName);
+                    infoCSVPresent = true;
                     String info_string = new String(content, StandardCharsets.UTF_8);
                     logger.debug("Description laut info.csv: {}", StringUtils.substringsBetween(info_string, "description:\",\"", "\"," )[0]);
                     logger.debug("Manufacturer laut info.csv: {}", StringUtils.substringsBetween(info_string, "manufacturer:\",\"", "\"," )[0]);
@@ -111,6 +110,8 @@ public class LogMessageArchive {
             e.printStackTrace();
             System.exit(1);
         }
+
+        if (!infoCSVPresent){throw new BadFormatForTARException("Die info.csv Datei wurde nicht gefunden",null);}
     }
 
     public ArrayList<LogMessage> getAll_log_messages(){
@@ -267,4 +268,6 @@ public class LogMessageArchive {
             logger.error("Der Schlüssel zur Prüfung der Signatur konnte nicht eingelesen werden.", e);
         }
     }
+
+
 }
