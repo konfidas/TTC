@@ -73,7 +73,7 @@ public abstract class LogMessage {
     String logTimeGeneralizedTime = "";
     int logTimeUnixTime = 0;
     byte[] signatureValue = null;
-      BigInteger signatureCounter = new BigInteger("5");
+    BigInteger signatureCounter = new BigInteger("5");
     byte[] seAuditData = null;
     byte[] dtbs = null;
     String filename = "";
@@ -130,7 +130,7 @@ public abstract class LogMessage {
 
                 ASN1Primitive element = asn1Primitives.nextElement();
 
-                //The first element has to be the version number
+                //Das erste Element MUSS die versionNumber sein
                 if (element instanceof ASN1Integer) {
                     this.version = ((ASN1Integer) element).intValueExact();
                     byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
@@ -145,13 +145,13 @@ public abstract class LogMessage {
                 parseSerialNumber(dtbsStream,element);
 
                 element = asn1Primitives.nextElement();
-                // Then, the sequence for the signatureAlgorithm  is expected
+                // Dann wir die Sqequenz für den signatureAlgorithm erwartet
                 if (element instanceof ASN1Sequence) {
 
                     Enumeration<ASN1Primitive> sigAlgorithmEnumeration = ((ASN1Sequence) element).getObjects();
 
                     element = sigAlgorithmEnumeration.nextElement();
-                    // First, we read the signatureAlgorithm itself
+                    // Erst lesen wir den signatureAlgorihtm selbst
 
                     if (element instanceof ASN1ObjectIdentifier) {
                         this.signatureAlgorithm = element.toString();
@@ -167,7 +167,7 @@ public abstract class LogMessage {
                     }
 
 
-                    //Then, we loop over the rest of the sequence for the options
+                    //Dann eine Schleife über den Rest für die SignatureAlgorithmParameters
                     while (sigAlgorithmEnumeration.hasMoreElements()) {
                         element = sigAlgorithmEnumeration.nextElement();
                         this.signatureAlgorithmParameters.add(element);
@@ -179,7 +179,7 @@ public abstract class LogMessage {
                 }
 
                 element = asn1Primitives.nextElement();
-                // Then, we are checking whether we have seAuditData
+                // Dann prüfen wir, ob wir seAuditData finden
 
                 if (element instanceof ASN1OctetString) {
                     this.seAuditData = ((ASN1OctetString) element).getOctets();
@@ -188,17 +188,17 @@ public abstract class LogMessage {
                     element = asn1Primitives.nextElement();
 
                 } else {
-                    logger.info(String.format("Information für %s. seAuditData wurde nicht gefunden.", filename));
+                    logger.debug(String.format("Information für %s. seAuditData wurde nicht gefunden.", filename));
                 }
 
-                // Then, we are checking whether we have signatureCounter
+                // Dann prüfen wir, ob wir einen signatureCounter finden
                 if(! asn1Primitives.hasMoreElements()){
                     throw new LogMessageParsingException("No More Elements, signature missing!");
                 }
                 ASN1Primitive nextElement = asn1Primitives.nextElement();
 
                 boolean hasSignatureCounter = false;
-                // check if nextElement is logTime. If not, element has to be time and no signature counter is present:
+                // Prüfe, ob nextElement logTime ist. Falls nicht, ist das aktuelle Element logTime. In diesem Fall ist kein signatureCoutner vorhandem
                 if(nextElement instanceof  ASN1Integer || nextElement instanceof ASN1UTCTime || nextElement instanceof ASN1GeneralizedTime) {
                     hasSignatureCounter = true;
                     parseSignatureCounter(dtbsStream, element);
@@ -212,7 +212,7 @@ public abstract class LogMessage {
                     element = nextElement;
                 }
 
-                // Now, the last element shall be the signature
+                // Das letzte Element is die Signatur
                 if (element instanceof ASN1OctetString) {
                     this.signatureValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
                 }
@@ -242,7 +242,7 @@ public abstract class LogMessage {
     }
 
     private void parseTime(ByteArrayOutputStream dtbsStream, ASN1Primitive element) throws IOException, LogMessageParsingException {
-        // Now, we expect the logTime as one of three typey
+        // Wir erwarten, dass logTime einer der folgenden drei Typen ist
         if (element instanceof ASN1Integer) {
             this.logTimeUnixTime = ((ASN1Integer) element).getValue().intValue();
             byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
@@ -271,7 +271,6 @@ public abstract class LogMessage {
             throw new SerialNumberParsingException("Failed to Parse Certified Data Type, no more elements in ASN1 Object", null);
         }
 
-        // Then, the serial number is expected
         if (element instanceof ASN1OctetString) {
             this.serialNumber = ((ASN1OctetString) element).getOctets();
             dtbsStream.write(this.serialNumber);
@@ -286,9 +285,7 @@ public abstract class LogMessage {
         }
         ASN1Primitive element = asn1Primitives.nextElement();
 
-        // Then, the object identifier for the certified data type shall follow
         if (element instanceof ASN1ObjectIdentifier) {
-
             byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
 
             try {
