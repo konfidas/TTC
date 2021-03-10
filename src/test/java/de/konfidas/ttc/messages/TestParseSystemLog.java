@@ -13,7 +13,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
 
 public class TestParseSystemLog {
-    final static Logger logger = LoggerFactory.getLogger(TTC.class);
+    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     @Test
     public void parseNoAdditionalInputData() throws Exception {

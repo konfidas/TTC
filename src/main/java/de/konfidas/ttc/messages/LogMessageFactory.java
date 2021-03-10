@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class LogMessageFactory {
-    final static Logger logger = LoggerFactory.getLogger(LogMessageFactory.class);
+    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     public static LogMessage createLogMessage(File file) throws BadFormatForLogMessageException, IOException {
         return createLogMessage(file.getName(), Files.readAllBytes(file.toPath()));
@@ -19,17 +19,17 @@ public class LogMessageFactory {
     public static LogMessage createLogMessage(String fileName, byte[] content) throws BadFormatForLogMessageException {
 
         if (fileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+(Start|Update|Finish)_Client-.+log")) {
-            logger.info("{} scheint eine TransactionLog zu sein. Starte Verarbeitung.", fileName);
+            logger.debug("{} scheint eine TransactionLog zu sein. Starte Verarbeitung.", fileName);
            return new TransactionLogMessage(content, fileName);
         }
 
         if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")) {
-            logger.info("{} scheint ein systemLog zu sein. Starte Verarbeitung ", fileName);
+            logger.debug("{} scheint ein systemLog zu sein. Starte Verarbeitung ", fileName);
             return new SystemLogMessage(content, fileName);
         }
 
         if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Aud.+log")) {
-            logger.info("{} scheint ein auditLog zu sein. Starte Verarbeitung.", fileName);
+            logger.debug("{} scheint ein auditLog zu sein. Starte Verarbeitung.", fileName);
             return new AuditLogMessage(content, fileName);
         }
 

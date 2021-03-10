@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 public class LogMessageSignatureVerifier {
-    final static Logger logger = LoggerFactory.getLogger(LogMessageSignatureVerifier.class);
+    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     HashMap<String, X509Certificate> certs;
 
@@ -50,7 +50,7 @@ public class LogMessageSignatureVerifier {
 
             byte[] signatureValue = msg.getSignatureValue();
             st.verify(signatureValue);
-            logger.info("signature validated successfully");
+            logger.debug("Die Signatur der logMessage {} wurde erfolgreich geprüft",msg.toString());
         } catch (NoSuchProviderException e) {
             throw new LogMessageVerificationException("Bouncy Castle wurde als Provider nicht gefunden", e);
         } catch (NoSuchAlgorithmException e) {

@@ -21,7 +21,7 @@ import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 public class LogMessageTestParsingFailing {
-    final static Logger logger = LoggerFactory.getLogger(LogMessageArchiveTestParsingSuccessfully.class);
+    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     final static File brokenLogs = new File("D:\\testdata\\brokenLogs"); // TODO: as soon as we have publish-able test data, point path to it.
 
     File file;
