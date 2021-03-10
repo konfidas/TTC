@@ -9,8 +9,8 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,10 +19,12 @@ import java.nio.file.Path;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 
+import static ch.qos.logback.classic.Level.*;
+
 public class TTC {
 
     private static Options options = new Options();
-    final static Logger logger = LoggerFactory.getLogger(TTC.class);
+    final static ch.qos.logback.classic.Logger logger =  (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     public static void main(String[] args) throws IOException {
         Security.addProvider(new BouncyCastleProvider());
@@ -30,6 +32,7 @@ public class TTC {
         options.addOption("i", "inputTAR", true, "Das TAR Archiv, das geprüft werden soll.");
         options.addOption("t", "trustAnker", true, "Trust Anker in Form eines X.509 Zertifikats für die Root-CA");
         options.addOption("o", "overwriteCertCheck", false, "Wenn diese Option gesetzt wird, werden die Zertifikate im TAR Archiv nicht gegen eine Root-CA geprüft");
+        options.addOption("v", "overwriteCertCheck", false, "Wenn diese Option gesetzt wird, gibt TTC detaillierte Informationen aus.");
 
         CommandLineParser parser = new GnuParser();
         CommandLine cmd = null;
@@ -42,6 +45,9 @@ public class TTC {
          *********************************/
         try {
             cmd = parser.parse(options, args);
+            if (cmd.hasOption("v")){
+                logger.setLevel(DEBUG);
+            }
             if (cmd.hasOption("i") == false) {
                 System.err.println("Fehler beim Parsen der Kommandozeile. Kein TAR-Archiv zur Prüfung angegeben");
             }
@@ -61,9 +67,8 @@ public class TTC {
             }
 
             LogMessageArchive tar = new LogMessageArchive(new File(cmd.getOptionValue("i")));
-
             for (LogMessage message : tar.getAll_log_messages()) {
-                System.out.println(LogMessagePrinter.printMessage(message));
+                logger.debug(LogMessagePrinter.printMessage(message));
             }
 
             tar.verify(trustedCert, cmd.hasOption("o"));

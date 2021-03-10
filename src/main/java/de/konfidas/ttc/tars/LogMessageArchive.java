@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class LogMessageArchive {
-    final static Logger logger = LoggerFactory.getLogger(LogMessageArchive.class);
+    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     ArrayList<LogMessage> all_log_messages = new ArrayList<LogMessage>();
     HashMap<String, X509Certificate> allClientCertificates = new HashMap<String, X509Certificate>();
@@ -59,6 +59,8 @@ public class LogMessageArchive {
 
                 myTarFile.read(content, offset, content.length - offset);
 
+                logger.info("Verarbeite nun die Datei {}", individualFileName);
+
                 if (individualFileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+log") ) {
                     all_log_messages.add(LogMessageFactory.createLogMessage(individualFileName,content));
                 }
@@ -67,24 +69,25 @@ public class LogMessageArchive {
                  ** info.csv *
                  *************/
                 else if (individualFileName.matches("^info.csv")) {
-                    logger.info("info.csv gefunden. Starte Verarbeitung.", individualFileName);
+                    logger.debug("info.csv gefunden. Starte Verarbeitung.", individualFileName);
                     String info_string = new String(content, StandardCharsets.UTF_8);
-                    logger.info("Description laut info.csv: {}", StringUtils.substringsBetween(info_string, "description:\",\"", "\"," )[0]);
-                    logger.info("Manufacturer laut info.csv: {}", StringUtils.substringsBetween(info_string, "manufacturer:\",\"", "\"," )[0]);
-                    logger.info("Version laut info.csv: {}", StringUtils.substringsBetween(info_string, "version:\",\"", "\"" )[0]);
+                    logger.debug("Description laut info.csv: {}", StringUtils.substringsBetween(info_string, "description:\",\"", "\"," )[0]);
+                    logger.debug("Manufacturer laut info.csv: {}", StringUtils.substringsBetween(info_string, "manufacturer:\",\"", "\"," )[0]);
+                    logger.debug("Version laut info.csv: {}", StringUtils.substringsBetween(info_string, "version:\",\"", "\"" )[0]);
                 }
                 /*********************
                  ** CVC Certificate *
                  ********************/
                 else if (individualFileName.contains("CVC")) {
-                    logger.info("{} seems to be a CVC. Will process it now.", individualFileName);
+                    logger.debug("{} seems to be a CVC. Will process it now.", individualFileName);
+                    //FIXME: Not supported
 
                 }
                 /**********************
                  ** X.509 Certificate *
                  **********************/
                 else if (individualFileName.contains("X509")) {
-                    logger.info("{} schein ein X.509 Zertifikat zu sein. Starte Verarbeitung.", individualFileName);
+                    logger.debug("{} schein ein X.509 Zertifikat zu sein. Starte Verarbeitung.", individualFileName);
 
                     try {
                         X509Certificate cer = loadCertificate(content);
@@ -115,6 +118,11 @@ public class LogMessageArchive {
     }
 
 
+    /**
+     * Diese Funktion prüft (per Minimum) die Gültigkeit der Signaturen aller LogMessages im TAR-Archiv. Optional kann auch die Gültigkeit der dabei verwendeten Zertifikate geprüft und auf einen Trust-Ancor zurückgeführt werden.
+     * @param trustedCert
+     * @param ignoreCertificate
+     */
     public void verify(X509Certificate trustedCert, boolean ignoreCertificate){
         /***************************************************************************************
          ** Sofern nicht darauf verzichtet wid, prüfen wir die Gültigkeit der Client-Zertifikate*
@@ -124,7 +132,7 @@ public class LogMessageArchive {
                 try {
 
                     Boolean result = checkCert(cert, trustedCert, new ArrayList<X509Certificate>(allIntermediateCertificates.values()));
-                    logger.info("Prüfe das Zertifikat mit Seriennummer {} auf Korrektheit und prüfe die zugehörige Zertifikatskette. Ergebnis ist {}", cert.getSerialNumber(), result.toString());
+                    logger.debug("Prüfe das Zertifikat mit Seriennummer {} auf Korrektheit und prüfe die zugehörige Zertifikatskette. Ergebnis ist {}", cert.getSerialNumber(), result.toString());
                 }
                 catch (Exception e) {
                     e.printStackTrace();
@@ -138,7 +146,7 @@ public class LogMessageArchive {
         LogMessageSignatureVerifier verifier = new LogMessageSignatureVerifier(allClientCertificates);
         for (LogMessage message : all_log_messages) {
             try {
-                logger.info("Prüfe die Signatur der LogMessage {}", message.getFileName());
+                logger.debug("Prüfe die Signatur der LogMessage {}", message.getFileName());
                 verifier.verify(message);
             }
             catch (LogMessageVerificationException e) {
