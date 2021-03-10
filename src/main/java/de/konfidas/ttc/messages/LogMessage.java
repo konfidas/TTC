@@ -10,6 +10,7 @@ import org.bouncycastle.asn1.*;
 import java.io.File;
 import java.io.IOException;
 import java.math.*;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,6 +121,36 @@ public abstract class LogMessage {
 
     public BigInteger getSignatureCounter(){ return signatureCounter; }
 
+    private byte[] getLFromASN1(ASN1Primitive element) throws IOException{
+        byte[] elementContent = element.getEncoded();
+
+        if (((int)elementContent[0])<=128){
+            //Case: Definite length encocding, one byte oder indefinte endcding
+            return Arrays.copyOfRange(elementContent, 1, 2);
+        }
+        else {
+            //Case: Definite length encocding, multple bytes
+            int elementNumberOfLengthBytes = (int)elementContent[0]-128;
+             return Arrays.copyOfRange(elementContent, 1, elementNumberOfLengthBytes+1);
+        }
+
+    }
+
+    byte[] getVFromASN1(ASN1Primitive element) throws IOException{
+        byte[] elementContent = element.getEncoded();
+
+        if (((int)elementContent[0])<=128){
+            //Case: Definite length encocding, one byte oder indefinte endcding
+            return Arrays.copyOfRange(elementContent, 2, elementContent.length);
+        }
+        else {
+            //Case: Definite length encocding, multple bytes
+            int elementNumberOfLengthBytes = (int)elementContent[0]-128;
+             return Arrays.copyOfRange(elementContent, 2 + elementNumberOfLengthBytes, elementContent.length);
+        }
+
+    }
+
     void parse(byte[] content) throws LogMessageParsingException{
         try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
             final ASN1InputStream decoder = new ASN1InputStream(content);
@@ -133,8 +164,7 @@ public abstract class LogMessage {
                 //Das erste Element MUSS die versionNumber sein
                 if (element instanceof ASN1Integer) {
                     this.version = ((ASN1Integer) element).intValueExact();
-                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                    dtbsStream.write(elementValue);
+                    dtbsStream.write(this.getVFromASN1(element));
                 }
                 else {
                     throw new LogMessageParsingException("Das version Element in der logMessage konnte nicht gefunden werden.");
@@ -155,8 +185,8 @@ public abstract class LogMessage {
 
                     if (element instanceof ASN1ObjectIdentifier) {
                         this.signatureAlgorithm = element.toString();
-                        byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                        dtbsStream.write(elementValue);
+                        dtbsStream.write(this.getVFromASN1(element));
+
                     }
                     else {
                         throw new LogMessageParsingException("signatureAlgorithm wurde nicht gefunden.");
@@ -183,8 +213,7 @@ public abstract class LogMessage {
 
                 if (element instanceof ASN1OctetString) {
                     this.seAuditData = ((ASN1OctetString) element).getOctets();
-                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                    dtbsStream.write(elementValue);
+                    dtbsStream.write(this.getVFromASN1(element));
                     element = asn1Primitives.nextElement();
 
                 } else {
@@ -233,8 +262,7 @@ public abstract class LogMessage {
             throw new LogMessageParsingException("SignatureCounter has to be ASN1Integer, but is " + element.getClass());
         }
         this.signatureCounter = ((ASN1Integer) element).getValue();
-        byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length); // TODO: fails on extended length.
-        dtbsStream.write(elementValue);
+        dtbsStream.write(this.getVFromASN1(element));
 
         if (signatureCounter == null) {
             throw new LogMessageParsingException("SignatureCounter is missing.");
@@ -245,20 +273,17 @@ public abstract class LogMessage {
         // Wir erwarten, dass logTime einer der folgenden drei Typen ist
         if (element instanceof ASN1Integer) {
             this.logTimeUnixTime = ((ASN1Integer) element).getValue().intValue();
-            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-            dtbsStream.write(elementValue);
+            dtbsStream.write(this.getVFromASN1(element));
             this.logTimeType = "unixTime";
         }
         else if (element instanceof ASN1UTCTime) {
             this.logTimeUTC = ((ASN1UTCTime) element).getTime();
-            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-            dtbsStream.write(elementValue);
+            dtbsStream.write(this.getVFromASN1(element));
             this.logTimeType = "utcTime";
         }
         else if (element instanceof ASN1GeneralizedTime) {
             this.logTimeGeneralizedTime = ((ASN1GeneralizedTime) element).getTime();
-            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-            dtbsStream.write(elementValue);
+            dtbsStream.write(this.getVFromASN1(element));
             this.logTimeType = "generalizedTime";
         }
         else {
@@ -286,7 +311,6 @@ public abstract class LogMessage {
         ASN1Primitive element = asn1Primitives.nextElement();
 
         if (element instanceof ASN1ObjectIdentifier) {
-            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
 
             try {
                 this.certifiedDataType = oid.fromBytes(element.getEncoded());
@@ -295,7 +319,7 @@ public abstract class LogMessage {
                 throw new CertifiedDataTypeParsingException("OID unknown",e);
             }
 
-            dtbsStream.write(elementValue);
+            dtbsStream.write(this.getVFromASN1(element));
         } else {
             throw new CertifiedDataTypeParsingException(String.format("Fehler beim Parsen von %s. certifiedDataType Element wurde nicht gefunden.", filename), null);
         }

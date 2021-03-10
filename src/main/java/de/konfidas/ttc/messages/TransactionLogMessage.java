@@ -31,8 +31,7 @@ public class TransactionLogMessage extends LogMessage {
         while (!(element instanceof ASN1OctetString)) {
             // Then, the object identifier for the certified data type shall follow
             this.certifiedData.add(element);
-            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-            dtbsStream.write(elementValue);
+            dtbsStream.write(super.getVFromASN1(element));
 
             element = test.nextElement();
         }
