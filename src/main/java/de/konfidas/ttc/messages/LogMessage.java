@@ -1,16 +1,13 @@
 package de.konfidas.ttc.messages;
 
 import de.konfidas.ttc.utilities.ByteArrayOutputStream;
-import de.konfidas.ttc.TTC;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
-import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.asn1.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.*;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,7 +118,7 @@ public abstract class LogMessage {
 
     public BigInteger getSignatureCounter(){ return signatureCounter; }
 
-    private byte[] getLFromASN1(ASN1Primitive element) throws IOException{
+    private byte[] getEncodedLength(ASN1Primitive element) throws IOException{
         byte[] elementContent = element.getEncoded();
 
         if (((int)elementContent[0])<=128){
@@ -130,13 +127,13 @@ public abstract class LogMessage {
         }
         else {
             //Case: Definite length encocding, multple bytes
-            int elementNumberOfLengthBytes = (int)elementContent[0]-128;
+            int elementNumberOfLengthBytes = (elementContent[0] & 0b01111111);
              return Arrays.copyOfRange(elementContent, 1, elementNumberOfLengthBytes+1);
         }
 
     }
 
-    byte[] getVFromASN1(ASN1Primitive element) throws IOException{
+    byte[] getEncodedValue(ASN1Primitive element) throws IOException{
         byte[] elementContent = element.getEncoded();
 
         if (((int)elementContent[0])<=128){
@@ -164,7 +161,7 @@ public abstract class LogMessage {
                 //Das erste Element MUSS die versionNumber sein
                 if (element instanceof ASN1Integer) {
                     this.version = ((ASN1Integer) element).intValueExact();
-                    dtbsStream.write(this.getVFromASN1(element));
+                    dtbsStream.write(this.getEncodedValue(element));
                 }
                 else {
                     throw new LogMessageParsingException("Das version Element in der logMessage konnte nicht gefunden werden.");
@@ -185,7 +182,7 @@ public abstract class LogMessage {
 
                     if (element instanceof ASN1ObjectIdentifier) {
                         this.signatureAlgorithm = element.toString();
-                        dtbsStream.write(this.getVFromASN1(element));
+                        dtbsStream.write(this.getEncodedValue(element));
 
                     }
                     else {
@@ -213,7 +210,7 @@ public abstract class LogMessage {
 
                 if (element instanceof ASN1OctetString) {
                     this.seAuditData = ((ASN1OctetString) element).getOctets();
-                    dtbsStream.write(this.getVFromASN1(element));
+                    dtbsStream.write(this.getEncodedValue(element));
                     element = asn1Primitives.nextElement();
 
                 } else {
@@ -262,7 +259,7 @@ public abstract class LogMessage {
             throw new LogMessageParsingException("SignatureCounter has to be ASN1Integer, but is " + element.getClass());
         }
         this.signatureCounter = ((ASN1Integer) element).getValue();
-        dtbsStream.write(this.getVFromASN1(element));
+        dtbsStream.write(this.getEncodedValue(element));
 
         if (signatureCounter == null) {
             throw new LogMessageParsingException("SignatureCounter is missing.");
@@ -273,17 +270,17 @@ public abstract class LogMessage {
         // Wir erwarten, dass logTime einer der folgenden drei Typen ist
         if (element instanceof ASN1Integer) {
             this.logTimeUnixTime = ((ASN1Integer) element).getValue().intValue();
-            dtbsStream.write(this.getVFromASN1(element));
+            dtbsStream.write(this.getEncodedValue(element));
             this.logTimeType = "unixTime";
         }
         else if (element instanceof ASN1UTCTime) {
             this.logTimeUTC = ((ASN1UTCTime) element).getTime();
-            dtbsStream.write(this.getVFromASN1(element));
+            dtbsStream.write(this.getEncodedValue(element));
             this.logTimeType = "utcTime";
         }
         else if (element instanceof ASN1GeneralizedTime) {
             this.logTimeGeneralizedTime = ((ASN1GeneralizedTime) element).getTime();
-            dtbsStream.write(this.getVFromASN1(element));
+            dtbsStream.write(this.getEncodedValue(element));
             this.logTimeType = "generalizedTime";
         }
         else {
@@ -319,7 +316,7 @@ public abstract class LogMessage {
                 throw new CertifiedDataTypeParsingException("OID unknown",e);
             }
 
-            dtbsStream.write(this.getVFromASN1(element));
+            dtbsStream.write(this.getEncodedValue(element));
         } else {
             throw new CertifiedDataTypeParsingException(String.format("Fehler beim Parsen von %s. certifiedDataType Element wurde nicht gefunden.", filename), null);
         }

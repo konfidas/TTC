@@ -7,7 +7,6 @@ import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Enumeration;
 
 public class TransactionLogMessage extends LogMessage {
@@ -31,7 +30,7 @@ public class TransactionLogMessage extends LogMessage {
         while (!(element instanceof ASN1OctetString)) {
             // Then, the object identifier for the certified data type shall follow
             this.certifiedData.add(element);
-            dtbsStream.write(super.getVFromASN1(element));
+            dtbsStream.write(super.getEncodedValue(element));
 
             element = test.nextElement();
         }
