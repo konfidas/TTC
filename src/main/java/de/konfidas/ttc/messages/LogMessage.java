@@ -3,11 +3,13 @@ package de.konfidas.ttc.messages;
 import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
+import org.apache.commons.codec.binary.BinaryCodec;
 import org.bouncycastle.asn1.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.*;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -118,34 +120,42 @@ public abstract class LogMessage {
 
     public BigInteger getSignatureCounter(){ return signatureCounter; }
 
-    private byte[] getEncodedLength(ASN1Primitive element) throws IOException{
+    /**
+     * Diese Funktion gibt die Lönge eines ASN1Elements als integer zurück.
+     * Falls die Länge nicht in ein Integer oasst, wird ein Fehler geworfen
+     * Bei indefinite lgenght encoding wir 0 zurückgegeben
+     * @param element
+     * @return Gibt die Länge des Elements als integer zurück
+     * @throws IOException
+     * @throws ExtendLengthValueExceedsInteger Wird geworfen, falls element mit einer extended length kodiert ist, die mehr als 4 bytes erfordert
+     */
+    private int getEncodedLength(ASN1Primitive element) throws IOException, ExtendLengthValueExceedsInteger{
         byte[] elementContent = element.getEncoded();
 
-        if (((int)elementContent[0])<=128){
-            //Case: Definite length encocding, one byte oder indefinte endcding
-            return Arrays.copyOfRange(elementContent, 1, 2);
+        if ((byte)elementContent[1] == (byte)0b10000000) {
+            //indefinte length encoding
+            return 0;
         }
+
+        else if ((elementContent[1] & 0b10000000) == 0){
+            //Case: Definite length encocding, one byte
+            return Integer.valueOf(elementContent[1]);
+        }
+
         else {
-            //Case: Definite length encocding, multple bytes
-            int elementNumberOfLengthBytes = (elementContent[0] & 0b01111111);
-             return Arrays.copyOfRange(elementContent, 1, elementNumberOfLengthBytes+1);
+            //Extended length encoding (limitiert auf max 4 bytes für die Länge)
+            int elementNumberOfLengthBytes = (elementContent[1] & 0b01111111);
+            if (elementNumberOfLengthBytes>4){ throw new ExtendLengthValueExceedsInteger("Der Wert der extended length überschreitet einen Integer",null); }
+            byte[] lengthBytes = Arrays.copyOfRange(elementContent, 1,elementNumberOfLengthBytes+1);
+            return ByteBuffer.wrap(lengthBytes).getInt();
         }
 
     }
 
-    byte[] getEncodedValue(ASN1Primitive element) throws IOException{
-        byte[] elementContent = element.getEncoded();
-
-        if (((int)elementContent[0])<=128){
-            //Case: Definite length encocding, one byte oder indefinte endcding
-            return Arrays.copyOfRange(elementContent, 2, elementContent.length);
-        }
-        else {
-            //Case: Definite length encocding, multple bytes
-            int elementNumberOfLengthBytes = (int)elementContent[0]-128;
-             return Arrays.copyOfRange(elementContent, 2 + elementNumberOfLengthBytes, elementContent.length);
-        }
-
+    byte[] getEncodedValue(ASN1Primitive element) throws IOException, ExtendLengthValueExceedsInteger {
+        byte [] elementContent = element.getEncoded();
+        int elementLength = this.getEncodedLength(element);
+        return Arrays.copyOfRange(elementContent, elementContent.length - elementLength, elementContent.length+1);
     }
 
     void parse(byte[] content) throws LogMessageParsingException{
@@ -301,7 +311,7 @@ public abstract class LogMessage {
         }
     }
 
-    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, CertifiedDataTypeParsingException {
+    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, CertifiedDataTypeParsingException, ExtendLengthValueExceedsInteger {
         if(!asn1Primitives.hasMoreElements()){
             throw new CertifiedDataTypeParsingException("Failed to Parse Certified Data Type, no more elements in ASN1 Object", null);
         }
@@ -366,6 +376,12 @@ public abstract class LogMessage {
 
     public class SerialNumberParsingException extends LogMessageParsingException{
         public SerialNumberParsingException(String message, Exception reason) {
+            super(message, reason);
+        }
+    }
+
+    public class ExtendLengthValueExceedsInteger extends LogMessageParsingException{
+        public ExtendLengthValueExceedsInteger(String message, Exception reason) {
             super(message, reason);
         }
     }

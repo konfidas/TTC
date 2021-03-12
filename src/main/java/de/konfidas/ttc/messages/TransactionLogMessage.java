@@ -15,7 +15,7 @@ public class TransactionLogMessage extends LogMessage {
     }
 
     @Override
-    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, LogMessage.CertifiedDataTypeParsingException {
+    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, LogMessage.CertifiedDataTypeParsingException, ExtendLengthValueExceedsInteger {
         super.parseCertifiedDataType(dtbsStream,asn1Primitives);
         if(this.certifiedDataType != oid.id_SE_API_transaction_log){
             throw new LogMessage.CertifiedDataTypeParsingException("Invalid Certified Data Type, expected id_SE_API_transaction_log but found "+this.certifiedDataType.getName(), null);
@@ -23,7 +23,7 @@ public class TransactionLogMessage extends LogMessage {
     }
 
     @Override
-    ASN1Primitive parseCertifiedData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> test) throws IOException {
+    ASN1Primitive parseCertifiedData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> test) throws IOException, ExtendLengthValueExceedsInteger {
         ASN1Primitive element;
         // Now, we will enter a while loop and collect all the certified data
         element = test.nextElement();
