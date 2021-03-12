@@ -21,7 +21,7 @@ public class SystemLogMessage extends LogMessage {
     }
 
     @Override
-    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, LogMessage.CertifiedDataTypeParsingException {
+    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, LogMessage.CertifiedDataTypeParsingException, ExtendLengthValueExceedsInteger {
         super.parseCertifiedDataType(dtbsStream,asn1Primitives);
         if(this.certifiedDataType != oid.id_SE_API_system_log){
             throw new LogMessage.CertifiedDataTypeParsingException("Invalid Certified Data Type, expected id_SE_API_system_log but found "+this.certifiedDataType.getName(), null);

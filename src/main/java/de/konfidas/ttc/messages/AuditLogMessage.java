@@ -7,7 +7,6 @@ import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Enumeration;
 
 public class AuditLogMessage extends LogMessage {
@@ -17,7 +16,7 @@ public class AuditLogMessage extends LogMessage {
     }
 
     @Override
-    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, LogMessage.CertifiedDataTypeParsingException {
+    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, LogMessage.CertifiedDataTypeParsingException, ExtendLengthValueExceedsInteger {
         super.parseCertifiedDataType(dtbsStream,asn1Primitives);
         if(this.certifiedDataType != oid.id_SE_API_SE_audit_log){
             throw new LogMessage.CertifiedDataTypeParsingException("Invalid Certified Data Type, expected id_SE_API_SE_audit_log but found "+this.certifiedDataType.getName(), null);
@@ -32,8 +31,7 @@ public class AuditLogMessage extends LogMessage {
         while (!(element instanceof ASN1OctetString)) {
             // Then, the object identifier for the certified data type shall follow
             this.certifiedData.add(element);
-            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-            dtbsStream.write(elementValue);
+            dtbsStream.write(super.getEncodedValue(element));
 
             element = asn1Primitives.nextElement();
         }

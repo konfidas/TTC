@@ -65,7 +65,7 @@ public class TTC {
                     e.printStackTrace();
                 }
             }
-
+            String tttt =cmd.getOptionValue("i");
             LogMessageArchive tar = new LogMessageArchive(new File(cmd.getOptionValue("i")));
             for (LogMessage message : tar.getAll_log_messages()) {
                 logger.debug(LogMessagePrinter.printMessage(message));

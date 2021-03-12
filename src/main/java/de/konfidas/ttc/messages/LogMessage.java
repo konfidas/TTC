@@ -1,15 +1,15 @@
 package de.konfidas.ttc.messages;
 
 import de.konfidas.ttc.utilities.ByteArrayOutputStream;
-import de.konfidas.ttc.TTC;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
-import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.binary.BinaryCodec;
 import org.bouncycastle.asn1.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.*;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,6 +120,44 @@ public abstract class LogMessage {
 
     public BigInteger getSignatureCounter(){ return signatureCounter; }
 
+    /**
+     * Diese Funktion gibt die Lönge eines ASN1Elements als integer zurück.
+     * Falls die Länge nicht in ein Integer oasst, wird ein Fehler geworfen
+     * Bei indefinite lgenght encoding wir 0 zurückgegeben
+     * @param element
+     * @return Gibt die Länge des Elements als integer zurück
+     * @throws IOException
+     * @throws ExtendLengthValueExceedsInteger Wird geworfen, falls element mit einer extended length kodiert ist, die mehr als 4 bytes erfordert
+     */
+    private int getEncodedLength(ASN1Primitive element) throws IOException, ExtendLengthValueExceedsInteger{
+        byte[] elementContent = element.getEncoded();
+
+        if ((byte)elementContent[1] == (byte)0b10000000) {
+            //indefinte length encoding
+            return 0;
+        }
+
+        else if ((elementContent[1] & 0b10000000) == 0){
+            //Case: Definite length encocding, one byte
+            return Integer.valueOf(elementContent[1]);
+        }
+
+        else {
+            //Extended length encoding (limitiert auf max 4 bytes für die Länge)
+            int elementNumberOfLengthBytes = (elementContent[1] & 0b01111111);
+            if (elementNumberOfLengthBytes>4){ throw new ExtendLengthValueExceedsInteger("Der Wert der extended length überschreitet einen Integer",null); }
+            byte[] lengthBytes = Arrays.copyOfRange(elementContent, 1,elementNumberOfLengthBytes+1);
+            return ByteBuffer.wrap(lengthBytes).getInt();
+        }
+
+    }
+
+    byte[] getEncodedValue(ASN1Primitive element) throws IOException, ExtendLengthValueExceedsInteger {
+        byte [] elementContent = element.getEncoded();
+        int elementLength = this.getEncodedLength(element);
+        return Arrays.copyOfRange(elementContent, elementContent.length - elementLength, elementContent.length+1);
+    }
+
     void parse(byte[] content) throws LogMessageParsingException{
         try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
             final ASN1InputStream decoder = new ASN1InputStream(content);
@@ -133,8 +171,7 @@ public abstract class LogMessage {
                 //Das erste Element MUSS die versionNumber sein
                 if (element instanceof ASN1Integer) {
                     this.version = ((ASN1Integer) element).intValueExact();
-                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                    dtbsStream.write(elementValue);
+                    dtbsStream.write(this.getEncodedValue(element));
                 }
                 else {
                     throw new LogMessageParsingException("Das version Element in der logMessage konnte nicht gefunden werden.");
@@ -155,8 +192,8 @@ public abstract class LogMessage {
 
                     if (element instanceof ASN1ObjectIdentifier) {
                         this.signatureAlgorithm = element.toString();
-                        byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                        dtbsStream.write(elementValue);
+                        dtbsStream.write(this.getEncodedValue(element));
+
                     }
                     else {
                         throw new LogMessageParsingException("signatureAlgorithm wurde nicht gefunden.");
@@ -183,8 +220,7 @@ public abstract class LogMessage {
 
                 if (element instanceof ASN1OctetString) {
                     this.seAuditData = ((ASN1OctetString) element).getOctets();
-                    byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-                    dtbsStream.write(elementValue);
+                    dtbsStream.write(this.getEncodedValue(element));
                     element = asn1Primitives.nextElement();
 
                 } else {
@@ -233,8 +269,7 @@ public abstract class LogMessage {
             throw new LogMessageParsingException("SignatureCounter has to be ASN1Integer, but is " + element.getClass());
         }
         this.signatureCounter = ((ASN1Integer) element).getValue();
-        byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length); // TODO: fails on extended length.
-        dtbsStream.write(elementValue);
+        dtbsStream.write(this.getEncodedValue(element));
 
         if (signatureCounter == null) {
             throw new LogMessageParsingException("SignatureCounter is missing.");
@@ -245,20 +280,17 @@ public abstract class LogMessage {
         // Wir erwarten, dass logTime einer der folgenden drei Typen ist
         if (element instanceof ASN1Integer) {
             this.logTimeUnixTime = ((ASN1Integer) element).getValue().intValue();
-            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-            dtbsStream.write(elementValue);
+            dtbsStream.write(this.getEncodedValue(element));
             this.logTimeType = "unixTime";
         }
         else if (element instanceof ASN1UTCTime) {
             this.logTimeUTC = ((ASN1UTCTime) element).getTime();
-            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-            dtbsStream.write(elementValue);
+            dtbsStream.write(this.getEncodedValue(element));
             this.logTimeType = "utcTime";
         }
         else if (element instanceof ASN1GeneralizedTime) {
             this.logTimeGeneralizedTime = ((ASN1GeneralizedTime) element).getTime();
-            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
-            dtbsStream.write(elementValue);
+            dtbsStream.write(this.getEncodedValue(element));
             this.logTimeType = "generalizedTime";
         }
         else {
@@ -279,14 +311,13 @@ public abstract class LogMessage {
         }
     }
 
-    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, CertifiedDataTypeParsingException {
+    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, CertifiedDataTypeParsingException, ExtendLengthValueExceedsInteger {
         if(!asn1Primitives.hasMoreElements()){
             throw new CertifiedDataTypeParsingException("Failed to Parse Certified Data Type, no more elements in ASN1 Object", null);
         }
         ASN1Primitive element = asn1Primitives.nextElement();
 
         if (element instanceof ASN1ObjectIdentifier) {
-            byte[] elementValue = Arrays.copyOfRange(element.getEncoded(), 2, element.getEncoded().length);
 
             try {
                 this.certifiedDataType = oid.fromBytes(element.getEncoded());
@@ -295,7 +326,7 @@ public abstract class LogMessage {
                 throw new CertifiedDataTypeParsingException("OID unknown",e);
             }
 
-            dtbsStream.write(elementValue);
+            dtbsStream.write(this.getEncodedValue(element));
         } else {
             throw new CertifiedDataTypeParsingException(String.format("Fehler beim Parsen von %s. certifiedDataType Element wurde nicht gefunden.", filename), null);
         }
@@ -345,6 +376,12 @@ public abstract class LogMessage {
 
     public class SerialNumberParsingException extends LogMessageParsingException{
         public SerialNumberParsingException(String message, Exception reason) {
+            super(message, reason);
+        }
+    }
+
+    public class ExtendLengthValueExceedsInteger extends LogMessageParsingException{
+        public ExtendLengthValueExceedsInteger(String message, Exception reason) {
             super(message, reason);
         }
     }
