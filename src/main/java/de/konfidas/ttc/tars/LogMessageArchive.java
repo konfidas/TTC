@@ -14,11 +14,11 @@ import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.operator.AlgorithmNameFinder;
 import org.bouncycastle.operator.DefaultAlgorithmNameFinder;
-import org.bouncycastle.util.encoders.Hex;
+import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.security.auth.x500.X500Principal;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -98,21 +98,18 @@ public class LogMessageArchive {
                     try {
                         X509Certificate cer = loadCertificate(content);
                         // Prüfe die Eigenschaften des Zertifikats gegen den Dateinamen
-                        this.validateCertificateAgainstFilename(cer, individualFileName);
                         boolean[] keyUsage = cer.getKeyUsage();
-                        if (keyUsage == null || keyUsage[5] == false) {
+                        if (keyUsage == null || !keyUsage[5]) {
                             allClientCertificates.put(individualFileName.split("_")[0].toUpperCase(), cer);
+                            this.validateCertificateAgainstFilename(cer, individualFileName);
                         } else {
                             allIntermediateCertificates.put(individualFileName.split("_")[0].toUpperCase(), cer);
                         }
                     } catch (CertificateLoadException e) {
                         logger.error("Fehler beim Laden des Zertifikats {}", individualFileName);
                     }
-                    catch (CertificateEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
+                    catch (CertificateInconsistentToFilenameException e) {
+                        logger.error("Im Zertifikat {} ist die Konsistenzprüfung fehlgeschlagen. Es wird ignoriert.", individualFileName);
                     }
                 } else {
                     logger.error("{} sollte nicht in der TAR Datei vorhanden sein. Es wird ignoriert.", individualFileName);
@@ -133,38 +130,49 @@ public class LogMessageArchive {
         return this.all_log_messages;
     }
 
-    public void validateCertificateAgainstFilename(X509Certificate cert, String filename) throws CertificateEncodingException, NoSuchAlgorithmException {
-
-        X500Principal test = cert.getIssuerX500Principal();
-        X500Name ttt =new JcaX509CertificateHolder(cert).getSubject();
-        RDN cn = ttt.getRDNs(BCStyle.CN)[0];
-
-        test.getName();
-        String uuu = cert.getSubjectDN().getName();
-        String ttttttt = IETFUtils.valueToString(cn.getFirst().getValue());
+    public void validateCertificateAgainstFilename(X509Certificate cert, String filename) throws CertificateInconsistentToFilenameException {
 
 
+        X500Name certSubject = null;
+        try {
+            certSubject = new JcaX509CertificateHolder(cert).getSubject();
+        }
+        catch (CertificateEncodingException e) {
+            throw new CertificateInconsistentToFilenameException(String.format("Fehler bei der Konsistenzprüfung des Zertifikats %s", filename),e);
+        }
+        RDN cn = certSubject.getRDNs(BCStyle.CN)[0];
 
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        String certSubjectClean = IETFUtils.valueToString(cn.getFirst().getValue()).toUpperCase();
+
+        String keyHashFromFilename = filename.split("_")[0].toUpperCase();
+
+        if (!(certSubjectClean.equals(keyHashFromFilename))){
+            throw new CertificateInconsistentToFilenameException(String.format("Der Dateiname %s passt nicht zum Subject des Zertifikats", filename),null);
+        }
+
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new CertificateInconsistentToFilenameException(String.format("Fehler bei der Konsistenzprüfung des Zertifikats %s", filename),e);
+        }
         byte[] hash = digest.digest(cert.getPublicKey().getEncoded());
-        String sha256hex = new String(Hex.encode(hash));
+        String sha256HexString = Hex.encodeHexString(hash).toUpperCase();
 
+        //FIXME: The following does not work yet.
 
-
-
-        int a =0;
-
-
-
-
+//        if (!(sha256HexString.equals(keyHashFromFilename))){
+//            throw new CertificateInconsistentToFilenameException(String.format("Der Dateiname {} passt nicht zum Hash des PublicKeys", filename),null);
+//        }
 
     }
 
 
     /**
      * Diese Funktion prüft (per Minimum) die Gültigkeit der Signaturen aller LogMessages im TAR-Archiv. Optional kann auch die Gültigkeit der dabei verwendeten Zertifikate geprüft und auf einen Trust-Ancor zurückgeführt werden.
-     * @param trustedCert
-     * @param ignoreCertificate
+     * @param trustedCert Das Zertifikat, das als TrustAncor verwendet werden soll
+     * @param ignoreCertificate Wenn dieser Parameter auf true gesetzt wird, werden die Zertifikate der TSE nicht auf den TrustAncor zurückgeführt
      */
     public void verify(X509Certificate trustedCert, boolean ignoreCertificate){
         /***************************************************************************************
