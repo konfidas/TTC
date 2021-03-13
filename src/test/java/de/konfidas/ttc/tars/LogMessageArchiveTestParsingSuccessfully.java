@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.junit.Assert.fail;
+
 @RunWith(Parameterized.class)
 public class LogMessageArchiveTestParsingSuccessfully {
     final static Logger logger = LoggerFactory.getLogger(LogMessageArchiveTestParsingSuccessfully.class);
@@ -34,8 +36,7 @@ public class LogMessageArchiveTestParsingSuccessfully {
 
         logger.info("checking for Tars in "+correctTarFiles.getName());
         if(null == correctTarFiles || !correctTarFiles.isDirectory()){
-            logger.error("not a directory.");
-            return Collections.EMPTY_LIST;
+            fail("not a directory.");
         }
 
 
