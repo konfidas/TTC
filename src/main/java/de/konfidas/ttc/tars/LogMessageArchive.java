@@ -7,11 +7,18 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.bouncycastle.operator.AlgorithmNameFinder;
 import org.bouncycastle.operator.DefaultAlgorithmNameFinder;
+import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.security.auth.x500.X500Principal;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
@@ -90,6 +97,8 @@ public class LogMessageArchive {
 
                     try {
                         X509Certificate cer = loadCertificate(content);
+                        // Prüfe die Eigenschaften des Zertifikats gegen den Dateinamen
+                        this.validateCertificateAgainstFilename(cer, individualFileName);
                         boolean[] keyUsage = cer.getKeyUsage();
                         if (keyUsage == null || keyUsage[5] == false) {
                             allClientCertificates.put(individualFileName.split("_")[0].toUpperCase(), cer);
@@ -98,6 +107,12 @@ public class LogMessageArchive {
                         }
                     } catch (CertificateLoadException e) {
                         logger.error("Fehler beim Laden des Zertifikats {}", individualFileName);
+                    }
+                    catch (CertificateEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
                     }
                 } else {
                     logger.error("{} sollte nicht in der TAR Datei vorhanden sein. Es wird ignoriert.", individualFileName);
@@ -116,6 +131,33 @@ public class LogMessageArchive {
 
     public ArrayList<LogMessage> getAll_log_messages(){
         return this.all_log_messages;
+    }
+
+    public void validateCertificateAgainstFilename(X509Certificate cert, String filename) throws CertificateEncodingException, NoSuchAlgorithmException {
+
+        X500Principal test = cert.getIssuerX500Principal();
+        X500Name ttt =new JcaX509CertificateHolder(cert).getSubject();
+        RDN cn = ttt.getRDNs(BCStyle.CN)[0];
+
+        test.getName();
+        String uuu = cert.getSubjectDN().getName();
+        String ttttttt = IETFUtils.valueToString(cn.getFirst().getValue());
+
+
+
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hash = digest.digest(cert.getPublicKey().getEncoded());
+        String sha256hex = new String(Hex.encode(hash));
+
+
+
+
+        int a =0;
+
+
+
+
+
     }
 
 
