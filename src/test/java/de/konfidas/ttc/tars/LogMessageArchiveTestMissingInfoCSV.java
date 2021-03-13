@@ -20,9 +20,9 @@ import java.util.Collections;
 import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
-public class LogMessageArchiveMissingInfoCSV {
+public class LogMessageArchiveTestMissingInfoCSV {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-    final static File brokenTarFiles = new File("testdata/negative/testdata_no_info_csv.tar");
+    final static File brokenTarFiles = new File("testdata/negative/testdata_no_info_csv/");
 
     File file;
 
@@ -37,14 +37,15 @@ public class LogMessageArchiveMissingInfoCSV {
 
         logger.info("checking for Tars in " + brokenTarFiles.getName());
         if (null == brokenTarFiles || !brokenTarFiles.isDirectory()) {
-            logger.error("not a directory.");
+            fail("not a directory.");
+
             return Collections.EMPTY_LIST;
         }
 
         return Arrays.asList(brokenTarFiles.listFiles());
     }
 
-    public LogMessageArchiveMissingInfoCSV(File file) {
+    public LogMessageArchiveTestMissingInfoCSV(File file) {
         this.file = file;
     }
 
@@ -61,6 +62,7 @@ public class LogMessageArchiveMissingInfoCSV {
         }
         catch (IOException | BadFormatForTARException e) {
             // expected behaviour
+
         }
 
     }
