@@ -12,6 +12,7 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.operator.AlgorithmNameFinder;
 import org.bouncycastle.operator.DefaultAlgorithmNameFinder;
 import org.apache.commons.codec.binary.Hex;
@@ -20,9 +21,14 @@ import org.slf4j.LoggerFactory;
 
 
 import java.io.*;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.cert.*;
+import java.security.interfaces.ECKey;
+import java.security.interfaces.ECPublicKey;
+import java.security.spec.ECParameterSpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -130,16 +136,50 @@ public class LogMessageArchive {
         return this.all_log_messages;
     }
 
-    public void validateCertificateAgainstFilename(X509Certificate cert, String filename) throws CertificateInconsistentToFilenameException {
+
+    // found at https://stackoverflow.com/questions/28172710/java-compact-representation-of-ecc-publickey
+    public static byte[] toUncompressedPoint(final ECPublicKey publicKey) {
+
+        int keySizeBytes = (publicKey.getParams().getOrder().bitLength() + Byte.SIZE - 1)
+                / Byte.SIZE;
+
+        final byte[] uncompressedPoint = new byte[1 + 2 * keySizeBytes];
+        int offset = 0;
+        uncompressedPoint[offset++] = 0x04;
+
+        final byte[] x = publicKey.getW().getAffineX().toByteArray();
+        if (x.length <= keySizeBytes) {
+            System.arraycopy(x, 0, uncompressedPoint, offset + keySizeBytes
+                    - x.length, x.length);
+        } else if (x.length == keySizeBytes + 1 && x[0] == 0) {
+            System.arraycopy(x, 1, uncompressedPoint, offset, keySizeBytes);
+        } else {
+            throw new IllegalStateException("x value is too large");
+        }
+        offset += keySizeBytes;
+
+        final byte[] y = publicKey.getW().getAffineY().toByteArray();
+        if (y.length <= keySizeBytes) {
+            System.arraycopy(y, 0, uncompressedPoint, offset + keySizeBytes
+                    - y.length, y.length);
+        } else if (y.length == keySizeBytes + 1 && y[0] == 0) {
+            System.arraycopy(y, 1, uncompressedPoint, offset, keySizeBytes);
+        } else {
+            throw new IllegalStateException("y value is too large");
+        }
+
+        return uncompressedPoint;
+    }
 
 
+    public static void validateCertificateAgainstFilename(X509Certificate cert, String filename) throws CertificateInconsistentToFilenameException {
         X500Name certSubject = null;
         try {
             certSubject = new JcaX509CertificateHolder(cert).getSubject();
-        }
-        catch (CertificateEncodingException e) {
+        } catch (CertificateEncodingException e) {
             throw new CertificateInconsistentToFilenameException(String.format("Fehler bei der Konsistenzprüfung des Zertifikats %s", filename),e);
         }
+
         RDN cn = certSubject.getRDNs(BCStyle.CN)[0];
 
         String certSubjectClean = IETFUtils.valueToString(cn.getFirst().getValue()).toUpperCase();
@@ -153,18 +193,18 @@ public class LogMessageArchive {
         MessageDigest digest = null;
         try {
             digest = MessageDigest.getInstance("SHA-256");
-        }
-        catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new CertificateInconsistentToFilenameException(String.format("Fehler bei der Konsistenzprüfung des Zertifikats %s", filename),e);
         }
-        byte[] hash = digest.digest(cert.getPublicKey().getEncoded());
+
+        byte[] encodedCertPublicKey = toUncompressedPoint((ECPublicKey) cert.getPublicKey());
+
+        byte[] hash = digest.digest(encodedCertPublicKey);
         String sha256HexString = Hex.encodeHexString(hash).toUpperCase();
 
-        //FIXME: The following does not work yet.
-
-//        if (!(sha256HexString.equals(keyHashFromFilename))){
-//            throw new CertificateInconsistentToFilenameException(String.format("Der Dateiname {} passt nicht zum Hash des PublicKeys", filename),null);
-//        }
+        if (!(sha256HexString.equals(keyHashFromFilename))){
+            throw new CertificateInconsistentToFilenameException(String.format("Der Dateiname %s passt nicht zum Hash des PublicKeys (%s)", filename, sha256HexString),null);
+        }
 
     }
 
