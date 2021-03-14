@@ -5,7 +5,7 @@ public class LogMessageVerificationException extends TtcException{
     public LogMessageVerificationException(String message) {
         super(message, null);
     }
-    public LogMessageVerificationException(String message, Exception reason) {
-        super(message, reason);
+    public LogMessageVerificationException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

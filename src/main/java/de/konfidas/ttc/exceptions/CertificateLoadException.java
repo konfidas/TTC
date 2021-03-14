@@ -7,8 +7,8 @@ package de.konfidas.ttc.exceptions;
  */
 
 public class CertificateLoadException extends TtcException{
-    public CertificateLoadException(String message, Exception reason){
-        super(message,reason);
+    public CertificateLoadException(String message, Throwable cause){
+        super(message,cause);
 
     }
 }
