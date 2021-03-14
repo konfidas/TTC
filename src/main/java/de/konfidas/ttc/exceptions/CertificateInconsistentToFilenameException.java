@@ -9,8 +9,8 @@ package de.konfidas.ttc.exceptions;
  */
 
 public class CertificateInconsistentToFilenameException extends TtcException{
-    public CertificateInconsistentToFilenameException(String message, Exception reason){
-        super(message,reason);
+    public CertificateInconsistentToFilenameException(String message, Throwable cause){
+        super(message,cause);
 
     }
 }
