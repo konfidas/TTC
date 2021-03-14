@@ -187,7 +187,7 @@ public class LogMessageArchive {
         String keyHashFromFilename = filename.split("_")[0].toUpperCase();
 
         if (!(certSubjectClean.equals(keyHashFromFilename))){
-            throw new CertificateInconsistentToFilenameException(String.format("Der Dateiname %s passt nicht zum Subject des Zertifikats", filename),null);
+            throw new FilenameToSubjectMismatchException(filename, keyHashFromFilename);
         }
 
         MessageDigest digest = null;
@@ -203,9 +203,20 @@ public class LogMessageArchive {
         String sha256HexString = Hex.encodeHexString(hash).toUpperCase();
 
         if (!(sha256HexString.equals(keyHashFromFilename))){
-            throw new CertificateInconsistentToFilenameException(String.format("Der Dateiname %s passt nicht zum Hash des PublicKeys (%s)", filename, sha256HexString),null);
+            throw new FilenameToPubKeyMismatchException(filename, sha256HexString);
         }
 
+    }
+    public static class FilenameToSubjectMismatchException extends CertificateInconsistentToFilenameException{
+        public FilenameToSubjectMismatchException(String expected, String found) {
+            super("FileName to Subject mismatch: got "+found+", but expected "+expected, null);
+        }
+    }
+
+    public static class FilenameToPubKeyMismatchException extends CertificateInconsistentToFilenameException{
+        public FilenameToPubKeyMismatchException(String expected, String found) {
+            super("FileName to Public Key mismatch: got "+found+", but expected "+expected, null);
+        }
     }
 
 
