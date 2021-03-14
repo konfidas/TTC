@@ -20,7 +20,7 @@ import java.util.Collections;
 import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
-public class LogMessageArchiveTestInconsinstentCertificate {
+public class LogMessageArchiveTestInconsistentCertificate {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     final static File brokenTarFiles = new File("testdata/negative/inconsistent_certificates/");
 
@@ -45,7 +45,7 @@ public class LogMessageArchiveTestInconsinstentCertificate {
         return Arrays.asList(brokenTarFiles.listFiles());
     }
 
-    public LogMessageArchiveTestInconsinstentCertificate(File file) {
+    public LogMessageArchiveTestInconsistentCertificate(File file) {
         this.file = file;
     }
 
@@ -64,6 +64,5 @@ public class LogMessageArchiveTestInconsinstentCertificate {
             // expected behaviour
 
         }
-
     }
 }
