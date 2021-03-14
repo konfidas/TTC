@@ -8,9 +8,6 @@ import de.konfidas.ttc.utilities.CertificateHelper;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.operator.AlgorithmNameFinder;
-import org.bouncycastle.operator.DefaultAlgorithmNameFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,13 +16,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
-import java.security.cert.CertPathValidatorException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+
 
 public class LogMessageArchive {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);

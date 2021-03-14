@@ -1,13 +1,11 @@
 package de.konfidas.ttc.tars;
 
 import de.konfidas.ttc.utilities.CertificateHelper;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 
