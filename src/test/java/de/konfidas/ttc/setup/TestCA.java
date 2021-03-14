@@ -1,5 +1,8 @@
 package de.konfidas.ttc.cert;
 
+import de.konfidas.ttc.exceptions.CertificateInconsistentToFilenameException;
+import de.konfidas.ttc.utilities.CertificateHelper;
+import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -19,6 +22,7 @@ import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
 import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder;
 import org.bouncycastle.util.encoders.Base64;
+import org.junit.Test;
 
 import java.io.FileOutputStream;
 import java.math.BigInteger;
@@ -26,6 +30,7 @@ import java.nio.file.Paths;
 import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.ECPublicKey;
 import java.util.Calendar;
 import java.util.Date;
 import java.nio.file.Path;
@@ -34,14 +39,12 @@ import java.nio.file.Path;
 
 public class TestCA {
     private static final String BC_PROVIDER = "BC";
-    private static final String KEY_ALGORITHM = "RSA";
-    private static final String SIGNATURE_ALGORITHM = "SHA256withRSA";
+    private static final String KEY_ALGORITHM = "EC";
+    private static final String SIGNATURE_ALGORITHM = "SHA256withECDSA";
     private static final String EXPORT_FOLDER = "/Users/nils/temp";
-//    private static final String EXPORT_FOLDER = System.getProperty("java.io.tmpdir");
 
-
-
-    public static void main(String[] args) throws Exception{
+    @Test
+    public void setupGoodCaseCA() throws Exception{
 
         /*****************************
          ** Erst wird die CA erzeugt *
@@ -53,7 +56,7 @@ public class TestCA {
 
         // Initialize a new KeyPair generator
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(KEY_ALGORITHM, BC_PROVIDER);
-        keyPairGenerator.initialize(2048);
+        keyPairGenerator.initialize(384);
 
         // Setup start date to yesterday and end date for 1 year validity
         Calendar calendar = Calendar.getInstance();
@@ -140,9 +143,22 @@ public class TestCA {
 
         // Generate a new KeyPair and sign it using the SubCA Cert Private Key
         // by generating a CSR (Certificate Signing Request)
-        X500Name issuedCertSubject = new X500Name("CN=issued-cert");
         BigInteger issuedCertSerialNum = new BigInteger(Long.toString(new SecureRandom().nextLong()));
         KeyPair issuedCertKeyPair = keyPairGenerator.generateKeyPair();
+        byte[] encodedCertPublicKey = CertificateHelper.publicKeyToUncompressedPoint((ECPublicKey) issuedCertKeyPair.getPublic());
+
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            throw new CertificateInconsistentToFilenameException(String.format("Fehler bei der Erzeugung der Test-CA. Der Hash-Agorithmus wurde nicht gefunden"),e);
+        }
+
+        byte[] hash = digest.digest(encodedCertPublicKey);
+        String sha256HexString = Hex.encodeHexString(hash).toUpperCase();
+
+        X500Name issuedCertSubject = new X500Name("CN="+"addon"+sha256HexString);
+
 
 
         p10Builder = new JcaPKCS10CertificationRequestBuilder(issuedCertSubject, issuedCertKeyPair.getPublic());
@@ -171,20 +187,14 @@ public class TestCA {
         // Add intended key usage extension if needed
         issuedCertBuilder.addExtension(Extension.keyUsage, false, new KeyUsage(KeyUsage.keyEncipherment));
 
-//        // Add DNS name is cert is to used for SSL
-//        issuedCertBuilder.addExtension(Extension.subjectAlternativeName, false, new DERSequence(new ASN1Encodable[] {
-//                new GeneralName(GeneralName.dNSName, "mydomain.local"),
-//                new GeneralName(GeneralName.iPAddress, "127.0.0.1")
-//        }));
-        //        --
         X509CertificateHolder issuedCertHolder = issuedCertBuilder.build(csrContentSigner);
         X509Certificate issuedCert  = new JcaX509CertificateConverter().setProvider(BC_PROVIDER).getCertificate(issuedCertHolder);
 
         // Verify the issued cert signature against the root (issuer) cert
         issuedCert.verify(subCACert.getPublicKey(), BC_PROVIDER);
 
-        writeCertToFileBase64Encoded(issuedCert, Paths.get(EXPORT_FOLDER,"issued-cert.cer").toString());
-        exportKeyPairToKeystoreFile(issuedCertKeyPair, issuedCert, "issued-cert", Paths.get(EXPORT_FOLDER,"issued-cert.pfx").toString() , "PKCS12", "pass");
+        writeCertToFileBase64Encoded(issuedCert, Paths.get(EXPORT_FOLDER,sha256HexString +".cer").toString());
+        exportKeyPairToKeystoreFile(issuedCertKeyPair, issuedCert, "issued-cert", Paths.get(EXPORT_FOLDER,sha256HexString+".pfx").toString() , "PKCS12", "pass");
 
     }
 
@@ -203,4 +213,6 @@ public class TestCA {
         certificateOut.write("-----END CERTIFICATE-----".getBytes());
         certificateOut.close();
     }
+
+
 }
