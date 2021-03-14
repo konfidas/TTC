@@ -39,8 +39,6 @@ public class CertificateValidatorTestCertConsistency {
         }
     }
 
-
-    // FIXME: need cert
     @Test
     public void testWrongPubkey() throws Exception{
         X509Certificate good1Cert = CertificateHelper.loadCertificate(broken1File.toPath());
