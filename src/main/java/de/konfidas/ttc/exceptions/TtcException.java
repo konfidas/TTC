@@ -1,29 +1,16 @@
 package de.konfidas.ttc.exceptions;
 
 public class TtcException extends Exception{
-    String message;
-    Exception reason;
-
-    TtcException(String message, Exception reason){
-        this.message = message;
-        this.reason = reason;
-    }
-
-    @Override
-    public String getMessage(){
-        return message;
-    }
-
-    public Exception getReason(){
-        return reason;
+    TtcException(String message, Throwable cause){
+        super(message, cause);
     }
 
     @Override
     public String toString(){
-        if(reason != null) {
-            return message + ", reason: " + reason.toString();
+        if(this.getCause() != null) {
+            return getMessage() + ", cause: " + getCause().toString();
         }else{
-            return message;
+            return getMessage();
         }
     }
 }

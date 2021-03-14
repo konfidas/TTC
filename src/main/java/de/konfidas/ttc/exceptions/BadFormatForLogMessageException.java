@@ -8,8 +8,8 @@ public class BadFormatForLogMessageException extends TtcException {
     public BadFormatForLogMessageException(String message) {
         super(message, null);
     }
-    public BadFormatForLogMessageException(String message, Exception reason) {
-        super(message, reason);
+    public BadFormatForLogMessageException(String message, Throwable cause) {
+        super(message, cause);
     }
 
 }
