@@ -12,7 +12,7 @@ import java.security.cert.X509Certificate;
 
 import static org.junit.Assert.fail;
 
-public class LogMessageArchivTestCertConsistency {
+public class LogMessageArchiveTestCertConsistency {
     final static File good1File  = new File("testdata/certificates/good1.cer");
     final static File broken1File  = new File("testdata/certificates/broken1.cer");
 
