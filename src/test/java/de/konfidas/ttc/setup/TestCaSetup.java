@@ -6,6 +6,14 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import org.apache.commons.io.FileUtils;
+
 import static org.junit.Assert.fail;
 
 
@@ -15,12 +23,20 @@ public class TestCaSetup {
 
     @Test
     public void setupCA()  {
-        String exportPathCACertificate ="/Users/nils/temp/root-cert.cer";
-        String exportPathSubCACertificate ="/Users/nils/temp/subca-cert.cer";
-        String exportPathClientCertificate = "/Users/nils/temp/client-cert.cer";
-        String exportPathCAKey ="/Users/nils/temp/root-cert.pfx";
-        String exportPathSubCAKey ="/Users/nils/temp/subca-cert.pfx";
-        String exportPathClientKey = "/Users/nils/temp/client-cert.pfx";
+        String exportDir = "";
+        try {
+            exportDir =  Files.createTempDirectory("ca_export").toString();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String exportPathCACertificate =  Paths.get(exportDir, "root-cert.cer").toString();
+        String exportPathSubCACertificate =  Paths.get(exportDir, "subca-cert.cer").toString();
+        String exportPathClientCertificate =  Paths.get(exportDir, "client-cert.cer").toString();
+        String exportPathCAKey =  Paths.get(exportDir, "root-cert.pfx").toString();
+        String exportPathSubCAKey =  Paths.get(exportDir, "subca-cert.pfx").toString();
+        String exportPathClientKey =  Paths.get(exportDir, "client-cert.pfx").toString();
 
         logger.info("============================================================================");
         logger.info("Erzeugung einer CA, Sub-CA und eines Client-Zertifikats");
@@ -93,6 +109,17 @@ public class TestCaSetup {
         logger.info("Ein Client Zertifikat wurde erstellt und in {} und {} exportiert", exportPathClientCertificate, exportPathClientKey);
         logger.info("============================================================================");
 
+        File removeDir = new File(exportDir);
+        try {
+            FileUtils.forceDelete(removeDir); //delete directory
+        }
+        catch (IOException e) {
+            logger.info("Exportverzeichnis konnte nicht gelöscht werden");
+            fail();
+        }
+
+        logger.info("Exportverzeichnis wird wieder gelöscht");
+        logger.info("============================================================================");
 
     }
 }
