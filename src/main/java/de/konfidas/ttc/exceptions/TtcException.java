@@ -1,7 +1,7 @@
 package de.konfidas.ttc.exceptions;
 
 public class TtcException extends Exception{
-    TtcException(String message, Throwable cause){
+    protected TtcException(String message, Throwable cause){
         super(message, cause);
     }
 
