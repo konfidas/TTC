@@ -42,14 +42,23 @@ public class TestClientCertificateFactory {
     Date endDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);  //Today + 1000 days
     String signatureAlgorithm = "SHA256withECDSA";
     int keySize = 384;
+
     X509Certificate rootCert;
     BigInteger clientCertSerialNum = new BigInteger(Long.toString(new SecureRandom().nextLong()));
     KeyPair signingKeyPair;
     String keyAlgorithm = "EC";
     X509Certificate clientCert;
     X509Certificate signingCertificate;
+
+    public KeyPair getClientKeyPair() {
+        return clientKeyPair;
+    }
+
     KeyPair clientKeyPair;
 
+    public X509Certificate getClientCert() {
+        return clientCert;
+    }
 
     public TestClientCertificateFactory(X509Certificate _signingCertificate, KeyPair _signingKeyPair) {
         Security.addProvider(new BouncyCastleProvider());
