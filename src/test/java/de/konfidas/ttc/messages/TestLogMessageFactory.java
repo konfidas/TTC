@@ -37,6 +37,222 @@ public abstract class TestLogMessageFactory {
     }
 
     int version = 2;
+
+    public oid getCertifiedDataType() {
+        return certifiedDataType;
+    }
+
+    public void setCertifiedDataType(oid certifiedDataType) {
+        this.certifiedDataType = certifiedDataType;
+    }
+
+    public ArrayList<ASN1Primitive> getCertifiedData() {
+        return certifiedData;
+    }
+
+    public void setCertifiedData(ArrayList<ASN1Primitive> certifiedData) {
+        this.certifiedData = certifiedData;
+    }
+
+    public byte[] getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(byte[] serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public String getSignatureAlgorithm() {
+        return signatureAlgorithm;
+    }
+
+    public void setSignatureAlgorithm(String signatureAlgorithm) {
+        this.signatureAlgorithm = signatureAlgorithm;
+    }
+
+    public ArrayList<ASN1Primitive> getSignatureAlgorithmParameters() {
+        return signatureAlgorithmParameters;
+    }
+
+    public void setSignatureAlgorithmParameters(ArrayList<ASN1Primitive> signatureAlgorithmParameters) {
+        this.signatureAlgorithmParameters = signatureAlgorithmParameters;
+    }
+
+    public String getLogTimeType() {
+        return logTimeType;
+    }
+
+    public void setLogTimeType(String logTimeType) {
+        this.logTimeType = logTimeType;
+    }
+
+    public String getLogTimeUTC() {
+        return logTimeUTC;
+    }
+
+    public void setLogTimeUTC(String logTimeUTC) {
+        this.logTimeUTC = logTimeUTC;
+    }
+
+    public String getLogTimeGeneralizedTime() {
+        return logTimeGeneralizedTime;
+    }
+
+    public void setLogTimeGeneralizedTime(String logTimeGeneralizedTime) {
+        this.logTimeGeneralizedTime = logTimeGeneralizedTime;
+    }
+
+    public long getLogTimeUnixTime() {
+        return logTimeUnixTime;
+    }
+
+    public void setLogTimeUnixTime(long logTimeUnixTime) {
+        this.logTimeUnixTime = logTimeUnixTime;
+    }
+
+    public byte[] getSignatureValue() {
+        return signatureValue;
+    }
+
+    public void setSignatureValue(byte[] signatureValue) {
+        this.signatureValue = signatureValue;
+    }
+
+    public BigInteger getSignatureCounter() {
+        return signatureCounter;
+    }
+
+    public void setSignatureCounter(BigInteger signatureCounter) {
+        this.signatureCounter = signatureCounter;
+    }
+
+    public byte[] getSeAuditData() {
+        return seAuditData;
+    }
+
+    public void setSeAuditData(byte[] seAuditData) {
+        this.seAuditData = seAuditData;
+    }
+
+    public byte[] getDtbs() {
+        return dtbs;
+    }
+
+    public void setDtbs(byte[] dtbs) {
+        this.dtbs = dtbs;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public ASN1EncodableVector getLogMessageVector() {
+        return logMessageVector;
+    }
+
+    public void setLogMessageVector(ASN1EncodableVector logMessageVector) {
+        this.logMessageVector = logMessageVector;
+    }
+
+    public ASN1Integer getVersionAsASN1() {
+        return versionAsASN1;
+    }
+
+    public void setVersionAsASN1ToNull() {
+        this.versionAsASN1 = null;
+    }
+    public void setVersionAsASN1(ASN1Integer versionAsASN1) {
+        this.versionAsASN1 = versionAsASN1;
+    }
+
+    public DEROctetString getSerialNumberAsASN1() {
+        return serialNumberAsASN1;
+    }
+
+    public void setSerialNumberAsASN1(DEROctetString serialNumberAsASN1) {
+        this.serialNumberAsASN1 = serialNumberAsASN1;
+    }
+
+    public ASN1EncodableVector getSignatureAlgorithmElementsList() {
+        return signatureAlgorithmElementsList;
+    }
+
+    public void setSignatureAlgorithmElementsList(ASN1EncodableVector signatureAlgorithmElementsList) {
+        this.signatureAlgorithmElementsList = signatureAlgorithmElementsList;
+    }
+
+    public ASN1ObjectIdentifier getSignatureAlgorithmAsASN1() {
+        return signatureAlgorithmAsASN1;
+    }
+
+    public void setSignatureAlgorithmAsASN1(ASN1ObjectIdentifier signatureAlgorithmAsASN1) {
+        this.signatureAlgorithmAsASN1 = signatureAlgorithmAsASN1;
+    }
+
+    public ASN1Integer getSignatureCounterAsASN1() {
+        return signatureCounterAsASN1;
+    }
+
+    public void setSignatureCounterAsASN1(ASN1Integer signatureCounterAsASN1) {
+        this.signatureCounterAsASN1 = signatureCounterAsASN1;
+    }
+
+    public ASN1Integer getLogTimeUnixTimeAsASN1() {
+        return logTimeUnixTimeAsASN1;
+    }
+
+    public void setLogTimeUnixTimeAsASN1(ASN1Integer logTimeUnixTimeAsASN1) {
+        this.logTimeUnixTimeAsASN1 = logTimeUnixTimeAsASN1;
+    }
+
+    public ASN1UTCTime getLogTimeUTCAsASN1() {
+        return logTimeUTCAsASN1;
+    }
+
+    public void setLogTimeUTCAsASN1(ASN1UTCTime logTimeUTCAsASN1) {
+        this.logTimeUTCAsASN1 = logTimeUTCAsASN1;
+    }
+
+    public ASN1GeneralizedTime getLogTimeGeneralizedTimeAsASN1() {
+        return logTimeGeneralizedTimeAsASN1;
+    }
+
+    public void setLogTimeGeneralizedTimeAsASN1(ASN1GeneralizedTime logTimeGeneralizedTimeAsASN1) {
+        this.logTimeGeneralizedTimeAsASN1 = logTimeGeneralizedTimeAsASN1;
+    }
+
+    public ASN1OctetString getSeAuditDataAsASN1() {
+        return seAuditDataAsASN1;
+    }
+
+    public void setSeAuditDataAsASN1(ASN1OctetString seAuditDataAsASN1) {
+        this.seAuditDataAsASN1 = seAuditDataAsASN1;
+    }
+
+    public ASN1ObjectIdentifier getCertifiedDataTypeAsASN1() {
+        return certifiedDataTypeAsASN1;
+    }
+
+    public void setCertifiedDataTypeAsASN1(ASN1ObjectIdentifier certifiedDataTypeAsASN1) {
+        this.certifiedDataTypeAsASN1 = certifiedDataTypeAsASN1;
+    }
+
+    public ASN1OctetString getCertifiedDataAsASN1() {
+        return certifiedDataAsASN1;
+    }
+
+    public void setCertifiedDataAsASN1(ASN1OctetString certifiedDataAsASN1) {
+        this.certifiedDataAsASN1 = certifiedDataAsASN1;
+    }
+
+    public ASN1OctetString getSignatureValueAsASN1() {
+        return signatureValueAsASN1;
+    }
+
+    public void setSignatureValueAsASN1(ASN1OctetString signatureValueAsASN1) {
+        this.signatureValueAsASN1 = signatureValueAsASN1;
+    }
+
     oid certifiedDataType;
     ArrayList<ASN1Primitive> certifiedData = new ArrayList<>();
     byte[] serialNumber = "HelloWorld".getBytes(StandardCharsets.UTF_8);
@@ -51,6 +267,7 @@ public abstract class TestLogMessageFactory {
     byte[] seAuditData = null;
     byte[] dtbs = null;
     String filename = "";
+
     ASN1EncodableVector logMessageVector = new ASN1EncodableVector();
     ASN1Integer versionAsASN1;
     DEROctetString serialNumberAsASN1;
@@ -129,15 +346,15 @@ public abstract class TestLogMessageFactory {
 
         try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
 
-            dtbsStream.write(getEncodedValue(versionAsASN1));
-            dtbsStream.write(getEncodedValue(certifiedDataTypeAsASN1));
+            if (versionAsASN1 != null) dtbsStream.write(getEncodedValue(versionAsASN1));
+            if (certifiedDataAsASN1 != null)   dtbsStream.write(getEncodedValue(certifiedDataTypeAsASN1));
             if (certifiedDataAsASN1 != null) dtbsStream.write(getEncodedValue(certifiedDataAsASN1));
 
-            dtbsStream.write(getEncodedValue(serialNumberAsASN1));
-            dtbsStream.write(getEncodedValue(signatureAlgorithmAsASN1));
+            if (serialNumberAsASN1 != null) dtbsStream.write(getEncodedValue(serialNumberAsASN1));
+            if (signatureAlgorithmAsASN1 != null) dtbsStream.write(getEncodedValue(signatureAlgorithmAsASN1));
             if (seAuditDataAsASN1 != null) dtbsStream.write(getEncodedValue(seAuditDataAsASN1));
 
-            dtbsStream.write(getEncodedValue(signatureCounterAsASN1));
+            if (signatureCounterAsASN1 != null) dtbsStream.write(getEncodedValue(signatureCounterAsASN1));
 
             switch (logTimeType) {
                 case "unixTime":
@@ -202,7 +419,6 @@ public abstract class TestLogMessageFactory {
             case "utcTime":
                 DateFormat uTCTimeFormat = new SimpleDateFormat();
                 logTimeUTCAsASN1 = new ASN1UTCTime(uTCTimeFormat.parse(logTimeUTC));
-                ;
                 break;
             case "generalizedTime":
                 DateFormat generalizedTimeFormat = new SimpleDateFormat();

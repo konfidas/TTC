@@ -34,7 +34,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
     }
 
     @Test
-    public void wrongVersion() throws TestLogMessageFactory.TestLogMessageCreationError {
+    public void wrongVersion() throws TestLogMessageFactory.TestLogMessageCreationError, BadFormatForLogMessageException {
 
         try{
         TestAuditLogMessageFactory auditLogMessageFactory = new TestAuditLogMessageFactory();
@@ -52,8 +52,38 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
         String filename = auditLogMessageFactory.getFilename();
 
         AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);}
-        catch (BadFormatForLogMessageException e){
+        catch (LogMessage.LogMessageParsingException e){
             //expected
+            return;
+        }
+        fail();
+    }
+
+    @Test
+    public void versionElementIsMissing() throws TestLogMessageFactory.TestLogMessageCreationError, BadFormatForLogMessageException {
+
+        try{
+            TestAuditLogMessageFactory auditLogMessageFactory = new TestAuditLogMessageFactory();
+
+
+            auditLogMessageFactory.prepare();
+            // Das Versionselement wird entfernt
+            auditLogMessageFactory.setVersionAsASN1ToNull();
+
+            auditLogMessageFactory.calculateDTBS();
+            auditLogMessageFactory.sign(getClientCertKeyPair().getPrivate());
+
+            auditLogMessageFactory.build();
+
+            byte[] auditMessage = auditLogMessageFactory.finalizeMessage();
+            String filename = auditLogMessageFactory.getFilename();
+
+            AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
+        }
+        catch (LogMessage.LogMessageParsingException e){
+            //expected
+            return;
+
         }
         fail();
     }
