@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import static de.konfidas.ttc.setup.Utilities.getEncodedValue;
 
 
-public abstract class TestLogMessageFactory {
+public abstract class LogMessageBuilder {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     public int getVersion() {
@@ -342,7 +342,7 @@ public abstract class TestLogMessageFactory {
         return filename;
     }
 
-    void calculateDTBS() throws TestLogMessageCreationError {
+    LogMessageBuilder calculateDTBS() throws TestLogMessageCreationError {
 
         try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
 
@@ -373,9 +373,11 @@ public abstract class TestLogMessageFactory {
             throw new TestLogMessageCreationError("Fehler beim Erstellen des DTBS", e);
         }
 
+        return this;
+
     }
 
-    void sign(PrivateKey key) throws TestLogMessageCreationError {
+    LogMessageBuilder sign(PrivateKey key) throws TestLogMessageCreationError {
         Signature signer = null;
         try {
             signer = Signature.getInstance(signatureAlgorithm);
@@ -395,10 +397,10 @@ public abstract class TestLogMessageFactory {
         } catch (SignatureException e) {
             throw new TestLogMessageCreationError("Fehler beim der Erstellung der Signatur", e);
         }
-
+        return this;
     }
 
-    void prepare() throws ParseException {
+    LogMessageBuilder prepare() throws ParseException {
 
         versionAsASN1 = new ASN1Integer(version);
         //certifiedDataType will be set by subclasses
@@ -425,9 +427,10 @@ public abstract class TestLogMessageFactory {
                 logTimeGeneralizedTimeAsASN1 = new ASN1GeneralizedTime(generalizedTimeFormat.parse(logTimeGeneralizedTime));
                 break;
         }
+        return this;
     }
 
-    void build() {
+    LogMessageBuilder build() {
         if (versionAsASN1 != null) logMessageVector.add(versionAsASN1);
         if (certifiedDataTypeAsASN1 != null) logMessageVector.add(certifiedDataTypeAsASN1);
         if (certifiedDataAsASN1 != null) logMessageVector.add(certifiedDataAsASN1);
@@ -450,6 +453,7 @@ public abstract class TestLogMessageFactory {
                 break;
         }
         logMessageVector.add(signatureValueAsASN1);
+        return this;
 
     }
 

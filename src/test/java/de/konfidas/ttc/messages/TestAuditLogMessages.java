@@ -2,13 +2,11 @@ package de.konfidas.ttc.messages;
 
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.setup.TestCaseBasisWithCA;
-import org.junit.BeforeClass;
+import org.bouncycastle.asn1.ASN1Integer;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.security.KeyPair;
-import java.security.cert.X509Certificate;
 
 import static junit.framework.TestCase.fail;
 
@@ -17,39 +15,39 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
 
 
     @Test
-    public void validAuditLogMessage() throws TestLogMessageFactory.TestLogMessageCreationError, BadFormatForLogMessageException { ;
-        TestAuditLogMessageFactory auditLogMessageFactory = new TestAuditLogMessageFactory();
-        auditLogMessageFactory.prepare();
+    public void validAuditLogMessage() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException { ;
+        AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
+        auditLogMessageBuilder.prepare();
 
-        auditLogMessageFactory.calculateDTBS();
-        auditLogMessageFactory.sign(getClientCertKeyPair().getPrivate());
+        auditLogMessageBuilder.calculateDTBS();
+        auditLogMessageBuilder.sign(getClientCertKeyPair().getPrivate());
 
 
-        auditLogMessageFactory.build();
+        auditLogMessageBuilder.build();
 
-        byte[] auditMessage = auditLogMessageFactory.finalizeMessage();
-        String filename = auditLogMessageFactory.getFilename();
+        byte[] auditMessage = auditLogMessageBuilder.finalizeMessage();
+        String filename = auditLogMessageBuilder.getFilename();
 
         AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
     }
 
     @Test
-    public void wrongVersion() throws TestLogMessageFactory.TestLogMessageCreationError, BadFormatForLogMessageException {
+    public void wrongVersion() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
 
         try{
-        TestAuditLogMessageFactory auditLogMessageFactory = new TestAuditLogMessageFactory();
+        AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
         // Falsche Version setzen
-        auditLogMessageFactory.setVersion(3);
+        auditLogMessageBuilder.setVersion(3);
 
-        auditLogMessageFactory.prepare();
+        auditLogMessageBuilder.prepare();
 
-        auditLogMessageFactory.calculateDTBS();
-        auditLogMessageFactory.sign(getClientCertKeyPair().getPrivate());
+        auditLogMessageBuilder.calculateDTBS();
+        auditLogMessageBuilder.sign(getClientCertKeyPair().getPrivate());
 
-        auditLogMessageFactory.build();
+        auditLogMessageBuilder.build();
 
-        byte[] auditMessage = auditLogMessageFactory.finalizeMessage();
-        String filename = auditLogMessageFactory.getFilename();
+        byte[] auditMessage = auditLogMessageBuilder.finalizeMessage();
+        String filename = auditLogMessageBuilder.getFilename();
 
         AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);}
         catch (LogMessage.LogMessageParsingException e){
@@ -60,23 +58,56 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
     }
 
     @Test
-    public void versionElementIsMissing() throws TestLogMessageFactory.TestLogMessageCreationError, BadFormatForLogMessageException {
+    public void versionElementIsMissing() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
 
         try{
-            TestAuditLogMessageFactory auditLogMessageFactory = new TestAuditLogMessageFactory();
+            AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
 
 
-            auditLogMessageFactory.prepare();
+            auditLogMessageBuilder.prepare();
             // Das Versionselement wird entfernt
-            auditLogMessageFactory.setVersionAsASN1ToNull();
+            auditLogMessageBuilder.setVersionAsASN1ToNull();
 
-            auditLogMessageFactory.calculateDTBS();
-            auditLogMessageFactory.sign(getClientCertKeyPair().getPrivate());
+            auditLogMessageBuilder.calculateDTBS();
+            auditLogMessageBuilder.sign(getClientCertKeyPair().getPrivate());
 
-            auditLogMessageFactory.build();
+            auditLogMessageBuilder.build();
 
-            byte[] auditMessage = auditLogMessageFactory.finalizeMessage();
-            String filename = auditLogMessageFactory.getFilename();
+            byte[] auditMessage = auditLogMessageBuilder.finalizeMessage();
+            String filename = auditLogMessageBuilder.getFilename();
+
+            AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
+        }
+        catch (LogMessage.LogMessageParsingException e){
+            //expected
+            return;
+
+        }
+        fail();
+    }
+
+    @Test
+    @Ignore //Dieser Test schlägt fehl weil die falsche Signatur erst im LogMessageSignatureVerifier auffallen würde.
+    public void versionElementIsMissingInDTBS() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
+
+        try{
+            AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
+
+
+            auditLogMessageBuilder.prepare();
+            ASN1Integer tmpVersion = auditLogMessageBuilder.getVersionAsASN1();
+            // Das Versionselement wird zwischengespeichert und dann entfernt
+            auditLogMessageBuilder.setVersionAsASN1ToNull();
+            auditLogMessageBuilder.calculateDTBS();
+
+            //Das Element wird wieder ergänzt so dass es in der LogMessage vorhanden ist. Die LogMessag hat also eine gütlige Struktur aber ein falsches DTBS.
+            auditLogMessageBuilder.setVersionAsASN1(tmpVersion);
+            auditLogMessageBuilder.sign(getClientCertKeyPair().getPrivate());
+
+            auditLogMessageBuilder.build();
+
+            byte[] auditMessage = auditLogMessageBuilder.finalizeMessage();
+            String filename = auditLogMessageBuilder.getFilename();
 
             AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
         }

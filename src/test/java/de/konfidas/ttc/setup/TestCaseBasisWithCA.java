@@ -1,27 +1,16 @@
 package de.konfidas.ttc.setup;
 
-import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
-import de.konfidas.ttc.messages.AuditLogMessage;
-import de.konfidas.ttc.messages.TestAuditLogMessageFactory;
-import de.konfidas.ttc.messages.TestLogMessageFactory;
-import org.bouncycastle.jcajce.provider.asymmetric.X509;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
-
-import org.apache.commons.io.FileUtils;
 
 import static org.junit.Assert.fail;
 

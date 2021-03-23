@@ -1,6 +1,5 @@
 package de.konfidas.ttc.messages;
 
-import de.konfidas.ttc.messages.TestLogMessageFactory;
 import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
@@ -8,11 +7,11 @@ import org.bouncycastle.asn1.DEROctetString;
 import java.text.ParseException;
 import java.util.Random;
 
-public class TestAuditLogMessageFactory extends TestLogMessageFactory {
+public class AuditLogMessageBuilder extends LogMessageBuilder {
 
 
     @Override
-    void prepare() {
+    AuditLogMessageBuilder prepare() {
         try {
             super.prepare();
         } catch (ParseException e) {
@@ -27,6 +26,7 @@ public class TestAuditLogMessageFactory extends TestLogMessageFactory {
 
         seAuditData = b;
         seAuditDataAsASN1 = new DEROctetString(seAuditData);
+        return this;
 
     }
 }
