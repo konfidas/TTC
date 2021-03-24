@@ -1,6 +1,7 @@
 package de.konfidas.ttc.utilities;
 
 import de.konfidas.ttc.exceptions.CertificateLoadException;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,7 @@ public class CertificateHelper {
     public static X509Certificate loadCertificate(byte[] certContent) throws CertificateLoadException {
         X509Certificate cer = null;
         try {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
+            CertificateFactory cf = CertificateFactory.getInstance("X.509", BouncyCastleProvider.PROVIDER_NAME);
             InputStream in = new ByteArrayInputStream(certContent);
             cer = (X509Certificate) cf.generateCertificate(in);
 

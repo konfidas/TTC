@@ -1,6 +1,7 @@
 package de.konfidas.ttc.setup;
 
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Base64;
 
 import java.io.FileOutputStream;
@@ -17,7 +18,7 @@ import java.util.Random;
 public class Utilities {
 
     static void exportKeyPairToKeystoreFile(KeyPair keyPair, java.security.cert.Certificate certificate, String alias, String fileName, String storeType, String storePass) throws Exception {
-        KeyStore sslKeyStore = KeyStore.getInstance(storeType, "BC");
+        KeyStore sslKeyStore = KeyStore.getInstance(storeType, BouncyCastleProvider.PROVIDER_NAME);
         sslKeyStore.load(null, null);
         sslKeyStore.setKeyEntry(alias, keyPair.getPrivate(),null, new java.security.cert.Certificate[]{certificate});
         FileOutputStream keyStoreOs = new FileOutputStream(fileName);
