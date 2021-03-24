@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
+
 import static junit.framework.TestCase.fail;
 
 public class TestAuditLogMessages extends TestCaseBasisWithCA {
@@ -45,7 +47,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
         String filename = auditLogMessageBuilder.getFilename();
 
         AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);}
-        catch (LogMessage.LogMessageParsingException e){
+        catch (LogMessage.LogMessageParsingException | ParseException e){
             //expected
             return;
         }
