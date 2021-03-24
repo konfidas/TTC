@@ -32,8 +32,9 @@ public abstract class LogMessageBuilder {
         return version;
     }
 
-    public void setVersion(int version) {
+    public LogMessageBuilder setVersion(int version) {
         this.version = version;
+        return this;
     }
 
     int version = 2;
@@ -42,56 +43,63 @@ public abstract class LogMessageBuilder {
         return certifiedDataType;
     }
 
-    public void setCertifiedDataType(oid certifiedDataType) {
+    public LogMessageBuilder setCertifiedDataType(oid certifiedDataType) {
         this.certifiedDataType = certifiedDataType;
+        return this;
     }
 
     public ArrayList<ASN1Primitive> getCertifiedData() {
         return certifiedData;
     }
 
-    public void setCertifiedData(ArrayList<ASN1Primitive> certifiedData) {
+    public LogMessageBuilder setCertifiedData(ArrayList<ASN1Primitive> certifiedData) {
         this.certifiedData = certifiedData;
+        return this;
     }
 
     public byte[] getSerialNumber() {
         return serialNumber;
     }
 
-    public void setSerialNumber(byte[] serialNumber) {
+    public LogMessageBuilder setSerialNumber(byte[] serialNumber) {
         this.serialNumber = serialNumber;
+        return this;
     }
 
     public String getSignatureAlgorithm() {
         return signatureAlgorithm;
     }
 
-    public void setSignatureAlgorithm(String signatureAlgorithm) {
+    public LogMessageBuilder setSignatureAlgorithm(String signatureAlgorithm) {
         this.signatureAlgorithm = signatureAlgorithm;
+        return this;
     }
 
     public ArrayList<ASN1Primitive> getSignatureAlgorithmParameters() {
         return signatureAlgorithmParameters;
     }
 
-    public void setSignatureAlgorithmParameters(ArrayList<ASN1Primitive> signatureAlgorithmParameters) {
+    public LogMessageBuilder setSignatureAlgorithmParameters(ArrayList<ASN1Primitive> signatureAlgorithmParameters) {
         this.signatureAlgorithmParameters = signatureAlgorithmParameters;
+        return this;
     }
 
     public String getLogTimeType() {
         return logTimeType;
     }
 
-    public void setLogTimeType(String logTimeType) {
+    public LogMessageBuilder setLogTimeType(String logTimeType) {
         this.logTimeType = logTimeType;
+        return this;
     }
 
     public String getLogTimeUTC() {
         return logTimeUTC;
     }
 
-    public void setLogTimeUTC(String logTimeUTC) {
+    public LogMessageBuilder setLogTimeUTC(String logTimeUTC) {
         this.logTimeUTC = logTimeUTC;
+        return this;
     }
 
     public String getLogTimeGeneralizedTime() {
@@ -106,151 +114,171 @@ public abstract class LogMessageBuilder {
         return logTimeUnixTime;
     }
 
-    public void setLogTimeUnixTime(long logTimeUnixTime) {
+    public LogMessageBuilder setLogTimeUnixTime(long logTimeUnixTime) {
         this.logTimeUnixTime = logTimeUnixTime;
+        return this;
     }
 
     public byte[] getSignatureValue() {
         return signatureValue;
     }
 
-    public void setSignatureValue(byte[] signatureValue) {
+    public LogMessageBuilder setSignatureValue(byte[] signatureValue) {
         this.signatureValue = signatureValue;
+        return this;
     }
 
     public BigInteger getSignatureCounter() {
         return signatureCounter;
     }
 
-    public void setSignatureCounter(BigInteger signatureCounter) {
+    public LogMessageBuilder setSignatureCounter(BigInteger signatureCounter) {
         this.signatureCounter = signatureCounter;
+        return this;
     }
 
     public byte[] getSeAuditData() {
         return seAuditData;
     }
 
-    public void setSeAuditData(byte[] seAuditData) {
+    public LogMessageBuilder setSeAuditData(byte[] seAuditData) {
         this.seAuditData = seAuditData;
+        return this;
     }
 
     public byte[] getDtbs() {
         return dtbs;
     }
 
-    public void setDtbs(byte[] dtbs) {
+    public LogMessageBuilder setDtbs(byte[] dtbs) {
         this.dtbs = dtbs;
+        return this;
     }
 
-    public void setFilename(String filename) {
+    public LogMessageBuilder setFilename(String filename) {
         this.filename = filename;
+        return this;
     }
 
     public ASN1EncodableVector getLogMessageVector() {
         return logMessageVector;
     }
 
-    public void setLogMessageVector(ASN1EncodableVector logMessageVector) {
+    public LogMessageBuilder setLogMessageVector(ASN1EncodableVector logMessageVector) {
         this.logMessageVector = logMessageVector;
+        return this;
     }
 
     public ASN1Integer getVersionAsASN1() {
         return versionAsASN1;
     }
 
-    public void setVersionAsASN1ToNull() {
+    public LogMessageBuilder setVersionAsASN1ToNull() {
         this.versionAsASN1 = null;
+        return this;
     }
-    public void setVersionAsASN1(ASN1Integer versionAsASN1) {
+    public LogMessageBuilder setVersionAsASN1(ASN1Integer versionAsASN1) {
         this.versionAsASN1 = versionAsASN1;
+        return this;
     }
 
     public DEROctetString getSerialNumberAsASN1() {
         return serialNumberAsASN1;
     }
 
-    public void setSerialNumberAsASN1(DEROctetString serialNumberAsASN1) {
+    public LogMessageBuilder setSerialNumberAsASN1(DEROctetString serialNumberAsASN1) {
         this.serialNumberAsASN1 = serialNumberAsASN1;
+        return this;
     }
 
     public ASN1EncodableVector getSignatureAlgorithmElementsList() {
         return signatureAlgorithmElementsList;
     }
 
-    public void setSignatureAlgorithmElementsList(ASN1EncodableVector signatureAlgorithmElementsList) {
+    public LogMessageBuilder setSignatureAlgorithmElementsList(ASN1EncodableVector signatureAlgorithmElementsList) {
         this.signatureAlgorithmElementsList = signatureAlgorithmElementsList;
+        return this;
     }
 
     public ASN1ObjectIdentifier getSignatureAlgorithmAsASN1() {
         return signatureAlgorithmAsASN1;
     }
 
-    public void setSignatureAlgorithmAsASN1(ASN1ObjectIdentifier signatureAlgorithmAsASN1) {
+    public LogMessageBuilder setSignatureAlgorithmAsASN1(ASN1ObjectIdentifier signatureAlgorithmAsASN1) {
         this.signatureAlgorithmAsASN1 = signatureAlgorithmAsASN1;
+        return this;
     }
 
     public ASN1Integer getSignatureCounterAsASN1() {
         return signatureCounterAsASN1;
     }
 
-    public void setSignatureCounterAsASN1(ASN1Integer signatureCounterAsASN1) {
+    public LogMessageBuilder setSignatureCounterAsASN1(ASN1Integer signatureCounterAsASN1) {
         this.signatureCounterAsASN1 = signatureCounterAsASN1;
+        return this;
     }
 
     public ASN1Integer getLogTimeUnixTimeAsASN1() {
         return logTimeUnixTimeAsASN1;
     }
 
-    public void setLogTimeUnixTimeAsASN1(ASN1Integer logTimeUnixTimeAsASN1) {
+    public LogMessageBuilder setLogTimeUnixTimeAsASN1(ASN1Integer logTimeUnixTimeAsASN1) {
         this.logTimeUnixTimeAsASN1 = logTimeUnixTimeAsASN1;
+        return this;
     }
 
     public ASN1UTCTime getLogTimeUTCAsASN1() {
         return logTimeUTCAsASN1;
     }
 
-    public void setLogTimeUTCAsASN1(ASN1UTCTime logTimeUTCAsASN1) {
+    public LogMessageBuilder setLogTimeUTCAsASN1(ASN1UTCTime logTimeUTCAsASN1) {
         this.logTimeUTCAsASN1 = logTimeUTCAsASN1;
+        return this;
     }
 
     public ASN1GeneralizedTime getLogTimeGeneralizedTimeAsASN1() {
         return logTimeGeneralizedTimeAsASN1;
     }
 
-    public void setLogTimeGeneralizedTimeAsASN1(ASN1GeneralizedTime logTimeGeneralizedTimeAsASN1) {
+    public LogMessageBuilder setLogTimeGeneralizedTimeAsASN1(ASN1GeneralizedTime logTimeGeneralizedTimeAsASN1) {
         this.logTimeGeneralizedTimeAsASN1 = logTimeGeneralizedTimeAsASN1;
+        return this;
     }
 
     public ASN1OctetString getSeAuditDataAsASN1() {
         return seAuditDataAsASN1;
     }
 
-    public void setSeAuditDataAsASN1(ASN1OctetString seAuditDataAsASN1) {
+    public LogMessageBuilder setSeAuditDataAsASN1(ASN1OctetString seAuditDataAsASN1) {
         this.seAuditDataAsASN1 = seAuditDataAsASN1;
+        return this;
     }
 
     public ASN1ObjectIdentifier getCertifiedDataTypeAsASN1() {
         return certifiedDataTypeAsASN1;
     }
 
-    public void setCertifiedDataTypeAsASN1(ASN1ObjectIdentifier certifiedDataTypeAsASN1) {
+    public LogMessageBuilder setCertifiedDataTypeAsASN1(ASN1ObjectIdentifier certifiedDataTypeAsASN1) {
         this.certifiedDataTypeAsASN1 = certifiedDataTypeAsASN1;
+        return this;
     }
 
     public ASN1OctetString getCertifiedDataAsASN1() {
         return certifiedDataAsASN1;
     }
 
-    public void setCertifiedDataAsASN1(ASN1OctetString certifiedDataAsASN1) {
+    public LogMessageBuilder setCertifiedDataAsASN1(ASN1OctetString certifiedDataAsASN1) {
         this.certifiedDataAsASN1 = certifiedDataAsASN1;
+        return this;
     }
 
     public ASN1OctetString getSignatureValueAsASN1() {
         return signatureValueAsASN1;
     }
 
-    public void setSignatureValueAsASN1(ASN1OctetString signatureValueAsASN1) {
+    public LogMessageBuilder setSignatureValueAsASN1(ASN1OctetString signatureValueAsASN1) {
         this.signatureValueAsASN1 = signatureValueAsASN1;
+        return this;
     }
 
     oid certifiedDataType;

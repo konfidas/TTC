@@ -17,15 +17,13 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
     @Test
     public void validAuditLogMessage() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException { ;
         AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
-        auditLogMessageBuilder.prepare();
+        byte[] auditMessage = auditLogMessageBuilder.prepare()
+                                .calculateDTBS()
+                                .sign(getClientCertKeyPair().getPrivate())
+                                .build()
+                                .finalizeMessage();
 
-        auditLogMessageBuilder.calculateDTBS();
-        auditLogMessageBuilder.sign(getClientCertKeyPair().getPrivate());
 
-
-        auditLogMessageBuilder.build();
-
-        byte[] auditMessage = auditLogMessageBuilder.finalizeMessage();
         String filename = auditLogMessageBuilder.getFilename();
 
         AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
@@ -37,16 +35,13 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
         try{
         AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
         // Falsche Version setzen
-        auditLogMessageBuilder.setVersion(3);
+            byte[] auditMessage = auditLogMessageBuilder.setVersion(3)
+                                .prepare()
+                                .calculateDTBS()
+                                .sign(getClientCertKeyPair().getPrivate())
+                                .build()
+                                .finalizeMessage();
 
-        auditLogMessageBuilder.prepare();
-
-        auditLogMessageBuilder.calculateDTBS();
-        auditLogMessageBuilder.sign(getClientCertKeyPair().getPrivate());
-
-        auditLogMessageBuilder.build();
-
-        byte[] auditMessage = auditLogMessageBuilder.finalizeMessage();
         String filename = auditLogMessageBuilder.getFilename();
 
         AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);}
@@ -64,16 +59,14 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
             AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
 
 
-            auditLogMessageBuilder.prepare();
+            byte[] auditMessage =  auditLogMessageBuilder.prepare()
             // Das Versionselement wird entfernt
-            auditLogMessageBuilder.setVersionAsASN1ToNull();
+                                  .setVersionAsASN1ToNull()
+                                  .calculateDTBS()
+                                  .sign(getClientCertKeyPair().getPrivate())
+                                  .build()
+                                  .finalizeMessage();
 
-            auditLogMessageBuilder.calculateDTBS();
-            auditLogMessageBuilder.sign(getClientCertKeyPair().getPrivate());
-
-            auditLogMessageBuilder.build();
-
-            byte[] auditMessage = auditLogMessageBuilder.finalizeMessage();
             String filename = auditLogMessageBuilder.getFilename();
 
             AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
@@ -97,16 +90,15 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
             auditLogMessageBuilder.prepare();
             ASN1Integer tmpVersion = auditLogMessageBuilder.getVersionAsASN1();
             // Das Versionselement wird zwischengespeichert und dann entfernt
-            auditLogMessageBuilder.setVersionAsASN1ToNull();
-            auditLogMessageBuilder.calculateDTBS();
-
+            auditLogMessageBuilder.setVersionAsASN1ToNull()
+                                  .calculateDTBS()
             //Das Element wird wieder ergänzt so dass es in der LogMessage vorhanden ist. Die LogMessag hat also eine gütlige Struktur aber ein falsches DTBS.
-            auditLogMessageBuilder.setVersionAsASN1(tmpVersion);
-            auditLogMessageBuilder.sign(getClientCertKeyPair().getPrivate());
-
-            auditLogMessageBuilder.build();
+                                  .setVersionAsASN1(tmpVersion)
+                                  .sign(getClientCertKeyPair().getPrivate())
+                                  .build();
 
             byte[] auditMessage = auditLogMessageBuilder.finalizeMessage();
+
             String filename = auditLogMessageBuilder.getFilename();
 
             AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
