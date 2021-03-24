@@ -1,17 +1,21 @@
 package de.konfidas.ttc.utilities;
 
 import de.konfidas.ttc.exceptions.CertificateLoadException;
-import org.bouncycastle.util.encoders.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.KeyPair;
-import java.security.KeyStore;
 import java.security.NoSuchProviderException;
-import java.security.cert.*;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPublicKey;
 
 public class CertificateHelper {
@@ -71,7 +75,7 @@ public class CertificateHelper {
     public static X509Certificate loadCertificate(byte[] certContent) throws CertificateLoadException {
         X509Certificate cer = null;
         try {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
+            CertificateFactory cf = CertificateFactory.getInstance("X.509", BouncyCastleProvider.PROVIDER_NAME);
             InputStream in = new ByteArrayInputStream(certContent);
             cer = (X509Certificate) cf.generateCertificate(in);
 

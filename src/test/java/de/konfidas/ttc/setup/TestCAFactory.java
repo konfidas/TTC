@@ -27,7 +27,6 @@ import static de.konfidas.ttc.setup.Utilities.writeCertToFileBase64Encoded;
 //In Anlehnung an https://gist.github.com/vivekkr12/c74f7ee08593a8c606ed96f4b62a208a
 
 public class TestCAFactory {
-    private static final String BC_PROVIDER = "BC";
 
     Date startDate = new Date(new Date().getTime());
     Date endDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);  //Today + 1000 days
@@ -50,7 +49,7 @@ public class TestCAFactory {
          ****************************************/
         KeyPairGenerator keyPairGenerator = null;
         try {
-            keyPairGenerator = KeyPairGenerator.getInstance(keyAlgorithm, BC_PROVIDER);
+            keyPairGenerator = KeyPairGenerator.getInstance(keyAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
         }
         catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             throw new CACreationException("Fehler bei der Erzeugung des Schlüsselpaars für die CA", e);
@@ -63,7 +62,7 @@ public class TestCAFactory {
          ***************************************************************************************************************************************************/
         X500Name rootCertIssuer = new X500Name("CN=" + commonName);
         X500Name rootCertSubject = rootCertIssuer;
-        ContentSigner rootCertContentSigner = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(BC_PROVIDER).build(rootKeyPair.getPrivate());
+        ContentSigner rootCertContentSigner = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(BouncyCastleProvider.PROVIDER_NAME).build(rootKeyPair.getPrivate());
         X509v3CertificateBuilder rootCertBuilder = new JcaX509v3CertificateBuilder(rootCertIssuer, rootSerialNum, startDate, endDate, rootCertSubject, rootKeyPair.getPublic());
 
         try {
@@ -77,7 +76,7 @@ public class TestCAFactory {
 
         X509CertificateHolder rootCertHolder = rootCertBuilder.build(rootCertContentSigner);
         try {
-            rootCert = new JcaX509CertificateConverter().setProvider(BC_PROVIDER).getCertificate(rootCertHolder);
+            rootCert = new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(rootCertHolder);
         }
         catch (CertificateException e) {
             throw new CACreationException("Fehler bei der Erzeugung des CA Zertifikats", e);
