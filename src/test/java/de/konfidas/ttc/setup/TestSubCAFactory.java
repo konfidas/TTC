@@ -30,7 +30,6 @@ import static de.konfidas.ttc.setup.Utilities.writeCertToFileBase64Encoded;
 //In Anlehnung an https://gist.github.com/vivekkr12/c74f7ee08593a8c606ed96f4b62a208a
 
 public class TestSubCAFactory {
-    private static final String BC_PROVIDER = "BC";
     public X509Certificate getSubCACert() {
         //FIXME: clone
         return subCACert;
@@ -69,7 +68,7 @@ public class TestSubCAFactory {
 
         KeyPairGenerator keyPairGenerator = null;
         try {
-            keyPairGenerator = KeyPairGenerator.getInstance(keyAlgorithm, BC_PROVIDER);
+            keyPairGenerator = KeyPairGenerator.getInstance(keyAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
         }
         catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             throw new SubCACreationException("Fehler bei der Erzeugung des Schlüsselpaars für die Sub-CA", e);
@@ -84,7 +83,7 @@ public class TestSubCAFactory {
         X500Name subCACertSubject = new X500Name("CN="+ commonName);
 
         PKCS10CertificationRequestBuilder p10Builder = new JcaPKCS10CertificationRequestBuilder(subCACertSubject, subCAKeyPair.getPublic());
-        JcaContentSignerBuilder csrBuilder = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(BC_PROVIDER);
+        JcaContentSignerBuilder csrBuilder = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(BouncyCastleProvider.PROVIDER_NAME);
 
         ContentSigner csrContentSigner = csrBuilder.build(rootKeyPair.getPrivate());
         PKCS10CertificationRequest csr = p10Builder.build(csrContentSigner);
@@ -111,7 +110,7 @@ public class TestSubCAFactory {
         X509CertificateHolder subCACertHolder = subCACertBuilder.build(csrContentSigner);
 
         try {
-            subCACert = new JcaX509CertificateConverter().setProvider(BC_PROVIDER).getCertificate(subCACertHolder);
+            subCACert = new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(subCACertHolder);
         }
         catch (CertificateException e) {
             throw new SubCACreationException("Fehler bei der Erzeugung der Sub-CA", e);
@@ -121,7 +120,7 @@ public class TestSubCAFactory {
          ** Das Zertifikat wird mit dem Schlüssel des Ausstellers geprüft *
          ******************************************************************/
         try {
-            subCACert.verify(rootCert.getPublicKey(), BC_PROVIDER);
+            subCACert.verify(rootCert.getPublicKey(), BouncyCastleProvider.PROVIDER_NAME);
         }
 
         catch (NoSuchAlgorithmException |InvalidKeyException|SignatureException|NoSuchProviderException|CertificateException e) {

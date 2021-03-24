@@ -37,19 +37,27 @@ import static de.konfidas.ttc.setup.Utilities.writeCertToFileBase64Encoded;
 
 public class TestClientCertificateFactory {
 
-    private static final String BC_PROVIDER = "BC";
     Date startDate = new Date(new Date().getTime());
     Date endDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);  //Today + 1000 days
     String signatureAlgorithm = "SHA256withECDSA";
     int keySize = 384;
+
     X509Certificate rootCert;
     BigInteger clientCertSerialNum = new BigInteger(Long.toString(new SecureRandom().nextLong()));
     KeyPair signingKeyPair;
     String keyAlgorithm = "EC";
     X509Certificate clientCert;
     X509Certificate signingCertificate;
+
+    public KeyPair getClientKeyPair() {
+        return clientKeyPair;
+    }
+
     KeyPair clientKeyPair;
 
+    public X509Certificate getClientCert() {
+        return clientCert;
+    }
 
     public TestClientCertificateFactory(X509Certificate _signingCertificate, KeyPair _signingKeyPair) {
         Security.addProvider(new BouncyCastleProvider());
@@ -65,7 +73,7 @@ public class TestClientCertificateFactory {
 
         KeyPairGenerator keyPairGenerator = null;
         try {
-            keyPairGenerator = KeyPairGenerator.getInstance(keyAlgorithm, BC_PROVIDER);
+            keyPairGenerator = KeyPairGenerator.getInstance(keyAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
         }
         catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             throw new ClientCertificateCreationException("Fehler bei der Erzeugung des Schlüsselpaars für die Sub-CA", e);
@@ -94,7 +102,7 @@ public class TestClientCertificateFactory {
         X500Name clientCertIssuer = new X500Name(signingCertificate.getSubjectX500Principal().getName());
 
         PKCS10CertificationRequestBuilder p10Builder = new JcaPKCS10CertificationRequestBuilder(clientCertSubject, clientKeyPair.getPublic());
-        JcaContentSignerBuilder csrBuilder = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(BC_PROVIDER);
+        JcaContentSignerBuilder csrBuilder = new JcaContentSignerBuilder(signatureAlgorithm).setProvider(BouncyCastleProvider.PROVIDER_NAME);
 
         ContentSigner csrContentSigner = csrBuilder.build(signingKeyPair.getPrivate());
         PKCS10CertificationRequest csr = p10Builder.build(csrContentSigner);
@@ -128,7 +136,7 @@ public class TestClientCertificateFactory {
 
         X509CertificateHolder clientCertHolder = clientCertBuilder.build(csrContentSigner);
         try {
-            clientCert = new JcaX509CertificateConverter().setProvider(BC_PROVIDER).getCertificate(clientCertHolder);
+            clientCert = new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(clientCertHolder);
         }
         catch (CertificateException e) {
             throw new ClientCertificateCreationException(String.format("Fehler bei der Erzeugung des ClientCert. Fehler beim Extrahieren des Zertifikats"), e);
@@ -138,7 +146,7 @@ public class TestClientCertificateFactory {
          ** Das Zertifikat wird mit dem Schlüssel des Ausstellers geprüft *
          ******************************************************************/
         try {
-            clientCert.verify(signingCertificate.getPublicKey(), BC_PROVIDER);
+            clientCert.verify(signingCertificate.getPublicKey(), BouncyCastleProvider.PROVIDER_NAME);
         }
         catch (CertificateException | NoSuchAlgorithmException | InvalidKeyException | NoSuchProviderException | SignatureException e) {
             throw new ClientCertificateCreationException(String.format("Fehler bei der Erzeugung des ClientCert. Das erzeugte Zertifikat konnte nicht verifziert werden."), e);
