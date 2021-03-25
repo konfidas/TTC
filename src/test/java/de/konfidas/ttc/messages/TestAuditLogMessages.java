@@ -47,7 +47,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
         String filename = auditLogMessageBuilder.getFilename();
 
         AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);}
-        catch (LogMessage.LogMessageParsingException | ParseException e){
+        catch (LogMessage.LogMessageParsingException  e){
             //expected
             return;
         }
@@ -63,7 +63,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
 
             byte[] auditMessage =  auditLogMessageBuilder.prepare()
             // Das Versionselement wird entfernt
-                                  .setVersionAsASN1ToNull()
+                                  .setVersionEncoded(new byte[0])
                                   .calculateDTBS()
                                   .sign(getClientCertKeyPair().getPrivate())
                                   .build()
@@ -92,7 +92,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
             auditLogMessageBuilder.prepare();
             ASN1Integer tmpVersion = auditLogMessageBuilder.getVersionAsASN1();
             // Das Versionselement wird zwischengespeichert und dann entfernt
-            auditLogMessageBuilder.setVersionAsASN1ToNull()
+            auditLogMessageBuilder.setVersionEncoded(new byte[0])
                                   .calculateDTBS()
             //Das Element wird wieder ergänzt so dass es in der LogMessage vorhanden ist. Die LogMessag hat also eine gütlige Struktur aber ein falsches DTBS.
                                   .setVersionAsASN1(tmpVersion)
