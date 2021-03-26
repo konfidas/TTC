@@ -63,7 +63,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
 
             byte[] auditMessage =  auditLogMessageBuilder.prepare()
             // Das Versionselement wird entfernt
-                                  .setVersionEncoded(new byte[0])
+                                  .setVersionAsASN1ToNull()
                                   .calculateDTBS()
                                   .sign(getClientCertKeyPair().getPrivate())
                                   .build()
@@ -73,8 +73,10 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
 
             AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
         }
+
         catch (LogMessage.LogMessageParsingException e){
             //expected
+            int a =0;
             return;
 
         }
@@ -87,7 +89,6 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
 
         try{
             AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
-
 
             auditLogMessageBuilder.prepare();
             ASN1Integer tmpVersion = auditLogMessageBuilder.getVersionAsASN1();

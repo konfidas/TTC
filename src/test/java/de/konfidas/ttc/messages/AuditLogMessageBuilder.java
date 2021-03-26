@@ -15,10 +15,11 @@ public class AuditLogMessageBuilder extends LogMessageBuilder {
     @Override
     AuditLogMessageBuilder prepare() throws TestLogMessageCreationError {
             super.prepare();
+        try {
         certifiedDataType = oid.id_SE_API_SE_audit_log;
         certifiedDataTypeAsASN1 = new ASN1ObjectIdentifier(certifiedDataType.getReadable());
-        try {
-            certifiedDataEncoded = getEncodedValue(certifiedDataTypeAsASN1);
+
+        certifiedDataTypeEndcoded = getEncodedValue(certifiedDataTypeAsASN1);
 
         //FIXME: Sinnhafte Auditdaten wären schön
         byte[] b = new byte[20];

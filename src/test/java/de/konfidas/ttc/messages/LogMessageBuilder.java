@@ -37,7 +37,7 @@ public abstract class LogMessageBuilder {
         return this;
     }
 
-    int version = 2;
+
 
     public oid getCertifiedDataType() {
         return certifiedDataType;
@@ -178,12 +178,22 @@ public abstract class LogMessageBuilder {
         return this;
     }
 
+    public LogMessageBuilder setVersionAsASN1ToNull() {
+        this.versionAsASN1 = null;
+        return this;
+    }
+
     public DEROctetString getSerialNumberAsASN1() {
         return serialNumberAsASN1;
     }
 
     public LogMessageBuilder setSerialNumberAsASN1(DEROctetString serialNumberAsASN1) {
         this.serialNumberAsASN1 = serialNumberAsASN1;
+        return this;
+    }
+
+    public LogMessageBuilder setSerialNumberAsASN1ToNull() {
+        this.serialNumberAsASN1 = null;
         return this;
     }
 
@@ -223,12 +233,22 @@ public abstract class LogMessageBuilder {
         return this;
     }
 
+    public LogMessageBuilder setLogTimeUnixTimeAsASN1ToNull() {
+        this.logTimeUnixTimeAsASN1 = null;
+        return this;
+    }
+
     public ASN1UTCTime getLogTimeUTCAsASN1() {
         return logTimeUTCAsASN1;
     }
 
     public LogMessageBuilder setLogTimeUTCAsASN1(ASN1UTCTime logTimeUTCAsASN1) {
         this.logTimeUTCAsASN1 = logTimeUTCAsASN1;
+        return this;
+    }
+
+    public LogMessageBuilder setLogTimeUTCAsASN1ToNull() {
+        this.logTimeUTCAsASN1 = null;
         return this;
     }
 
@@ -241,12 +261,22 @@ public abstract class LogMessageBuilder {
         return this;
     }
 
+    public LogMessageBuilder setLogTimeGeneralizedTimeAsASN1ToNull(ASN1GeneralizedTime logTimeGeneralizedTimeAsASN1) {
+        this.logTimeGeneralizedTimeAsASN1 = null;
+        return this;
+    }
+
     public ASN1OctetString getSeAuditDataAsASN1() {
         return seAuditDataAsASN1;
     }
 
     public LogMessageBuilder setSeAuditDataAsASN1(ASN1OctetString seAuditDataAsASN1) {
         this.seAuditDataAsASN1 = seAuditDataAsASN1;
+        return this;
+    }
+
+    public LogMessageBuilder setSeAuditDataAsASN1ToNull() {
+        this.seAuditDataAsASN1 = null;
         return this;
     }
 
@@ -259,12 +289,21 @@ public abstract class LogMessageBuilder {
         return this;
     }
 
+    public LogMessageBuilder setCertifiedDataTypeAsASN1ToNull() {
+        this.certifiedDataTypeAsASN1 = null;
+        return this;
+    }
+
     public ASN1OctetString getCertifiedDataAsASN1() {
         return certifiedDataAsASN1;
     }
 
     public LogMessageBuilder setCertifiedDataAsASN1(ASN1OctetString certifiedDataAsASN1) {
         this.certifiedDataAsASN1 = certifiedDataAsASN1;
+        return this;
+    }
+    public LogMessageBuilder setCertifiedDataAsASN1ToNull(ASN1OctetString certifiedDataAsASN1) {
+        this.certifiedDataAsASN1 = null;
         return this;
     }
 
@@ -274,6 +313,11 @@ public abstract class LogMessageBuilder {
 
     public LogMessageBuilder setSignatureValueAsASN1(ASN1OctetString signatureValueAsASN1) {
         this.signatureValueAsASN1 = signatureValueAsASN1;
+        return this;
+    }
+
+    public LogMessageBuilder setSignatureValueAsASN1ToNull() {
+        this.signatureValueAsASN1 = null;
         return this;
     }
 
@@ -367,6 +411,7 @@ public abstract class LogMessageBuilder {
         return this;
     }
 
+    int version = 2;
     oid certifiedDataType;
     ArrayList<ASN1Primitive> certifiedData = new ArrayList<>();
     byte[] serialNumber = "HelloWorld".getBytes(StandardCharsets.UTF_8);
@@ -420,114 +465,11 @@ public abstract class LogMessageBuilder {
      *  2) calculateDTBS
      *  3) sign
      *  4) build
-     *  6) ExportToFolder oder finalizeMessage
+     *  6) ExportLogMessageToFolder oder finalizeMessage
      *  durchlaufen
      ******************************************************************/
 
-    public byte[] finalizeMessage() {
-        filename = constructFileName();
-        byte[] message = null;
-        DERSequence messageSequenceForExport = new DERSequence(logMessageVector);
-        try {
-            message = messageSequenceForExport.getEncoded();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return message;
-    }
-
-    public String exportLogMessageToFolder(String exportFolder) throws TestLogMessageExportError {
-        filename = constructFileName();
-        DERSequence messageSequenceForExport = new DERSequence(logMessageVector);
-        Path exportPath = Paths.get(exportFolder, filename);
-
-        try {
-            Files.write(exportPath, messageSequenceForExport.getEncoded());
-        } catch (IOException e) {
-            throw new TestLogMessageExportError("Fehler beim Export der Message", e);
-        }
-        return filename;
-    }
-
-
-    String constructFileName() {
-        switch (logTimeType) {
-            case "unixTime":
-                filename = "Unixt_" + logTimeUnixTime + "_Sig-";
-                break;
-            case "utcTime":
-                filename = "UTCTime_" + logTimeUTC + "_Sig-";
-                break;
-            case "generalizedTime":
-                filename = "Gent_" + logTimeGeneralizedTime + "_Sig-";
-                break;
-        }
-
-        filename = filename + signatureCounter.toString();
-        filename = filename + "_Log-Aud.log";
-        return filename;
-    }
-
-    LogMessageBuilder calculateDTBS() throws TestLogMessageCreationError {
-
-        try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
-
-            if (versionEncoded != null) dtbsStream.write(versionEncoded);
-            if (certifiedDataTypeEndcoded != null)   dtbsStream.write(certifiedDataTypeEndcoded);
-            if (certifiedDataEncoded != null) dtbsStream.write(certifiedDataEncoded);
-
-            if (serialNumberEncoded != null) dtbsStream.write(serialNumberEncoded);
-            if (signatureAlgorithmEncoded != null) dtbsStream.write(signatureAlgorithmEncoded);
-            if (seAuditDataEncoded != null) dtbsStream.write(seAuditDataEncoded);
-
-            if (signatureCounterAsASN1 != null) dtbsStream.write(getEncodedValue(signatureCounterAsASN1));
-
-            switch (logTimeType) {
-                case "unixTime":
-                    dtbsStream.write(logTimeUnixTimeEncoded);
-                    break;
-                case "utcTime":
-                    dtbsStream.write(logTimeUTCEncoded);
-                    break;
-                case "generalizedTime":
-                    dtbsStream.write(logTimeGeneralizedTimeEncoded);
-                    break;
-            }
-
-            this.dtbs = dtbsStream.toByteArray();
-        } catch (IOException | Utilities.ExtendLengthValueExceedsInteger e) {
-            throw new TestLogMessageCreationError("Fehler beim Erstellen des DTBS", e);
-        }
-
-        return this;
-
-    }
-
-    LogMessageBuilder sign(PrivateKey key) throws TestLogMessageCreationError {
-        Signature signer = null;
-        try {
-            signer = Signature.getInstance(signatureAlgorithm);
-        } catch (NoSuchAlgorithmException e) {
-            throw new TestLogMessageCreationError("Fehler beim der Erstellung der Signatur", e);
-        }
-        try {
-            signer.initSign(key);
-        } catch (InvalidKeyException e) {
-            throw new TestLogMessageCreationError("Fehler beim der Erstellung der Signatur. Ungültiger Schlüssel", e);
-        }
-        try {
-            signer.update(dtbs);
-            signatureValue = signer.sign();
-            signatureValueAsASN1 = new DEROctetString(signatureValue);
-
-        } catch (SignatureException e) {
-            throw new TestLogMessageCreationError("Fehler beim der Erstellung der Signatur", e);
-        }
-        return this;
-    }
-
     LogMessageBuilder prepare() throws TestLogMessageCreationError {
-
 
         try {
             versionAsASN1 = new ASN1Integer(version);
@@ -565,12 +507,71 @@ public abstract class LogMessageBuilder {
                     break;
             }
         }
-             catch (Exception e) {
-           throw new TestLogMessageCreationError("Fehler bei der Vorbereitung der Nachricht", e);
+        catch (Exception e) {
+            throw new TestLogMessageCreationError("Fehler bei der Vorbereitung der Nachricht", e);
         }
         return this;
 
     }
+
+
+    LogMessageBuilder calculateDTBS() throws TestLogMessageCreationError {
+
+        try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
+
+            if (versionEncoded != null) dtbsStream.write(versionEncoded);
+            if (certifiedDataTypeEndcoded != null)   dtbsStream.write(certifiedDataTypeEndcoded);
+            if (certifiedDataEncoded != null) dtbsStream.write(certifiedDataEncoded);
+
+            if (serialNumberEncoded != null) dtbsStream.write(serialNumberEncoded);
+            if (signatureAlgorithmEncoded != null) dtbsStream.write(signatureAlgorithmEncoded);
+            if (seAuditDataEncoded != null) dtbsStream.write(seAuditDataEncoded);
+
+            if (signatureCounterAsASN1 != null) dtbsStream.write(getEncodedValue(signatureCounterAsASN1));
+
+            switch (logTimeType) {
+                case "unixTime":
+                    dtbsStream.write(logTimeUnixTimeEncoded);
+                    break;
+                case "utcTime":
+                    dtbsStream.write(logTimeUTCEncoded);
+                    break;
+                case "generalizedTime":
+                    dtbsStream.write(logTimeGeneralizedTimeEncoded);
+                    break;
+            }
+
+            this.dtbs = dtbsStream.toByteArray();
+        } catch (IOException | Utilities.ExtendLengthValueExceedsInteger e) {
+            throw new TestLogMessageCreationError("Fehler beim Erstellen des DTBS", e);
+        }
+
+        return this;
+
+    }
+    LogMessageBuilder sign(PrivateKey key) throws TestLogMessageCreationError {
+        Signature signer = null;
+        try {
+            signer = Signature.getInstance(signatureAlgorithm);
+        } catch (NoSuchAlgorithmException e) {
+            throw new TestLogMessageCreationError("Fehler beim der Erstellung der Signatur", e);
+        }
+        try {
+            signer.initSign(key);
+        } catch (InvalidKeyException e) {
+            throw new TestLogMessageCreationError("Fehler beim der Erstellung der Signatur. Ungültiger Schlüssel", e);
+        }
+        try {
+            signer.update(dtbs);
+            signatureValue = signer.sign();
+            signatureValueAsASN1 = new DEROctetString(signatureValue);
+
+        } catch (SignatureException e) {
+            throw new TestLogMessageCreationError("Fehler beim der Erstellung der Signatur", e);
+        }
+        return this;
+    }
+
 
     LogMessageBuilder build() {
         if (versionAsASN1 != null) logMessageVector.add(versionAsASN1);
@@ -598,6 +599,51 @@ public abstract class LogMessageBuilder {
         return this;
 
     }
+
+    public byte[] finalizeMessage() {
+        filename = constructFileName();
+        byte[] message = null;
+        DERSequence messageSequenceForExport = new DERSequence(logMessageVector);
+        try {
+            message = messageSequenceForExport.getEncoded();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return message;
+    }
+
+    public String exportLogMessageToFolder(String exportFolder) throws TestLogMessageExportError {
+        filename = constructFileName();
+        DERSequence messageSequenceForExport = new DERSequence(logMessageVector);
+        Path exportPath = Paths.get(exportFolder, filename);
+
+        try {
+            Files.write(exportPath, messageSequenceForExport.getEncoded());
+        } catch (IOException e) {
+            throw new TestLogMessageExportError("Fehler beim Export der Message", e);
+        }
+        return filename;
+    }
+
+    String constructFileName() {
+        switch (logTimeType) {
+            case "unixTime":
+                filename = "Unixt_" + logTimeUnixTime + "_Sig-";
+                break;
+            case "utcTime":
+                filename = "UTCTime_" + logTimeUTC + "_Sig-";
+                break;
+            case "generalizedTime":
+                filename = "Gent_" + logTimeGeneralizedTime + "_Sig-";
+                break;
+        }
+
+        filename = filename + signatureCounter.toString();
+        filename = filename + "_Log-Aud.log";
+        return filename;
+    }
+
+
 
     public class TestLogMessageCreationError extends Exception {
         public TestLogMessageCreationError(String message, Exception reason) {
