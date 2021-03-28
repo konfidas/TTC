@@ -595,7 +595,7 @@ public abstract class LogMessageBuilder {
                 logMessageVector.add(logTimeGeneralizedTimeAsASN1);
                 break;
         }
-        logMessageVector.add(signatureValueAsASN1);
+        if (signatureValueAsASN1 != null) logMessageVector.add(signatureValueAsASN1);
         return this;
 
     }
