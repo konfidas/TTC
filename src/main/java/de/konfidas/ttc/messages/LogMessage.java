@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -259,7 +260,7 @@ public abstract class LogMessage {
                 //Speichern des DTBS aus dem BufferedWriter
                 this.dtbs = dtbsStream.toByteArray();
             }
-        }catch(IOException e){
+        }catch(IOException | NoSuchElementException e){
             throw new LogMessageParsingException("failed to parse log message",e);
         }
     }
@@ -351,6 +352,12 @@ public abstract class LogMessage {
         // Prüfen, dass die Serial Number auch da ist.
         if (this.serialNumber == null) {
             throw new LogMessageParsingException("Die Serial Number ist null");
+        }
+
+        // Und die Signatur muss auch da sein
+
+        if (this.signatureValue == null) {
+            throw new LogMessageParsingException("LogMessage ohne Signatur");
         }
 
         if (logTimeType == null) {
