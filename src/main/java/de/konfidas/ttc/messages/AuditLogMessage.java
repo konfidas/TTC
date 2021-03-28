@@ -37,4 +37,11 @@ public class AuditLogMessage extends LogMessage {
         }
         return element;
     }
+
+    @Override
+    void checkContent() throws LogMessageParsingException {
+
+        if (this.seAuditData == null){ throw new LogMessageParsingException("AuditLogMessage ohne seAuditData");}
+        super.checkContent();
+    }
 }
