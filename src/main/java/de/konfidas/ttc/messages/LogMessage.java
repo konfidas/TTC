@@ -178,8 +178,16 @@ public abstract class LogMessage {
                     throw new LogMessageParsingException("Das version Element in der logMessage konnte nicht gefunden werden.");
                 }
 
-                parseCertifiedDataType(dtbsStream, asn1Primitives);
-                element = parseCertifiedData(dtbsStream, asn1Primitives); // TODO: CertifiedData ends with optional element. So parseCertifiedData fetches one element to much.
+                if (decoder.readObject() instanceof ASN1ObjectIdentifier) {
+                    parseCertifiedDataType(dtbsStream, asn1Primitives);
+                    element = parseCertifiedData(dtbsStream, asn1Primitives); // TODO: CertifiedData ends with optional element. So parseCertifiedData fetches one element to much.
+                    //FIXME: Dieser Teil des Parsers ist tricky. Wir gehen aktuell davon aus, dass wenn certifiedDataType gesetzt ist, dass dann auch certifiedData vorhanden ist. Aber hier gibt es einige
+                    //theoretische Fälle, die Probleme machen können.
+                }
+                else {
+                    throw new LogMessageParsingException("certifiedDataType konnte nicht gefunden werden.");
+                }
+
                 parseSerialNumber(dtbsStream,element);
 
                 element = asn1Primitives.nextElement();

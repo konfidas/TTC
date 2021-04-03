@@ -2,9 +2,14 @@ package de.konfidas.ttc.messages;
 
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.setup.TestCaseBasisWithCA;
+import de.konfidas.ttc.utilities.oid;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.DEROctetString;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +36,6 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
 
 
         String filename = auditLogMessageBuilder.getFilename();
-
         AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
     }
 
@@ -78,6 +82,58 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
         catch (LogMessage.LogMessageParsingException  e){
             //expected
             return;
+        }
+        fail();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = oid.class, names = {"id_SE_API_transaction_log", "id_SE_API_system_log"})
+    public void auditLogMessageWithWromgCertifiedDataType(oid wrongCertifiedDataType) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
+        try{
+
+        AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
+        // CertifiedDataType falsch setzen
+
+            byte[] auditMessage = auditLogMessageBuilder
+                                .prepare()
+                                .setCertifiedDataTypeAsASN1(new ASN1ObjectIdentifier(wrongCertifiedDataType.getReadable()))
+                                .calculateDTBS()
+                                .sign(getClientCertKeyPair().getPrivate())
+                                .build()
+                                .finalizeMessage();
+
+        String filename = auditLogMessageBuilder.getFilename();
+
+        AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);}
+        catch (LogMessage.LogMessageParsingException  e){
+            //expected
+            return;
+        }
+        fail();
+    }
+
+    @Test
+    public void auditLogMessageWithCertifiedData() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
+        try{
+
+        AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
+        // CertifiedData setzen
+
+            byte[] auditMessage = auditLogMessageBuilder
+                                .prepare()
+                                .setCertifiedDataAsASN1(new DEROctetString(new byte[5]))
+                                .calculateDTBS()
+                                .sign(getClientCertKeyPair().getPrivate())
+                                .build()
+                                .finalizeMessage();
+
+        String filename = auditLogMessageBuilder.getFilename();
+        AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);}
+        catch (LogMessage.LogMessageParsingException  e){
+            //expected
+            // Hier müssen wir aber sicherstellen, dass der Test aus dem richtigen Grund fehlschlägt
+            if (e.getMessage().contains("AuditLogMessage mit certifiedData")) return;
+            else fail();
         }
         fail();
     }

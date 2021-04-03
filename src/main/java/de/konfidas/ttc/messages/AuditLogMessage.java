@@ -43,5 +43,8 @@ public class AuditLogMessage extends LogMessage {
 
         if (this.seAuditData == null){ throw new LogMessageParsingException("AuditLogMessage ohne seAuditData");}
         super.checkContent();
+
+        if (this.certifiedDataType != oid.id_SE_API_SE_audit_log){ throw new LogMessageParsingException("AuditLogMessage mit falschem certifiedDataType");}
+        if (this.certifiedData != null){ throw new LogMessageParsingException("AuditLogMessage mit certifiedData");}
     }
 }
