@@ -11,10 +11,7 @@ import java.io.IOException;
 import java.math.*;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,26 +158,26 @@ public abstract class LogMessage {
 
     void parse(byte[] content) throws LogMessageParsingException{
         try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
-            final ASN1InputStream decoder = new ASN1InputStream(content);
-            ASN1Primitive primitive = decoder.readObject();
+            final ASN1InputStream inputStreamDecoder = new ASN1InputStream(content);
+            ASN1Primitive logMessageAsASN1 = inputStreamDecoder.readObject();
 
-            if (primitive instanceof ASN1Sequence) {
-                Enumeration<ASN1Primitive> asn1Primitives = ((ASN1Sequence) primitive).getObjects();
 
-                ASN1Primitive element = asn1Primitives.nextElement();
+            if (logMessageAsASN1 instanceof ASN1Sequence) {
+
+                List<ASN1Primitive> logMessageAsASN1List = Collections.list(((ASN1Sequence) logMessageAsASN1).getObjects());
+                ListIterator<ASN1Primitive> logMessageIterator = logMessageAsASN1List.listIterator();
+
+
+//                ASN1Primitive element = logMessageElementsAsASN1.nextElement();
 
                 //Das erste Element MUSS die versionNumber sein
-                if (element instanceof ASN1Integer) {
-                    this.version = ((ASN1Integer) element).intValueExact();
-                    dtbsStream.write(this.getEncodedValue(element));
-                }
-                else {
-                    throw new LogMessageParsingException("Das version Element in der logMessage konnte nicht gefunden werden.");
-                }
+                parseVersionNumber(dtbsStream,logMessageAsASN1List, logMessageIterator);
+                parseCertifiedDataType(dtbsStream,logMessageAsASN1List, logMessageIterator);
 
-                if (decoder.readObject() instanceof ASN1ObjectIdentifier) {
-                    parseCertifiedDataType(dtbsStream, asn1Primitives);
-                    element = parseCertifiedData(dtbsStream, asn1Primitives); // TODO: CertifiedData ends with optional element. So parseCertifiedData fetches one element to much.
+
+
+                if (inputStreamDecoder.readObject() instanceof ASN1ObjectIdentifier) {
+                    element = parseCertifiedData(dtbsStream, logMessageIterator); // TODO: CertifiedData ends with optional element. So parseCertifiedData fetches one element to much.
                     //FIXME: Dieser Teil des Parsers ist tricky. Wir gehen aktuell davon aus, dass wenn certifiedDataType gesetzt ist, dass dann auch certifiedData vorhanden ist. Aber hier gibt es einige
                     //theoretische Fälle, die Probleme machen können.
                 }
@@ -190,7 +187,7 @@ public abstract class LogMessage {
 
                 parseSerialNumber(dtbsStream,element);
 
-                element = asn1Primitives.nextElement();
+                element = logMessageIterator.nextElement();
                 // Dann wir die Sqequenz für den signatureAlgorithm erwartet
                 if (element instanceof ASN1Sequence) {
 
@@ -224,23 +221,23 @@ public abstract class LogMessage {
                     throw new LogMessageParsingException("Die Sequenz für den signatureAlgortihm wurde nicht gefunden.");
                 }
 
-                element = asn1Primitives.nextElement();
+                element = logMessageIterator.nextElement();
                 // Dann prüfen wir, ob wir seAuditData finden
 
                 if (element instanceof ASN1OctetString) {
                     this.seAuditData = ((ASN1OctetString) element).getOctets();
                     dtbsStream.write(this.getEncodedValue(element));
-                    element = asn1Primitives.nextElement();
+                    element = logMessageIterator.nextElement();
 
                 } else {
                     logger.debug(String.format("Information für %s. seAuditData wurde nicht gefunden.", filename));
                 }
 
                 // Dann prüfen wir, ob wir einen signatureCounter finden
-                if(! asn1Primitives.hasMoreElements()){
+                if(! logMessageIterator.hasMoreElements()){
                     throw new LogMessageParsingException("No More Elements, signature missing!");
                 }
-                ASN1Primitive nextElement = asn1Primitives.nextElement();
+                ASN1Primitive nextElement = logMessageIterator.nextElement();
 
                 boolean hasSignatureCounter = false;
                 // Prüfe, ob nextElement logTime ist. Falls nicht, ist das aktuelle Element logTime. In diesem Fall ist kein signatureCoutner vorhandem
@@ -251,7 +248,7 @@ public abstract class LogMessage {
 
                 if(hasSignatureCounter){
                     parseTime(dtbsStream, nextElement);
-                    element = asn1Primitives.nextElement();
+                    element = logMessageIterator.nextElement();
                 }else {
                     parseTime(dtbsStream, element);
                     element = nextElement;
@@ -271,6 +268,31 @@ public abstract class LogMessage {
         }catch(IOException | NoSuchElementException e){
             throw new LogMessageParsingException("failed to parse log message",e);
         }
+    }
+
+    private void parseVersionNumber(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+        if (!logMessageIterator.hasNext()){ throw new LogMessageParsingException("Version element not found"); }
+        ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
+        if (!(nextElement instanceof ASN1Integer)){ throw new LogMessageParsingException("vesrion has to be ASN1Integer, but is " + nextElement.getClass()); }
+
+        ASN1Primitive element = logMessageIterator.next();
+        this.version = ((ASN1Integer) element).intValueExact();
+        dtbsStream.write(this.getEncodedValue(element));
+    }
+
+    private void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+        if (!logMessageIterator.hasNext()){ throw new LogMessageParsingException("certifidData element not found"); }
+        ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
+        if (!(nextElement instanceof ASN1ObjectIdentifier)){ throw new LogMessageParsingException("certifidData has to be ASN1ObjectIdentifier, but is " + nextElement.getClass()); }
+
+        ASN1Primitive element = logMessageIterator.next();
+
+        try { this.certifiedDataType = oid.fromBytes(element.getEncoded()); }
+            catch (oid.UnknownOidException e) { throw new CertifiedDataTypeParsingException("OID for certifiedData unknown",e); }
+
+        dtbsStream.write(this.getEncodedValue(element));
+
+
     }
 
     private void parseSignatureCounter(ByteArrayOutputStream dtbsStream, ASN1Primitive element) throws LogMessageParsingException, IOException {
@@ -320,26 +342,26 @@ public abstract class LogMessage {
         }
     }
 
-    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, CertifiedDataTypeParsingException, ExtendLengthValueExceedsInteger {
-        if(!asn1Primitives.hasMoreElements()){
-            throw new CertifiedDataTypeParsingException("Failed to Parse Certified Data Type, no more elements in ASN1 Object", null);
-        }
-        ASN1Primitive element = asn1Primitives.nextElement();
-
-        if (element instanceof ASN1ObjectIdentifier) {
-
-            try {
-                this.certifiedDataType = oid.fromBytes(element.getEncoded());
-            }
-            catch (oid.UnknownOidException e) {
-                throw new CertifiedDataTypeParsingException("OID unknown",e);
-            }
-
-            dtbsStream.write(this.getEncodedValue(element));
-        } else {
-            throw new CertifiedDataTypeParsingException(String.format("Fehler beim Parsen von %s. certifiedDataType Element wurde nicht gefunden.", filename), null);
-        }
-    }
+//    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, CertifiedDataTypeParsingException, ExtendLengthValueExceedsInteger {
+//        if(!asn1Primitives.hasMoreElements()){
+//            throw new CertifiedDataTypeParsingException("Failed to Parse Certified Data Type, no more elements in ASN1 Object", null);
+//        }
+//        ASN1Primitive element = asn1Primitives.nextElement();
+//
+//        if (element instanceof ASN1ObjectIdentifier) {
+//
+//            try {
+//                this.certifiedDataType = oid.fromBytes(element.getEncoded());
+//            }
+//            catch (oid.UnknownOidException e) {
+//                throw new CertifiedDataTypeParsingException("OID unknown",e);
+//            }
+//
+//            dtbsStream.write(this.getEncodedValue(element));
+//        } else {
+//            throw new CertifiedDataTypeParsingException(String.format("Fehler beim Parsen von %s. certifiedDataType Element wurde nicht gefunden.", filename), null);
+//        }
+//    }
 
 
     abstract ASN1Primitive parseCertifiedData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> test) throws IOException, LogMessageParsingException;
