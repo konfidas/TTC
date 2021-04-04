@@ -5,9 +5,11 @@ import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.DERApplicationSpecific;
 
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.List;
+import java.util.ListIterator;
 
 public class AuditLogMessage extends LogMessage {
 
@@ -16,26 +18,32 @@ public class AuditLogMessage extends LogMessage {
     }
 
     @Override
-    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, LogMessage.CertifiedDataTypeParsingException, ExtendLengthValueExceedsInteger {
-        super.parseCertifiedDataType(dtbsStream,asn1Primitives);
+    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException,LogMessage.LogMessageParsingException, LogMessage.CertifiedDataTypeParsingException, ExtendLengthValueExceedsInteger {
+        super.parseCertifiedDataType(dtbsStream,logMessageAsASN1List,logMessageIterator);
         if(this.certifiedDataType != oid.id_SE_API_SE_audit_log){
             throw new LogMessage.CertifiedDataTypeParsingException("Invalid Certified Data Type, expected id_SE_API_SE_audit_log but found "+this.certifiedDataType.getName(), null);
         }
     }
 
     @Override
-    ASN1Primitive parseCertifiedData(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, LogMessageParsingException {
-        ASN1Primitive element;
-        // Now, we will enter a while loop and collect all the certified data
-        element = asn1Primitives.nextElement();
+        void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
+
+            if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("CertifiedData element not found"); }
+            ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
+            if (!(nextElement instanceof DERApplicationSpecific)) {
+            certifiedData = null;
+                return;
+            }
+
+            ASN1Primitive element = logMessageIterator.next();
+
         while (!(element instanceof ASN1OctetString)) {
             // Then, the object identifier for the certified data type shall follow
             this.certifiedData.add(element);
             dtbsStream.write(super.getEncodedValue(element));
-
-            element = asn1Primitives.nextElement();
+            element = logMessageIterator.next();
         }
-        return element;
+//        return element;
     }
 
     @Override
