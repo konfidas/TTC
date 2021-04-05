@@ -25,7 +25,7 @@ public class LogMessagePrinter {
         return_value += System.lineSeparator();
 
         for (ASN1Primitive signatureAlgorithmParameter : msg.signatureAlgorithmParameters) {
-            return_value += String.format("certifiedData: %s", signatureAlgorithmParameter.toString());
+            return_value += String.format("signatureAlgorithmParameter: %s", signatureAlgorithmParameter.toString());
             return_value += System.lineSeparator();
         }
         if (msg.seAuditData != null) {
