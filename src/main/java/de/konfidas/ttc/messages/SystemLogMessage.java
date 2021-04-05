@@ -5,9 +5,11 @@ import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DLTaggedObject;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ListIterator;
@@ -25,7 +27,6 @@ public class SystemLogMessage extends LogMessage {
     @Override
     void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
 
-//        void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, LogMessage.CertifiedDataTypeParsingException, ExtendLengthValueExceedsInteger {
         super.parseCertifiedDataType(dtbsStream,logMessageAsASN1List,logMessageIterator);
         if(this.certifiedDataType != oid.id_SE_API_system_log){
             throw new LogMessage.CertifiedDataTypeParsingException("Invalid Certified Data Type, expected id_SE_API_system_log but found "+this.certifiedDataType.getName(), null);
@@ -36,6 +37,7 @@ public class SystemLogMessage extends LogMessage {
     @Override
         void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
 
+//
         parseOperationType(dtbsStream, logMessageAsASN1List, logMessageIterator);
         parseSystemOperationData(dtbsStream, logMessageAsASN1List, logMessageIterator);
         parseAdditionalInternalData(dtbsStream, logMessageAsASN1List, logMessageIterator);
@@ -44,10 +46,10 @@ public class SystemLogMessage extends LogMessage {
 
 
     void parseOperationType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("operationsType element not found"); }
+        if (!logMessageIterator.hasNext()) { throw new OperationTypeParsingException("operationsType element not found"); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof DLTaggedObject)) {
-            throw new LogMessageParsingException("operationsType has to be DLTaggedObject, but is " + nextElement.getClass());
+            throw new OperationTypeParsingException("operationsType has to be DLTaggedObject, but is " + nextElement.getClass());
         }
 
         ASN1Primitive element = logMessageIterator.next();
@@ -63,10 +65,10 @@ public class SystemLogMessage extends LogMessage {
     }
 
     void parseSystemOperationData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("SystemOperationData element not found"); }
+        if (!logMessageIterator.hasNext()) { throw new SystemOperationDataParsingException("SystemOperationData element not found"); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof DLTaggedObject)) {
-            throw new LogMessageParsingException("SystemOperationData has to be DLTaggedObject, but is " + nextElement.getClass());
+            throw new SystemOperationDataParsingException("SystemOperationData has to be DLTaggedObject, but is " + nextElement.getClass());
         }
 
         ASN1Primitive element = logMessageIterator.next();
@@ -102,6 +104,16 @@ public class SystemLogMessage extends LogMessage {
         additionalInternalData = element;
     }
 
+    @Override
+        void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("seAuditData element not found"); }
+        ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
+        if(nextElement instanceof  ASN1OctetString){
+            throw new LogMessageParsingException("seAuditData element found in a system log message.");
+        }
+
+    }
 
 
 

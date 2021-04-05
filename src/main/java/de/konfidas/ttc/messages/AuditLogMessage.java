@@ -30,21 +30,12 @@ public class AuditLogMessage extends LogMessage {
 
             if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("CertifiedData element not found"); }
             ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-            if (!(nextElement instanceof DERApplicationSpecific)) {
-            certifiedData = null;
-                return;
+            if (getEncodedTag(nextElement) >= 127 ) {
+                throw new LogMessageParsingException("CertifiedData element found in an audit log message.");
             }
 
-            ASN1Primitive element = logMessageIterator.next();
-
-        while (!(element instanceof ASN1OctetString)) {
-            // Then, the object identifier for the certified data type shall follow
-            this.certifiedData.add(element);
-            dtbsStream.write(super.getEncodedValue(element));
-            element = logMessageIterator.next();
         }
-//        return element;
-    }
+
 
     @Override
     void checkContent() throws LogMessageParsingException {

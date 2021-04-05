@@ -155,6 +155,11 @@ public abstract class LogMessage {
         return Arrays.copyOfRange(elementContent, elementContent.length - elementLength, elementContent.length + 1);
     }
 
+    int getEncodedTag(ASN1Primitive element) throws IOException, ExtendLengthValueExceedsInteger {
+        byte[] elementContent = element.getEncoded();
+        return elementContent[0];
+    }
+
     void parse(byte[] content) throws LogMessageParsingException {
         try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
             final ASN1InputStream inputStreamDecoder = new ASN1InputStream(content);
@@ -206,10 +211,10 @@ public abstract class LogMessage {
     }
 
     void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("certifidData element not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("certifidDataype element not found"); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1ObjectIdentifier)) {
-            throw new LogMessageParsingException("certifidData has to be ASN1ObjectIdentifier, but is " + nextElement.getClass());
+            throw new LogMessageParsingException("certifidData#Type has to be ASN1ObjectIdentifier, but is " + nextElement.getClass());
         }
 
         ASN1Primitive element = logMessageIterator.next();
@@ -272,7 +277,7 @@ public abstract class LogMessage {
 
     }
 
-    private void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+    void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("seAuditData element not found"); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1OctetString)) {
@@ -282,8 +287,6 @@ public abstract class LogMessage {
         ASN1Primitive element = logMessageIterator.next();
             this.seAuditData = ((ASN1OctetString) element).getOctets();
             dtbsStream.write(this.getEncodedValue(element));
-
-
     }
 
     private void parseSignatureCounter(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {

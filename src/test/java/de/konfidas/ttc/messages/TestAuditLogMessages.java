@@ -4,16 +4,16 @@ import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.setup.TestCaseBasisWithCA;
 import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
-import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.DERApplicationSpecific;
 import org.bouncycastle.asn1.DEROctetString;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Random;
@@ -113,7 +113,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
     }
 
     @Test
-    public void auditLogMessageWithCertifiedData() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
+    public void auditLogMessageWithInvalidCertifiedData() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
         try{
 
         AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
@@ -121,7 +121,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
 
             byte[] auditMessage = auditLogMessageBuilder
                                 .prepare()
-                                .setCertifiedDataAsASN1(new DEROctetString(new byte[5]))
+                                .addCertifiedDataAsASN1(new DERApplicationSpecific(129,new DEROctetString(new byte[5])))
                                 .calculateDTBS()
                                 .sign(getClientCertKeyPair().getPrivate())
                                 .build()
@@ -129,10 +129,10 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
 
         String filename = auditLogMessageBuilder.getFilename();
         AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);}
-        catch (LogMessage.LogMessageParsingException  e){
+        catch (LogMessage.LogMessageParsingException | IOException e){
             //expected
             // Hier müssen wir aber sicherstellen, dass der Test aus dem richtigen Grund fehlschlägt
-            if (e.getMessage().contains("AuditLogMessage mit certifiedData")) return;
+            if (e.getMessage().contains("CertifiedData element found in an audit log message")) return;
             else fail();
         }
         fail();
