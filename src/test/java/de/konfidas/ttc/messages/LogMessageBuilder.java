@@ -38,7 +38,6 @@ public abstract class LogMessageBuilder {
     }
 
 
-
     public oid getCertifiedDataType() {
         return certifiedDataType;
     }
@@ -294,12 +293,18 @@ public abstract class LogMessageBuilder {
         return this;
     }
 
-    public ASN1OctetString getCertifiedDataAsASN1() {
+    public List<ASN1Primitive> getCertifiedDataAsASN1() {
         return certifiedDataAsASN1;
     }
 
-    public LogMessageBuilder setCertifiedDataAsASN1(ASN1OctetString certifiedDataAsASN1) {
+    public LogMessageBuilder setCertifiedDataAsASN1(List<ASN1Primitive> certifiedDataAsASN1) {
         this.certifiedDataAsASN1 = certifiedDataAsASN1;
+        return this;
+    }
+
+    public LogMessageBuilder addCertifiedDataAsASN1(ASN1Primitive newCertifiedDataAsASN1) {
+//        if (certifiedDataAsASN1 == null) certifiedDataAsASN1 = new List<ASN1Primitive>();
+        this.certifiedDataAsASN1.add(newCertifiedDataAsASN1);
         return this;
     }
     public LogMessageBuilder setCertifiedDataAsASN1ToNull(ASN1OctetString certifiedDataAsASN1) {
@@ -439,7 +444,8 @@ public abstract class LogMessageBuilder {
     ASN1GeneralizedTime logTimeGeneralizedTimeAsASN1;
     ASN1OctetString seAuditDataAsASN1;
     ASN1ObjectIdentifier certifiedDataTypeAsASN1;
-    ASN1OctetString certifiedDataAsASN1;
+    List<ASN1Primitive> certifiedDataAsASN1 = new ArrayList<ASN1Primitive>();
+//    ASN1OctetString certifiedDataAsASN1;
     ASN1OctetString signatureValueAsASN1;
 
     byte[] versionEncoded;
@@ -576,7 +582,10 @@ public abstract class LogMessageBuilder {
     LogMessageBuilder build() {
         if (versionAsASN1 != null) logMessageVector.add(versionAsASN1);
         if (certifiedDataTypeAsASN1 != null) logMessageVector.add(certifiedDataTypeAsASN1);
-        if (certifiedDataAsASN1 != null) logMessageVector.add(certifiedDataAsASN1);
+        for (ASN1Primitive element : certifiedDataAsASN1) {
+            logMessageVector.add(element);
+        }
+//        if (certifiedDataAsASN1 != null) logMessageVector.add(certifiedDataAsASN1);
         if (serialNumberAsASN1 != null) logMessageVector.add(serialNumberAsASN1);
         //fixme: im moment keine parameter für den algorithmus
         if (signatureAlgorithmElementsList != null)
