@@ -277,17 +277,8 @@ public abstract class LogMessage {
 
     }
 
-    void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("seAuditData element not found"); }
-        ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof ASN1OctetString)) {
-            throw new LogMessageParsingException("seAuditData has to be ASN1OctetString, but is " + nextElement.getClass());
-        }
+    abstract void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException;
 
-        ASN1Primitive element = logMessageIterator.next();
-            this.seAuditData = ((ASN1OctetString) element).getOctets();
-            dtbsStream.write(this.getEncodedValue(element));
-    }
 
     private void parseSignatureCounter(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("signatureCounter element not found"); }
