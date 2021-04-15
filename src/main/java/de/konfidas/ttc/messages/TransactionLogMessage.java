@@ -14,10 +14,10 @@ import java.util.ListIterator;
 
 
 public class TransactionLogMessage extends LogMessage {
-    String operationType ="";
-    String clientID ="";
+    String operationType;
+    String clientID;
     byte[] processData;
-    String processType="";
+    String processType;
     byte[] additionalExternalData;
     BigInteger transactionNumber;
     byte[] additionalInternalData;
@@ -129,7 +129,11 @@ public class TransactionLogMessage extends LogMessage {
 
         }
 
-        if (((DLTaggedObject) nextElement).getTagNo() != 4){ throw new LogMessageParsingException("additionalExternalData in certifiedData has to have a tag of 4 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
+        if (((DLTaggedObject) nextElement).getTagNo() != 4){
+//            throw new LogMessageParsingException("additionalExternalData in certifiedData has to have a tag of 4 (int), but is " + ((DLTaggedObject) nextElement).getTagNo());
+//            TODO: logging
+            return;
+        }
 
         DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
         ASN1OctetString innerElement = ASN1OctetString.getInstance(element,false);

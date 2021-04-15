@@ -1,10 +1,7 @@
 package de.konfidas.ttc.messages;
 
 import de.konfidas.ttc.utilities.oid;
-import org.bouncycastle.asn1.ASN1Integer;
-import org.bouncycastle.asn1.DEROctetString;
-import org.bouncycastle.asn1.DERPrintableString;
-import org.bouncycastle.asn1.DLApplicationSpecific;
+import org.bouncycastle.asn1.*;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -20,28 +17,28 @@ public class StartTransactionLogMessageBuilder extends TransactionLogMessageBuil
     @Override
     StartTransactionLogMessageBuilder prepare() throws TestLogMessageCreationError {
 
-        try {
-            operationTypeAsASN1 = new DLApplicationSpecific(128,new DERPrintableString(operationType));
+//        try {
+            operationTypeAsASN1 = new DLTaggedObject(false,0,new DERPrintableString(operationType));
             super.addCertifiedDataAsASN1(operationTypeAsASN1);
-            clientIdAsASN1 = new DLApplicationSpecific(129,new DERPrintableString(clientID));
+            clientIdAsASN1 = new DLTaggedObject(false,1,new DERPrintableString(clientID));
             super.addCertifiedDataAsASN1(clientIdAsASN1);
-            processDataAsASN1 = new DLApplicationSpecific(130,new DEROctetString(processData));
+            processDataAsASN1 = new DLTaggedObject(false,2,new DEROctetString(processData));
             super.addCertifiedDataAsASN1(processDataAsASN1);
             if (processType != null){
-            processTypwAsASN1 = new DLApplicationSpecific(131,new DERPrintableString(processType));
+            processTypwAsASN1 = new DLTaggedObject(false,3,new DERPrintableString(processType));
             super.addCertifiedDataAsASN1(processTypwAsASN1);}
             if (additionalExternalData != null){
-            additionalExternalDataAsASN1 = new DLApplicationSpecific(132,new DEROctetString(additionalExternalData));
+            additionalExternalDataAsASN1 = new DLTaggedObject(false,4,new DEROctetString(additionalExternalData));
             super.addCertifiedDataAsASN1(additionalExternalDataAsASN1);}
-            transactionNumberAsASN1 = new DLApplicationSpecific(133,new ASN1Integer(transactionNumber));
+            transactionNumberAsASN1 = new DLTaggedObject(false,5,new ASN1Integer(transactionNumber));
             super.addCertifiedDataAsASN1(transactionNumberAsASN1);
             if (additionalInternalData != null){
-            additionalInternalDataAsASN1 = new DLApplicationSpecific(134,new DEROctetString(additionalInternalData));
+            additionalInternalDataAsASN1 = new DLTaggedObject(false,6,new DEROctetString(additionalInternalData));
             super.addCertifiedDataAsASN1(additionalInternalDataAsASN1);}
 
-        } catch (IOException e) {
-           throw new TestLogMessageCreationError("Fehler beim Erstellen von startTransaction",e);
-        }
+//        } catch (IOException e) {
+//           throw new TestLogMessageCreationError("Fehler beim Erstellen von startTransaction",e);
+//        }
 
         super.prepare();
 
