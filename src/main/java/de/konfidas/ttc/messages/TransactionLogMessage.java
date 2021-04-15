@@ -51,14 +51,14 @@ public class TransactionLogMessage extends LogMessage {
     void parseOperationType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("operationType in certifiedData  not found"); }
 
-        ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLApplicationSpecific)) { throw new LogMessageParsingException("operationType in certifiedData has to be DLApplicationSpecific, but is " + nextElement.getClass()); }
+        ASN1Primitive nextElement =  logMessageAsASN1List.get(logMessageIterator.nextIndex());
 
-        if (((DLApplicationSpecific) nextElement).getApplicationTag() != 128){ throw new LogMessageParsingException("operationType in certifiedData has to have a tag of 128 (int), but is " + ((DLApplicationSpecific) nextElement).getApplicationTag()); }
+        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException("operationType in certifiedData has to be DLApplicationSpecific, but is " + nextElement.getClass()); }
 
-        DLApplicationSpecific element = (DLApplicationSpecific)logMessageIterator.next();
-        ASN1Primitive innerElement = element.getObject();
+        if (((DLTaggedObject) nextElement).getTagNo()!=0){ throw new LogMessageParsingException("operationType in certifiedData has to have a tag of 0 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
 
+        DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
+        DERPrintableString innerElement = DERPrintableString.getInstance(element,false);
         operationType = innerElement.toString();
         dtbsStream.write(getEncodedValue(innerElement));
 
@@ -68,13 +68,13 @@ public class TransactionLogMessage extends LogMessage {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("clientID in certifiedData  not found"); }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLApplicationSpecific)) { throw new LogMessageParsingException("clientID in certifiedData has to be DLApplicationSpecific, but is " + nextElement.getClass()); }
+        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException("clientID in certifiedData has to be DLTaggedObject, but is " + nextElement.getClass()); }
 
-        if (((DLApplicationSpecific) nextElement).getApplicationTag() != 129){ throw new LogMessageParsingException("clientID in certifiedData has to have a tag of 129 (int), but is " + ((DLApplicationSpecific) nextElement).getApplicationTag()); }
+        if (((DLTaggedObject) nextElement).getTagNo() != 1){ throw new LogMessageParsingException("clientID in certifiedData has to have a tag of 1 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
 
-        DLApplicationSpecific element = (DLApplicationSpecific)logMessageIterator.next();
-        ASN1Primitive innerElement = element.getObject();
+        DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
 
+        DERPrintableString innerElement = DERPrintableString.getInstance(element,false);
         clientID = innerElement.toString();
         dtbsStream.write(getEncodedValue(innerElement));
 
@@ -84,12 +84,13 @@ public class TransactionLogMessage extends LogMessage {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("processData in certifiedData  not found"); }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLApplicationSpecific)) { throw new LogMessageParsingException("processData in certifiedData has to be DLApplicationSpecific, but is " + nextElement.getClass()); }
+        if (((nextElement instanceof DLTaggedObject == false)&&(nextElement instanceof BERTaggedObject ==false))) { throw new LogMessageParsingException("processData in certifiedData has to be DLTaggedObject or BERTaggedObject, but is " + nextElement.getClass()); }
 
-        if (((DLApplicationSpecific) nextElement).getApplicationTag() != 130){ throw new LogMessageParsingException("processData in certifiedData has to have a tag of 130 (int), but is " + ((DLApplicationSpecific) nextElement).getApplicationTag()); }
 
-        DLApplicationSpecific element = (DLApplicationSpecific)logMessageIterator.next();
-        ASN1OctetString innerElement = (ASN1OctetString) element.getObject();
+        if (((ASN1TaggedObject) nextElement).getTagNo() != 2){ throw new LogMessageParsingException("processData in certifiedData has to have a tag of 2 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
+
+        ASN1TaggedObject element = (ASN1TaggedObject)logMessageIterator.next();
+        ASN1OctetString innerElement = ASN1OctetString.getInstance(element,false);
 
         processData = innerElement.getOctets();
         dtbsStream.write(getEncodedValue(innerElement));
@@ -100,12 +101,12 @@ public class TransactionLogMessage extends LogMessage {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("processType in certifiedData  not found"); }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLApplicationSpecific)) { throw new LogMessageParsingException("processType in certifiedData has to be DLApplicationSpecific, but is " + nextElement.getClass()); }
+        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException("processType in certifiedData has to be DLTaggedObject or BERTaggedObject, but is " + nextElement.getClass()); }
 
-        if (((DLApplicationSpecific) nextElement).getApplicationTag() != 131){ throw new LogMessageParsingException("processType in certifiedData has to have a tag of 131 (int), but is " + ((DLApplicationSpecific) nextElement).getApplicationTag()); }
+        if (((DLTaggedObject) nextElement).getTagNo() != 3){ throw new LogMessageParsingException("processType in certifiedData has to have a tag of 3 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
 
-        DLApplicationSpecific element = (DLApplicationSpecific)logMessageIterator.next();
-        ASN1Primitive innerElement = element.getObject();
+        DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
+        DERPrintableString innerElement = DERPrintableString.getInstance(element, false);
 
         processType = innerElement.toString();
         dtbsStream.write(getEncodedValue(innerElement));
@@ -113,24 +114,31 @@ public class TransactionLogMessage extends LogMessage {
     }
 
     void parseAdditionalExternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("additionalExternalData in certifiedData  not found"); }
+
+        if (!logMessageIterator.hasNext()) {
+//            throw new LogMessageParsingException("additionalExternalData in certifiedData  not found");
+//            TODO: logging
+            return;
+            }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLApplicationSpecific)) {
-//            throw new LogMessageParsingException("additionalExternalData in certifiedData has to be DLApplicationSpecific, but is " + nextElement.getClass());
-        return;
+        if (!(nextElement instanceof DLTaggedObject)) {
+//            throw new LogMessageParsingException("additionalExternalData in certifiedData has to be DLTaggedObject, but is " + nextElement.getClass());
+//        TODO: logging
+            return;
+
         }
 
-        if (((DLApplicationSpecific) nextElement).getApplicationTag() != 132){
-          return;
-        //    throw new LogMessageParsingException("additionalExternalData in certifiedData has to have a tag of 131 (int), but is " + ((DLApplicationSpecific) nextElement).getApplicationTag());
-        }
+        if (((DLTaggedObject) nextElement).getTagNo() != 4){ throw new LogMessageParsingException("additionalExternalData in certifiedData has to have a tag of 4 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
 
-        DLApplicationSpecific element = (DLApplicationSpecific)logMessageIterator.next();
-        ASN1OctetString innerElement = (ASN1OctetString) element.getObject();
+        DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
+        ASN1OctetString innerElement = ASN1OctetString.getInstance(element,false);
+
+//        DEROctetString innerElement = (DEROctetString) element.getObject();
 
         additionalExternalData = innerElement.getOctets();
         dtbsStream.write(getEncodedValue(innerElement));
+
 
     }
 
@@ -138,12 +146,12 @@ public class TransactionLogMessage extends LogMessage {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("transactionNumber in certifiedData  not found"); }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLApplicationSpecific)) { throw new LogMessageParsingException("transactionNumber in certifiedData has to be DLApplicationSpecific, but is " + nextElement.getClass()); }
+        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException("transactionNumber in certifiedData has to be DLTaggedObject, but is " + nextElement.getClass()); }
 
-        if (((DLApplicationSpecific) nextElement).getApplicationTag() != 133){ throw new LogMessageParsingException("transactionNumber in certifiedData has to have a tag of 133 (int), but is " + ((DLApplicationSpecific) nextElement).getApplicationTag()); }
+        if (((DLTaggedObject) nextElement).getTagNo() != 5){ throw new LogMessageParsingException("transactionNumber in certifiedData has to have a tag of 5 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
 
-        DLApplicationSpecific element = (DLApplicationSpecific)logMessageIterator.next();
-        ASN1Integer innerElement = (ASN1Integer)element.getObject();
+        DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
+        ASN1Integer innerElement = ASN1Integer.getInstance(element,false);
 
         transactionNumber = innerElement.getValue();
         dtbsStream.write(getEncodedValue(innerElement));
@@ -151,22 +159,29 @@ public class TransactionLogMessage extends LogMessage {
     }
 
     void parseAdditionalInternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("additionalInternalData in certifiedData  not found"); }
+        if (!logMessageIterator.hasNext()) {
+//            throw new LogMessageParsingException("additionalExternalData in certifiedData  not found");
+//TODO: Logging
+return;
+        }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLApplicationSpecific)) {
-//            throw new LogMessageParsingException("additionalInternalData in certifiedData has to be DLApplicationSpecific, but is " + nextElement.getClass());
-            return;
+        if (!(nextElement instanceof DLTaggedObject)) {
+//            throw new LogMessageParsingException("additionalExternalData in certifiedData has to be DLTaggedObject, but is " + nextElement.getClass());
+//        TODO: logging
+        return;
         }
 
-        if (((DLApplicationSpecific) nextElement).getApplicationTag() != 134){
-            return;
-//                throw new LogMessageParsingException("additionalInternalData in certifiedData has to have a tag of 131 (int), but is " + ((DLApplicationSpecific) nextElement).getApplicationTag());
-        }
-        DLApplicationSpecific element = (DLApplicationSpecific)logMessageIterator.next();
-        ASN1OctetString innerElement = (ASN1OctetString) element.getObject();
 
-        additionalExternalData = innerElement.getOctets();
+
+        if (((DLTaggedObject) nextElement).getTagNo() != 6){ throw new LogMessageParsingException("additionalExternalData in certifiedData has to have a tag of 6 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
+
+        DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
+//        DEROctetString innerElement = (DEROctetString) element.getObject();
+        ASN1OctetString innerElement = ASN1OctetString.getInstance(element,false);
+//
+
+        additionalInternalData = innerElement.getOctets();
         dtbsStream.write(getEncodedValue(innerElement));
 
     }

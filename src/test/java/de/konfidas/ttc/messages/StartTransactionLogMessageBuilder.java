@@ -64,7 +64,7 @@ public class StartTransactionLogMessageBuilder extends TransactionLogMessageBuil
         }
 
         filename = filename + signatureCounter.toString();
-        filename = filename + "_Log-TRANSACTION_start_Client";
+        filename = filename + "_Log_No-" +transactionNumber.toString()+ "_Start";
         filename = filename + clientID.toString()+".log";
         return filename;
     }
