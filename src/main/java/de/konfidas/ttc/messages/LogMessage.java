@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.*;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.util.*;
 
@@ -143,8 +144,14 @@ public abstract class LogMessage {
             if (elementNumberOfLengthBytes > 4) {
                 throw new ExtendLengthValueExceedsInteger("Der Wert der extended length überschreitet einen Integer", null);
             }
-            byte[] lengthBytes = Arrays.copyOfRange(elementContent, 1, elementNumberOfLengthBytes + 1);
-            return ByteBuffer.wrap(lengthBytes).getInt();
+
+            byte[] lengthBytesFromElement = Arrays.copyOfRange(elementContent, 2, 2+elementNumberOfLengthBytes); //we need to have 4 bytes for an integer
+            byte[] prependBytes = new byte[4-elementNumberOfLengthBytes];
+
+            ByteBuffer lengthByte = ByteBuffer.wrap(new byte[4]);
+            lengthByte.put(prependBytes);
+            lengthByte.put(lengthBytesFromElement);
+            return lengthByte.getInt(0);
         }
 
     }

@@ -6,7 +6,6 @@ import org.bouncycastle.asn1.*;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Random;
 
 import static de.konfidas.ttc.setup.Utilities.getEncodedValue;
 
@@ -20,6 +19,9 @@ public abstract class TransactionLogMessageBuilder extends LogMessageBuilder{
     public void setOperationType(String operationType) {
         this.operationType = operationType;
     }
+    public void setOperationTypeToNull() {
+        this.operationType = null;
+    }
 
     public String getClientID() {
         return clientID;
@@ -27,6 +29,9 @@ public abstract class TransactionLogMessageBuilder extends LogMessageBuilder{
 
     public void setClientID(String clientID) {
         this.clientID = clientID;
+    }
+    public void setClientIDToNull() {
+        this.clientID = null;
     }
 
     public byte[] getProcessData() {
@@ -36,6 +41,9 @@ public abstract class TransactionLogMessageBuilder extends LogMessageBuilder{
     public void setProcessData(byte[] processData) {
         this.processData = processData;
     }
+    public void setProcessDataToNull() {
+    this.processData = null;
+    }
 
     public String getProcessType() {
         return processType;
@@ -43,6 +51,9 @@ public abstract class TransactionLogMessageBuilder extends LogMessageBuilder{
 
     public void setProcessType(String processType) {
         this.processType = processType;
+    }
+    public void setProcessTypeToNull() {
+        this.processType = null;
     }
 
     public byte[] getAdditionalExternalData() {
@@ -59,6 +70,9 @@ public abstract class TransactionLogMessageBuilder extends LogMessageBuilder{
 
     public void setTransactionNumber(BigInteger transactionNumber) {
         this.transactionNumber = transactionNumber;
+    }
+    public void setTransactionNumberToNull() {
+        this.transactionNumber = null;
     }
 
     public byte[] getAdditionalInternalData() {
@@ -77,6 +91,10 @@ public abstract class TransactionLogMessageBuilder extends LogMessageBuilder{
         this.operationTypeAsASN1 = operationTypeAsASN1;
     }
 
+    public void setOperationTypeAsASN1ToNull() {
+        this.operationTypeAsASN1 = null;
+    }
+
     public DLTaggedObject getClientIdAsASN1() {
         return clientIdAsASN1;
     }
@@ -93,12 +111,12 @@ public abstract class TransactionLogMessageBuilder extends LogMessageBuilder{
         this.processDataAsASN1 = processDataAsASN1;
     }
 
-    public DLTaggedObject getProcessTypwAsASN1() {
-        return processTypwAsASN1;
+    public DLTaggedObject getProcessTypeAsASN1() {
+        return processTypeAsASN1;
     }
 
-    public void setProcessTypwAsASN1(DLTaggedObject processTypwAsASN1) {
-        this.processTypwAsASN1 = processTypwAsASN1;
+    public void setProcessTypeAsASN1(DLTaggedObject processTypeAsASN1) {
+        this.processTypeAsASN1 = processTypeAsASN1;
     }
 
     public DLTaggedObject getAdditionalExternalDataAsASN1() {
@@ -136,7 +154,7 @@ public abstract class TransactionLogMessageBuilder extends LogMessageBuilder{
     DLTaggedObject operationTypeAsASN1;
     DLTaggedObject clientIdAsASN1;
     DLTaggedObject processDataAsASN1;
-    DLTaggedObject processTypwAsASN1;
+    DLTaggedObject processTypeAsASN1;
     DLTaggedObject additionalExternalDataAsASN1;
     DLTaggedObject transactionNumberAsASN1;
     DLTaggedObject additionalInternalDataAsASN1;
@@ -152,6 +170,7 @@ public abstract class TransactionLogMessageBuilder extends LogMessageBuilder{
             certifiedDataType = oid.id_SE_API_transaction_log;
             certifiedDataTypeAsASN1 = new ASN1ObjectIdentifier(certifiedDataType.getReadable());
             certifiedDataTypeEndcoded = getEncodedValue(certifiedDataTypeAsASN1);
+
 
 
         }

@@ -1,9 +1,7 @@
 package de.konfidas.ttc.messages;
 
-import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.*;
 
-import java.io.IOException;
 import java.math.BigInteger;
 
 public class StartTransactionLogMessageBuilder extends TransactionLogMessageBuilder{
@@ -17,28 +15,26 @@ public class StartTransactionLogMessageBuilder extends TransactionLogMessageBuil
     @Override
     StartTransactionLogMessageBuilder prepare() throws TestLogMessageCreationError {
 
-//        try {
-            operationTypeAsASN1 = new DLTaggedObject(false,0,new DERPrintableString(operationType));
-            super.addCertifiedDataAsASN1(operationTypeAsASN1);
+            if (operationType != null) {operationTypeAsASN1 = new DLTaggedObject(false,0,new DERPrintableString(operationType));
+            super.addCertifiedDataAsASN1(operationTypeAsASN1);}
+            if (clientID!=null){
             clientIdAsASN1 = new DLTaggedObject(false,1,new DERPrintableString(clientID));
-            super.addCertifiedDataAsASN1(clientIdAsASN1);
+            super.addCertifiedDataAsASN1(clientIdAsASN1);}
+            if (processData!=null){
             processDataAsASN1 = new DLTaggedObject(false,2,new DEROctetString(processData));
-            super.addCertifiedDataAsASN1(processDataAsASN1);
+            super.addCertifiedDataAsASN1(processDataAsASN1);}
             if (processType != null){
-            processTypwAsASN1 = new DLTaggedObject(false,3,new DERPrintableString(processType));
-            super.addCertifiedDataAsASN1(processTypwAsASN1);}
+            processTypeAsASN1 = new DLTaggedObject(false,3,new DERPrintableString(processType));
+            super.addCertifiedDataAsASN1(processTypeAsASN1);}
             if (additionalExternalData != null){
             additionalExternalDataAsASN1 = new DLTaggedObject(false,4,new DEROctetString(additionalExternalData));
             super.addCertifiedDataAsASN1(additionalExternalDataAsASN1);}
+            if (transactionNumber != null){
             transactionNumberAsASN1 = new DLTaggedObject(false,5,new ASN1Integer(transactionNumber));
-            super.addCertifiedDataAsASN1(transactionNumberAsASN1);
+            super.addCertifiedDataAsASN1(transactionNumberAsASN1);}
             if (additionalInternalData != null){
             additionalInternalDataAsASN1 = new DLTaggedObject(false,6,new DEROctetString(additionalInternalData));
             super.addCertifiedDataAsASN1(additionalInternalDataAsASN1);}
-
-//        } catch (IOException e) {
-//           throw new TestLogMessageCreationError("Fehler beim Erstellen von startTransaction",e);
-//        }
 
         super.prepare();
 
@@ -61,8 +57,8 @@ public class StartTransactionLogMessageBuilder extends TransactionLogMessageBuil
         }
 
         filename = filename + signatureCounter.toString();
-        filename = filename + "_Log_No-" +transactionNumber.toString()+ "_Start";
-        filename = filename + clientID.toString()+".log";
+        filename += (transactionNumber == null) ? "_Log_No-_Start" : "_Log_No-" +transactionNumber.toString()+ "_Start";
+        filename += (clientID == null) ? ".log" : clientID.toString()+".log";
         return filename;
     }
 

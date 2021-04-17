@@ -178,7 +178,11 @@ return;
 
 
 
-        if (((DLTaggedObject) nextElement).getTagNo() != 6){ throw new LogMessageParsingException("additionalExternalData in certifiedData has to have a tag of 6 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
+        if (((DLTaggedObject) nextElement).getTagNo() != 6){
+            //throw new LogMessageParsingException("additionalExternalData in certifiedData has to have a tag of 6 (int), but is " + ((DLTaggedObject) nextElement).getTagNo());
+//        logging
+            return;
+        }
 
         DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
 //        DEROctetString innerElement = (DEROctetString) element.getObject();
@@ -199,6 +203,21 @@ return;
             throw new LogMessageParsingException("seAuditData element found in a transaction log message.");
         }
 
+    }
+    @Override
+    void checkContent() throws LogMessageParsingException {
+        if (operationType==null){
+            throw new LogMessageParsingException("Transaction Log Message without serialNumber");
+        }
+        if (!((operationType.equals("startTransaction"))||(operationType.equals("Update"))||(operationType.equals("finishTransaction")))) {
+            throw new LogMessageParsingException("Invalid operationType: " + operationType);
+        }
+        if (serialNumber==null){
+            throw new LogMessageParsingException("Transaction Log Message without serialNumber");
+        }
+
+
+        super.checkContent();
     }
 
     }

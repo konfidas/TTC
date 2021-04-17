@@ -494,7 +494,7 @@ public abstract class LogMessageBuilder {
             signatureCounterAsASN1 = new ASN1Integer(signatureCounter);
             signatureCounterEncoded = getEncodedValue(signatureCounterAsASN1);
 
-            //logtime
+            //logtimesd
             switch (logTimeType) {
                 case "unixTime":
                     logTimeUnixTimeAsASN1 = new ASN1Integer(logTimeUnixTime);
@@ -584,7 +584,8 @@ public abstract class LogMessageBuilder {
         for (ASN1Primitive element : certifiedDataAsASN1) {
             logMessageVector.add(element);
         }
-//        if (certifiedDataAsASN1 != null) logMessageVector.add(certifiedDataAsASN1);
+
+
         if (serialNumberAsASN1 != null) logMessageVector.add(serialNumberAsASN1);
         //fixme: im moment keine parameter für den algorithmus
         if (signatureAlgorithmElementsList != null)
