@@ -22,6 +22,62 @@ public class TransactionLogMessage extends LogMessage {
     BigInteger transactionNumber;
     byte[] additionalInternalData;
 
+    public String getOperationType() {
+        return operationType;
+    }
+
+    public void setOperationType(String operationType) {
+        this.operationType = operationType;
+    }
+
+    public String getClientID() {
+        return clientID;
+    }
+
+    public void setClientID(String clientID) {
+        this.clientID = clientID;
+    }
+
+    public byte[] getProcessData() {
+        return processData;
+    }
+
+    public void setProcessData(byte[] processData) {
+        this.processData = processData;
+    }
+
+    public String getProcessType() {
+        return processType;
+    }
+
+    public void setProcessType(String processType) {
+        this.processType = processType;
+    }
+
+    public byte[] getAdditionalExternalData() {
+        return additionalExternalData;
+    }
+
+    public void setAdditionalExternalData(byte[] additionalExternalData) {
+        this.additionalExternalData = additionalExternalData;
+    }
+
+    public BigInteger getTransactionNumber() {
+        return transactionNumber;
+    }
+
+    public void setTransactionNumber(BigInteger transactionNumber) {
+        this.transactionNumber = transactionNumber;
+    }
+
+    public byte[] getAdditionalInternalData() {
+        return additionalInternalData;
+    }
+
+    public void setAdditionalInternalData(byte[] additionalInternalData) {
+        this.additionalInternalData = additionalInternalData;
+    }
+
     public TransactionLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
         super(content, filename);
     }

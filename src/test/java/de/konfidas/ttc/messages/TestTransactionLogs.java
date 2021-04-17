@@ -322,9 +322,12 @@ public class TestTransactionLogs extends TestCaseBasisWithCA {
 
         String filename = startTransactionLogBuilder.getFilename();
         try{
-            TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);}
+            TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
+        byte[] processDataFromBuiltTransactionLog = transactionLogMessage.getProcessData();
+        assert(processDataFromBuiltTransactionLog.length==sizeProcessDataInByte);
+
+        }
         catch(LogMessage.LogMessageParsingException e){
-            //Expected
             fail("Transaction Log Message parsing failed with one element that has extended length");
             return;
         }
@@ -353,7 +356,10 @@ public class TestTransactionLogs extends TestCaseBasisWithCA {
 
         String filename = startTransactionLogBuilder.getFilename();
         try{
-            TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);}
+            TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
+            byte[] processDataFromBuiltTransactionLog = transactionLogMessage.getProcessData();
+            assert(processDataFromBuiltTransactionLog.length==randomSizeProcessDataInByte);
+        }
         catch(LogMessage.LogMessageParsingException e){
              fail("Transaction Log Message parsing failed with random process data (ha extended length)");
         }
