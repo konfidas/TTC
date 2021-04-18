@@ -265,7 +265,7 @@ return;
         if (operationType==null){
             throw new LogMessageParsingException("Transaction Log Message without serialNumber");
         }
-        if (!((operationType.equals("startTransaction"))||(operationType.equals("Update"))||(operationType.equals("finishTransaction")))) {
+        if (!((operationType.equals("StartTransaction"))||(operationType.equals("UpdateTransaction"))||(operationType.equals("FinishTransaction")))) {
             throw new LogMessageParsingException("Invalid operationType: " + operationType);
         }
         if (serialNumber==null){

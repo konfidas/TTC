@@ -172,6 +172,27 @@ public abstract class TransactionLogMessageBuilder extends LogMessageBuilder{
             certifiedDataTypeEndcoded = getEncodedValue(certifiedDataTypeAsASN1);
 
 
+            if (operationType != null) {operationTypeAsASN1 = new DLTaggedObject(false,0,new DERPrintableString(operationType));
+                super.addCertifiedDataAsASN1(operationTypeAsASN1);}
+            if (clientID!=null){
+                clientIdAsASN1 = new DLTaggedObject(false,1,new DERPrintableString(clientID));
+                super.addCertifiedDataAsASN1(clientIdAsASN1);}
+            if (processData!=null){
+                processDataAsASN1 = new DLTaggedObject(false,2,new DEROctetString(processData));
+                super.addCertifiedDataAsASN1(processDataAsASN1);}
+            if (processType != null){
+                processTypeAsASN1 = new DLTaggedObject(false,3,new DERPrintableString(processType));
+                super.addCertifiedDataAsASN1(processTypeAsASN1);}
+            if (additionalExternalData != null){
+                additionalExternalDataAsASN1 = new DLTaggedObject(false,4,new DEROctetString(additionalExternalData));
+                super.addCertifiedDataAsASN1(additionalExternalDataAsASN1);}
+            if (transactionNumber != null){
+                transactionNumberAsASN1 = new DLTaggedObject(false,5,new ASN1Integer(transactionNumber));
+                super.addCertifiedDataAsASN1(transactionNumberAsASN1);}
+            if (additionalInternalData != null){
+                additionalInternalDataAsASN1 = new DLTaggedObject(false,6,new DEROctetString(additionalInternalData));
+                super.addCertifiedDataAsASN1(additionalInternalDataAsASN1);}
+
 
         }
         catch (IOException| Utilities.ExtendLengthValueExceedsInteger e) {
