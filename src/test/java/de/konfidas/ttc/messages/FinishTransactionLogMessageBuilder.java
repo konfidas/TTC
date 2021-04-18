@@ -1,11 +1,11 @@
 package de.konfidas.ttc.messages;
 
 
-public class StartTransactionLogMessageBuilder extends TransactionLogMessageBuilder{
+public class FinishTransactionLogMessageBuilder extends TransactionLogMessageBuilder{
 
- public StartTransactionLogMessageBuilder(){
-     operationType = "StartTransaction";
- }
+    public FinishTransactionLogMessageBuilder(){
+        operationType = "FinishTransaction";
+    }
 
     @Override
     String constructFileName() {
@@ -22,7 +22,7 @@ public class StartTransactionLogMessageBuilder extends TransactionLogMessageBuil
         }
 
         filename = filename + signatureCounter.toString();
-        filename += (transactionNumber == null) ? "_Log_No-_Start" : "_Log_No-" +transactionNumber.toString()+ "_Start";
+        filename += (transactionNumber == null) ? "_Log_No-_Update" : "_Log_No-" +transactionNumber.toString()+ "_Finish";
         filename += (clientID == null) ? ".log" : clientID.toString()+".log";
         return filename;
     }

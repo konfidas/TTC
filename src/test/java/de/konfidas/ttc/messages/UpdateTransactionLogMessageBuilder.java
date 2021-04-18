@@ -4,7 +4,7 @@ package de.konfidas.ttc.messages;
 public class UpdateTransactionLogMessageBuilder extends TransactionLogMessageBuilder{
 
     public UpdateTransactionLogMessageBuilder(){
-        operationType = "updateTransaction";
+        operationType = "UpdateTransaction";
     }
 
     @Override

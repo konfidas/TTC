@@ -17,7 +17,7 @@ public class TestTransactionLogs extends TestCaseBasisWithCA {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
 public static String[][] provideParameters() {
-    return new String[][] { { "de.konfidas.ttc.messages.StartTransactionLogMessageBuilder", "StartTransaction"}, { "de.konfidas.ttc.messages.UpdateTransactionLogMessageBuilder", "UpdateTransaction"}};
+    return new String[][] { { "de.konfidas.ttc.messages.StartTransactionLogMessageBuilder", "StartTransaction"}, { "de.konfidas.ttc.messages.UpdateTransactionLogMessageBuilder", "UpdateTransaction"},{ "de.konfidas.ttc.messages.FinishTransactionLogMessageBuilder", "FinishTransaction"}};
 }
 
     @ParameterizedTest
