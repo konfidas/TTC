@@ -3,42 +3,47 @@ package de.konfidas.ttc.validation;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.TransactionLogMessage;
 import de.konfidas.ttc.tars.LogMessageArchive;
+import org.apache.commons.codec.binary.Hex;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
-// FIXME: the validation currently only works, if exactly one signature key in the tar is used.
-// This has to be generalized.
-
 public class SignatureCounterValidator implements Validator{
-    BigInteger nextSignatureCounter;
+    HashMap<String, BigInteger>  nextSignatureCounters;
 
     public SignatureCounterValidator(){
-        nextSignatureCounter = BigInteger.ONE;
+        nextSignatureCounters = new HashMap<>();
     }
 
     @Override
     public Collection<ValidationException> validate(LogMessageArchive tar) {
         LinkedList<ValidationException> result = new LinkedList<>();
 
-        ArrayList<LogMessage> msgs = tar.getAll_log_messages();
-        msgs.sort(new LogMessage.SignatureCounterComparator());
+        ArrayList<LogMessage> messages = tar.getAll_log_messages();
+        messages.sort(new LogMessage.SignatureCounterComparator());
 
-        for(LogMessage msg : msgs){
+        BigInteger expectedSignatureCounter;
+        String serial;
+        for(LogMessage msg : messages){
+            serial = Hex.encodeHexString(msg.getSerialNumber());
+
             BigInteger foundSignatureCounter = msg.getSignatureCounter();
+            if(!nextSignatureCounters.containsKey(serial)){
+                nextSignatureCounters.put(serial, BigInteger.ONE);
+                expectedSignatureCounter = BigInteger.ONE;
+            }else{
+                expectedSignatureCounter = nextSignatureCounters.get(serial);
+            }
 
-            switch(nextSignatureCounter.compareTo(foundSignatureCounter)){
-                case -1: result.add(new SignatureCounterMissingException(nextSignatureCounter, foundSignatureCounter));
-                         nextSignatureCounter = foundSignatureCounter.add(BigInteger.ONE);
+            switch(expectedSignatureCounter.compareTo(foundSignatureCounter)){
+                case -1: result.add(new SignatureCounterMissingException(serial,expectedSignatureCounter, foundSignatureCounter));
+                         nextSignatureCounters.replace(serial, foundSignatureCounter.add(BigInteger.ONE));
                          break;
-                case 0:  nextSignatureCounter = foundSignatureCounter.add(BigInteger.ONE);
+                case 0:  nextSignatureCounters.replace(serial, foundSignatureCounter.add(BigInteger.ONE));
                          break;
-                case 1:  result.addAll(handleDuplicates(msgs,msg));
+                case 1:  result.addAll(handleDuplicates(messages,msg));
             }
         }
         return result;
@@ -55,12 +60,14 @@ public class SignatureCounterValidator implements Validator{
     }
 
     static class SignatureCounterMissingException extends ValidationException{
+        String serial;
         BigInteger expected;
         BigInteger foundNext;
 
-        public SignatureCounterMissingException(BigInteger expected, BigInteger foundNext) {
+        public SignatureCounterMissingException(String serial, BigInteger expected, BigInteger foundNext) {
             this.expected = expected;
             this.foundNext = foundNext;
+            this.serial = serial;
         }
     }
 
