@@ -1,5 +1,9 @@
 package de.konfidas.ttc.messages;
 
+import de.konfidas.ttc.messages.logtime.GeneralizedLogTime;
+import de.konfidas.ttc.messages.logtime.LogTime;
+import de.konfidas.ttc.messages.logtime.UnixLogTime;
+import de.konfidas.ttc.messages.logtime.UtcLogTime;
 import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
@@ -66,10 +70,9 @@ public abstract class LogMessage {
     byte[] serialNumber;
     String signatureAlgorithm = "";
     ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<>();
-    String logTimeType = "";
-    String logTimeUTC = "";
-    String logTimeGeneralizedTime = "";
-    int logTimeUnixTime = 0;
+
+    LogTime logTime;
+    
     byte[] signatureValue = null;
     BigInteger signatureCounter = new BigInteger("5");
     byte[] seAuditData = null;
@@ -114,8 +117,7 @@ public abstract class LogMessage {
         return this.signatureAlgorithm;
     }
 
-    public int getLogTimeUnixTime() { return logTimeUnixTime; }
-
+    public LogTime getLogTime(){return logTime; }
     public BigInteger getSignatureCounter() { return signatureCounter; }
 
     /**
@@ -309,17 +311,14 @@ public abstract class LogMessage {
         ASN1Primitive element = logMessageIterator.next();
 
         if (element instanceof ASN1Integer) {
-            this.logTimeUnixTime = ((ASN1Integer) element).getValue().intValue();
+            this.logTime = new UnixLogTime(((ASN1Integer) element).getValue().intValue());
             dtbsStream.write(this.getEncodedValue(element));
-            this.logTimeType = "unixTime";
         } else if (element instanceof ASN1UTCTime) {
-            this.logTimeUTC = ((ASN1UTCTime) element).getTime();
+            this.logTime = new UtcLogTime(((ASN1UTCTime) element).getTime());
             dtbsStream.write(this.getEncodedValue(element));
-            this.logTimeType = "utcTime";
         } else if (element instanceof ASN1GeneralizedTime) {
-            this.logTimeGeneralizedTime = ((ASN1GeneralizedTime) element).getTime();
+            this.logTime = new GeneralizedLogTime(((ASN1GeneralizedTime) element).getTime());
             dtbsStream.write(this.getEncodedValue(element));
-            this.logTimeType = "generalizedTime";
         }
     }
 
@@ -360,7 +359,7 @@ public abstract class LogMessage {
             throw new LogMessageParsingException("LogMessage ohne Signatur");
         }
 
-        if (logTimeType == null) {
+        if (logTime == null) {
             throw new LogMessageParsingException("Es ist kein Typ für die LogZeit vorhanden");
         }
     }

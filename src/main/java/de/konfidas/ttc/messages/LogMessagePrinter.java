@@ -36,23 +36,9 @@ public class LogMessagePrinter {
         return_value += String.format("signatureCounter: %d", msg.signatureCounter);
         return_value += System.lineSeparator();
 
-        return_value += String.format("logTimeFormat:: %s", msg.logTimeType);
+        return_value += String.format("logTimeFormat:: %s", msg.getLogTime().getType());
         return_value += System.lineSeparator();
-
-        switch (msg.logTimeType) {
-            case "unixTime":
-                return_value += String.format("logTime: %d", msg.logTimeUnixTime);
-                return_value += System.lineSeparator();
-                break;
-            case "utcTime":
-                return_value += String.format("logTime: %s", msg.logTimeUTC);
-                return_value += System.lineSeparator();
-                break;
-            case "generalizedTime":
-                return_value += String.format("logTime: %s", msg.logTimeGeneralizedTime);
-                return_value += System.lineSeparator();
-                break;
-        }
+        return_value += String.format("logTime: %d", msg.getLogTime().toString());
 
         return_value += String.format("signatureValue:: %s", Hex.encodeHexString(msg.signatureValue));
         return_value += System.lineSeparator();
