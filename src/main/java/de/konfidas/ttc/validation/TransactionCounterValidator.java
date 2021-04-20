@@ -5,21 +5,23 @@ import de.konfidas.ttc.messages.TransactionLogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.tars.LogMessageArchive;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class TransactionCounterValidator implements Validator {
-    HashMap<Integer,OpenTransaction> openTransactions;
-    int transactionCounter;
+    HashMap<BigInteger,OpenTransaction> openTransactions;
+    BigInteger transactionCounter;
 
     TransactionCounterValidator(){
         openTransactions = new HashMap<>();
-        transactionCounter = 0;
+        transactionCounter = BigInteger.ONE;
     }
 
-    public Collection<Exception> validate(LogMessageArchive tar){
-        ArrayList<Exception> result = new ArrayList<>();
+    public Collection<ValidationException> validate(LogMessageArchive tar){
+        ArrayList<ValidationException> result = new ArrayList<>();
 
         ArrayList<LogMessage> msgs = tar.getAll_log_messages();
         msgs.sort(new LogMessage.SignatureCounterComparator());
@@ -27,7 +29,7 @@ public class TransactionCounterValidator implements Validator {
 
         for(LogMessage msg : msgs){
             if(msg instanceof TransactionLogMessage){
-                updateState((TransactionLogMessage) msg);
+                result.addAll(updateState((TransactionLogMessage) msg));
             }
         }
 
@@ -37,15 +39,81 @@ public class TransactionCounterValidator implements Validator {
 
 
 
-    void updateState(TransactionLogMessage msg) {
+    Collection<ValidationException> updateState(TransactionLogMessage msg) {
+        LinkedList <ValidationException> result = new LinkedList<>();
 
-        msg.
+        if("START".equals(msg.getProcessType())){
+            if(!transactionCounter.equals(msg.getTransactionNumber())){
+                result.add(new WrongTransactionCounterException(transactionCounter, msg));
+            }
+
+            if(openTransactions.containsKey(msg.getTransactionNumber())){
+                OpenTransaction duplicate = openTransactions.get(msg.getTransactionNumber());
+                result.add(new DuplicateTransactionCounterFoundException(duplicate.msgs.get(0), msg));
+                duplicate.msgs.add(msg);
+                duplicate.signatureCounterLastUpdate = msg.getSignatureCounter();
+            }else{
+                openTransactions.put(msg.getTransactionNumber(), new OpenTransaction(msg));
+            }
+
+            // TODO: what is the next expected transaction number?
+            // transactionCounter +1 or msg.getTransactionNumber +1?
+            transactionCounter = transactionCounter.add(BigInteger.ONE);
+        }
+
+        if("UPDATE".equals(msg.getProcessType())){
+            if(!openTransactions.containsKey(msg.getTransactionNumber())){
+                result.add(new UpdateForNotOpenTransactionException(transactionCounter, msg));
+            }else{
+
+            }
+        }
+
+        if("FINISH".equals(msg.getProcessType())){
+
+        }
+
+        return result;
     }
 
 
     static class OpenTransaction{
-        int transactionNumber;
-        int signatureCounterLastUpdate;
-        LogTime lastUpdateTime;
+        BigInteger signatureCounterLastUpdate;
+        LinkedList<TransactionLogMessage> msgs;
+
+        public OpenTransaction(TransactionLogMessage msg) {
+            this.signatureCounterLastUpdate = msg.getSignatureCounter();
+            msgs = new LinkedList<>();
+            msgs.add(msg);
+        }
+    }
+
+
+    static class DuplicateTransactionCounterFoundException extends ValidationException{
+        TransactionLogMessage msg1;
+        TransactionLogMessage msg2;
+
+        public DuplicateTransactionCounterFoundException(TransactionLogMessage msg1, TransactionLogMessage msg2) {
+            this.msg1 = msg1;
+            this.msg2 = msg2;
+        }
+    }
+
+    static class UpdateForNotOpenTransactionException extends ValidationException{
+        BigInteger expectedTransactionCounter;
+        TransactionLogMessage msg;
+        public UpdateForNotOpenTransactionException(BigInteger transactionCounter, TransactionLogMessage msg) {
+            this.expectedTransactionCounter = transactionCounter;
+            this.msg = msg;
+        }
+    }
+
+    static class WrongTransactionCounterException extends ValidationException{
+        BigInteger expectedTransactionCounter;
+        TransactionLogMessage msg;
+        public WrongTransactionCounterException(BigInteger transactionCounter, TransactionLogMessage msg) {
+            this.expectedTransactionCounter = transactionCounter;
+            this.msg = msg;
+        }
     }
 }
