@@ -72,7 +72,7 @@ public abstract class LogMessage {
     ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<>();
 
     LogTime logTime;
-    
+
     byte[] signatureValue = null;
     BigInteger signatureCounter = new BigInteger("5");
     byte[] seAuditData = null;
@@ -389,6 +389,14 @@ public abstract class LogMessage {
     public class ExtendLengthValueExceedsInteger extends LogMessageParsingException {
         public ExtendLengthValueExceedsInteger(String message, Exception reason) {
             super(message, reason);
+        }
+    }
+
+
+    public static class SignatureCounterComparator implements Comparator<LogMessage>{
+        @Override
+        public int compare(LogMessage o1, LogMessage o2) {
+            return o1.signatureCounter.compareTo(o2.signatureCounter);
         }
     }
 }

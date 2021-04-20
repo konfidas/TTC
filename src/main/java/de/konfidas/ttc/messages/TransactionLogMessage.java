@@ -7,7 +7,6 @@ import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.ListIterator;
 
