@@ -11,6 +11,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+// FIXME: the validation currently only works, if exactly one signature key in the tar is used.
+// This has to be generalized.
+
 public class SignatureCounterValidator implements Validator{
     BigInteger nextSignatureCounter;
 
