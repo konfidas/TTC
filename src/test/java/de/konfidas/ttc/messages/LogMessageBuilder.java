@@ -303,7 +303,6 @@ public abstract class LogMessageBuilder {
     }
 
     public LogMessageBuilder addCertifiedDataAsASN1(ASN1Primitive newCertifiedDataAsASN1) {
-//        if (certifiedDataAsASN1 == null) certifiedDataAsASN1 = new List<ASN1Primitive>();
         this.certifiedDataAsASN1.add(newCertifiedDataAsASN1);
         return this;
     }
@@ -495,7 +494,7 @@ public abstract class LogMessageBuilder {
             signatureCounterAsASN1 = new ASN1Integer(signatureCounter);
             signatureCounterEncoded = getEncodedValue(signatureCounterAsASN1);
 
-            //logtime
+            //logtimesd
             switch (logTimeType) {
                 case "unixTime":
                     logTimeUnixTimeAsASN1 = new ASN1Integer(logTimeUnixTime);
@@ -585,7 +584,8 @@ public abstract class LogMessageBuilder {
         for (ASN1Primitive element : certifiedDataAsASN1) {
             logMessageVector.add(element);
         }
-//        if (certifiedDataAsASN1 != null) logMessageVector.add(certifiedDataAsASN1);
+
+
         if (serialNumberAsASN1 != null) logMessageVector.add(serialNumberAsASN1);
         //fixme: im moment keine parameter für den algorithmus
         if (signatureAlgorithmElementsList != null)
@@ -634,24 +634,7 @@ public abstract class LogMessageBuilder {
         return filename;
     }
 
-    String constructFileName() {
-        switch (logTimeType) {
-            case "unixTime":
-                filename = "Unixt_" + logTimeUnixTime + "_Sig-";
-                break;
-            case "utcTime":
-                filename = "UTCTime_" + logTimeUTC + "_Sig-";
-                break;
-            case "generalizedTime":
-                filename = "Gent_" + logTimeGeneralizedTime + "_Sig-";
-                break;
-        }
-
-        filename = filename + signatureCounter.toString();
-        filename = filename + "_Log-Aud.log";
-        return filename;
-    }
-
+    abstract String constructFileName();
 
 
     public class TestLogMessageCreationError extends Exception {

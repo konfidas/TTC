@@ -46,4 +46,17 @@ public class AuditLogMessage extends LogMessage {
         if (this.certifiedDataType != oid.id_SE_API_SE_audit_log){ throw new LogMessageParsingException("AuditLogMessage mit falschem certifiedDataType");}
 //        if (this.certifiedData != null){ throw new LogMessageParsingException("AuditLogMessage mit certifiedData");}
     }
+
+    @Override
+    void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("seAuditData element not found"); }
+        ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
+        if (!(nextElement instanceof ASN1OctetString)) {
+            throw new LogMessageParsingException("seAuditData has to be ASN1OctetString, but is " + nextElement.getClass());
+        }
+
+        ASN1Primitive element = logMessageIterator.next();
+        this.seAuditData = ((ASN1OctetString) element).getOctets();
+        dtbsStream.write(this.getEncodedValue(element));
+    }
 }

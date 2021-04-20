@@ -14,6 +14,26 @@ public class LogMessagePrinter {
         return_value += String.format("certifiedDataType: %s", msg.certifiedDataType);
         return_value += System.lineSeparator();
 
+        if (msg instanceof TransactionLogMessage){
+
+            // If certifiedData is present, we have a transaction log
+            return_value += String.format("[certifiedData]operationType: %s", ((TransactionLogMessage) msg).operationType);
+            return_value += System.lineSeparator();
+            return_value += String.format("[certifiedData]clientID: %s", ((TransactionLogMessage) msg).clientID);
+            return_value += System.lineSeparator();
+            return_value += String.format("[certifiedData]processData: %s",Hex.encodeHexString(((TransactionLogMessage)msg).processData));
+            return_value += System.lineSeparator();
+            return_value += String.format("[certifiedData]processType: %s", ((TransactionLogMessage) msg).processType);
+            return_value += System.lineSeparator();
+            return_value += (((TransactionLogMessage)msg).additionalExternalData == null) ? "[certifiedData]No additionalExternalData" : String.format("[certifiedData]additionalExternaData: %s",Hex.encodeHexString(((TransactionLogMessage)msg).additionalExternalData));
+            return_value += System.lineSeparator();
+            return_value += String.format("[certifiedData]transactionNumber: %x", ((TransactionLogMessage) msg).transactionNumber);
+            return_value += System.lineSeparator();
+            return_value += (((TransactionLogMessage)msg).additionalInternalData == null) ? "[certifiedData]No additionalInternalData" : String.format("[certifiedData]additionalInternalData: %s",Hex.encodeHexString(((TransactionLogMessage)msg).additionalInternalData));
+            return_value += System.lineSeparator();
+
+        }
+
         for (ASN1Primitive certifiedDatum : msg.certifiedData) {
             return_value += String.format("certifiedData: %s", certifiedDatum.toString());
             return_value += System.lineSeparator();
@@ -25,7 +45,7 @@ public class LogMessagePrinter {
         return_value += System.lineSeparator();
 
         for (ASN1Primitive signatureAlgorithmParameter : msg.signatureAlgorithmParameters) {
-            return_value += String.format("certifiedData: %s", signatureAlgorithmParameter.toString());
+            return_value += String.format("signatureAlgorithmParameter: %s", signatureAlgorithmParameter.toString());
             return_value += System.lineSeparator();
         }
         if (msg.seAuditData != null) {
