@@ -1,17 +1,25 @@
 package de.konfidas.ttc.validation;
 
 import de.konfidas.ttc.messages.LogMessage;
-import de.konfidas.ttc.messages.TransactionLogMessage;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import org.apache.commons.codec.binary.Hex;
 
 import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class SignatureCounterValidator implements Validator{
-    HashMap<String, BigInteger>  nextSignatureCounters;
+    HashMap<String, BigInteger> nextSignatureCounters;
+
+    // we operate on sorted log messages, so if we are in the case, that multiple log messages have the
+    // same signature counters, we process them one after another. To create meaningful exceptions, we track
+    // the previously processed Log Message:
+    LogMessage previousMessage = null;
+    // Note: This fails, if multiple tar-archives are presented to one validator in the wrong order, i.e.
+    // not starting with the smallest signature counters!
+
 
     public SignatureCounterValidator(){
         nextSignatureCounters = new HashMap<>();
@@ -26,6 +34,7 @@ public class SignatureCounterValidator implements Validator{
 
         BigInteger expectedSignatureCounter;
         String serial;
+
         for(LogMessage msg : messages){
             serial = Hex.encodeHexString(msg.getSerialNumber());
 
@@ -38,25 +47,17 @@ public class SignatureCounterValidator implements Validator{
             }
 
             switch(expectedSignatureCounter.compareTo(foundSignatureCounter)){
-                case -1: result.add(new SignatureCounterMissingException(serial,expectedSignatureCounter, foundSignatureCounter));
+                case -1: result.add(new SignatureCounterMissingException(msg, serial, expectedSignatureCounter, foundSignatureCounter));
                          nextSignatureCounters.replace(serial, foundSignatureCounter.add(BigInteger.ONE));
                          break;
                 case 0:  nextSignatureCounters.replace(serial, foundSignatureCounter.add(BigInteger.ONE));
                          break;
-                case 1:  result.addAll(handleDuplicates(messages,msg));
+                case 1:  result.add( new SignatureCounterDuplicateException(foundSignatureCounter,msg,previousMessage));
             }
+
+            previousMessage = msg;
         }
         return result;
-    }
-
-    List<SignatureCounterDuplicateException> handleDuplicates(ArrayList<LogMessage> msgs, LogMessage msg) {
-        BigInteger duplicateCounter = msg.getSignatureCounter();
-
-        // FIXME: do not run over all message. only over previous ones:
-        return msgs.stream()
-                .filter(c -> c.getSignatureCounter().equals(duplicateCounter))
-                .map(c -> new SignatureCounterDuplicateException(duplicateCounter, c, msg))
-                .collect(Collectors.toList());
     }
 
     static class SignatureCounterMissingException extends ValidationException{
@@ -64,7 +65,8 @@ public class SignatureCounterValidator implements Validator{
         BigInteger expected;
         BigInteger foundNext;
 
-        public SignatureCounterMissingException(String serial, BigInteger expected, BigInteger foundNext) {
+        public SignatureCounterMissingException(LogMessage msg, String serial, BigInteger expected, BigInteger foundNext) {
+            super(msg);
             this.expected = expected;
             this.foundNext = foundNext;
             this.serial = serial;
@@ -73,12 +75,11 @@ public class SignatureCounterValidator implements Validator{
 
     static class SignatureCounterDuplicateException extends ValidationException{
         BigInteger expected;
-        LogMessage msg;
         LogMessage msg1;
 
-        public SignatureCounterDuplicateException(BigInteger expected, LogMessage msg1, LogMessage msg) {
+        public SignatureCounterDuplicateException(BigInteger expected, LogMessage msg, LogMessage msg1) {
+            super(msg);
             this.expected = expected;
-            this.msg = msg;
             this.msg1 = msg1;
         }
     }

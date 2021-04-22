@@ -16,6 +16,7 @@ import java.math.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
+import java.text.ParseException;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -202,7 +203,7 @@ public abstract class LogMessage {
                 //Speichern des DTBS aus dem BufferedWriter
                 this.dtbs = dtbsStream.toByteArray();
             }
-        } catch (IOException | NoSuchElementException e) {
+        } catch (IOException | NoSuchElementException | ParseException e) {
             throw new LogMessageParsingException("failed to parse log message", e);
         }
     }
@@ -301,7 +302,7 @@ public abstract class LogMessage {
     }
 
 
-    private void parseTime(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException, LogMessageParsingException {
+    private void parseTime(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException, LogMessageParsingException, ParseException {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("logTime element not found"); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1Integer)&& !(nextElement instanceof ASN1UTCTime) && !(nextElement instanceof ASN1GeneralizedTime)) { throw new LogMessageParsingException("logTime is of invalid type. It is " + nextElement.getClass()); }
@@ -312,10 +313,10 @@ public abstract class LogMessage {
             this.logTime = new UnixLogTime(((ASN1Integer) element).getValue().intValue());
             dtbsStream.write(this.getEncodedValue(element));
         } else if (element instanceof ASN1UTCTime) {
-            this.logTime = new UtcLogTime(((ASN1UTCTime) element).getTime());
+            this.logTime = new UtcLogTime(((ASN1UTCTime) element));
             dtbsStream.write(this.getEncodedValue(element));
         } else if (element instanceof ASN1GeneralizedTime) {
-            this.logTime = new GeneralizedLogTime(((ASN1GeneralizedTime) element).getTime());
+            this.logTime = new GeneralizedLogTime((ASN1GeneralizedTime) element);
             dtbsStream.write(this.getEncodedValue(element));
         }
     }

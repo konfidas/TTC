@@ -12,6 +12,11 @@ public class UnixLogTime extends LogTime {
     }
 
     @Override
+    public long getTime() {
+        return time*1000;
+    }
+
+    @Override
     public Type getType() {
         return Type.UNIX;
     }

@@ -90,30 +90,29 @@ public class TransactionCounterValidator implements Validator {
 
 
     static class DuplicateTransactionCounterFoundException extends ValidationException{
-        TransactionLogMessage msg1;
         TransactionLogMessage msg2;
 
         public DuplicateTransactionCounterFoundException(TransactionLogMessage msg1, TransactionLogMessage msg2) {
-            this.msg1 = msg1;
+            super(msg1);
             this.msg2 = msg2;
         }
     }
 
     static class UpdateForNotOpenTransactionException extends ValidationException{
         BigInteger expectedTransactionCounter;
-        TransactionLogMessage msg;
+
         public UpdateForNotOpenTransactionException(BigInteger transactionCounter, TransactionLogMessage msg) {
+            super(msg);
             this.expectedTransactionCounter = transactionCounter;
-            this.msg = msg;
         }
     }
 
     static class WrongTransactionCounterException extends ValidationException{
         BigInteger expectedTransactionCounter;
-        TransactionLogMessage msg;
+
         public WrongTransactionCounterException(BigInteger transactionCounter, TransactionLogMessage msg) {
+            super(msg);
             this.expectedTransactionCounter = transactionCounter;
-            this.msg = msg;
         }
     }
 }

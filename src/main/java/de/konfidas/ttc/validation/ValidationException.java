@@ -1,5 +1,15 @@
 package de.konfidas.ttc.validation;
 
-public abstract class ValidationException extends Exception{
+import de.konfidas.ttc.messages.LogMessage;
 
+public abstract class ValidationException extends Exception{
+    LogMessage msg;
+
+    ValidationException(LogMessage msg){
+        this.msg = msg;
+    }
+
+    public LogMessage getLogMessage(){
+        return msg;
+    }
 }

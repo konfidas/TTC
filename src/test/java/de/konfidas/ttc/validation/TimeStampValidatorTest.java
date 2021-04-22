@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
-public class SignatureCounterValidatorTest {
+public class TimeStampValidatorTest {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     final File file;
@@ -30,17 +30,16 @@ public class SignatureCounterValidatorTest {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-
     @Parameterized.Parameters
     public static LinkedList<Object[]> filesToTest() {
         LinkedList<Object[]> parameters = new LinkedList<>();
 
-        parameters.add(new Object[]{new File("testdata/positive/positive_bdr_tse_web.tar"),1});
+        parameters.add(new Object[]{new File("testdata/positive/positive_bdr_tse_web.tar"),0});
 
         return parameters;
     }
 
-    public SignatureCounterValidatorTest(File file, int expectedNumberOfErrors) {
+    public TimeStampValidatorTest(File file, int expectedNumberOfErrors) {
         this.file = file;
         this.expectedNumberOfErrors = expectedNumberOfErrors;
     }
@@ -52,7 +51,7 @@ public class SignatureCounterValidatorTest {
         logger.info("testing tar file {}:", file.getName());
 
         try {
-            SignatureCounterValidator validator = new SignatureCounterValidator();
+            TimeStampValidator validator = new TimeStampValidator();
 
             LogMessageArchive tar = new LogMessageArchive(this.file);
 
