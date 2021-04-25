@@ -23,10 +23,15 @@ public class LogMessageFactory {
            return new TransactionLogMessage(content, fileName);
         }
 
-        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")) {
-            logger.debug("{} scheint ein systemLog zu sein. Starte Verarbeitung ", fileName);
-            return new SystemLogMessage(content, fileName);
+        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_unblockUser.+log")) {
+            logger.debug("{} scheint ein unblockUser systemLog zu sein. Starte Verarbeitung ", fileName);
+            return new UnblockUserSystemLogMessage(content, fileName);
         }
+
+//        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")) {
+//            logger.debug("{} scheint ein systemLog zu sein. Starte Verarbeitung ", fileName);
+//            return new SystemLogMessage(content, fileName);
+//        }
 
         if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Aud.+log")) {
             logger.debug("{} scheint ein auditLog zu sein. Starte Verarbeitung.", fileName);

@@ -3,18 +3,16 @@ package de.konfidas.ttc.messages;
 import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
+import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DLTaggedObject;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.ListIterator;
 
-public class SystemLogMessage extends LogMessage {
+public abstract class SystemLogMessage extends LogMessage {
     ASN1Primitive operationType;
     ASN1Primitive systemOperationData;
     ASN1Primitive additionalInternalData;
@@ -39,7 +37,8 @@ public class SystemLogMessage extends LogMessage {
 
 //
         parseOperationType(dtbsStream, logMessageAsASN1List, logMessageIterator);
-        parseSystemOperationData(dtbsStream, logMessageAsASN1List, logMessageIterator);
+        parseSystemOperationDataElement(dtbsStream, logMessageAsASN1List, logMessageIterator);
+        parseSystemOperationDataContent(systemOperationData);
         parseAdditionalInternalData(dtbsStream, logMessageAsASN1List, logMessageIterator);
 
     }
@@ -64,7 +63,7 @@ public class SystemLogMessage extends LogMessage {
 
     }
 
-    void parseSystemOperationData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+    void parseSystemOperationDataElement(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
         if (!logMessageIterator.hasNext()) { throw new SystemOperationDataParsingException("SystemOperationData element not found"); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof DLTaggedObject)) {
@@ -80,7 +79,10 @@ public class SystemLogMessage extends LogMessage {
 
         dtbsStream.write(element.getEncoded());
         systemOperationData = element;
+
     }
+
+    abstract void parseSystemOperationDataContent(ASN1Primitive element) throws LogMessageParsingException, IOException;
 
     void parseAdditionalInternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("AdditionalInternalData element not found"); }
