@@ -2,6 +2,7 @@ package de.konfidas.ttc.messages;
 
 import de.konfidas.ttc.TTC;
 
+import de.konfidas.ttc.messages.logtime.UnixLogTime;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -429,7 +430,8 @@ public class TestParseSystemLog {
         SystemLogMessage msg = new SystemLogMessage(systemLog, "");
 
         assert(msg.getSignatureCounter().equals(BigInteger.valueOf(23)));
-        assert( 1 == msg.getLogTimeUnixTime());
+        assert( msg.getLogTime() instanceof UnixLogTime);
+        assert( 1 == ((UnixLogTime)msg.getLogTime()).getValue() );
     }
 
 
