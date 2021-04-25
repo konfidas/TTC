@@ -65,10 +65,10 @@ public abstract class LogMessage {
 
     int version = 0;
     oid certifiedDataType;
-    ArrayList<ASN1Primitive> certifiedData = new ArrayList<>();
+    ArrayList<ASN1Primitive> certifiedData = new ArrayList<ASN1Primitive>();
     byte[] serialNumber;
     String signatureAlgorithm = "";
-    ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<>();
+    ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<ASN1Primitive>();
 
     LogTime logTime;
     
