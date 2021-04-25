@@ -31,9 +31,9 @@ public class LogMessagePrinter {
         return_value.append(String.format("signatureCounter: %d", msg.signatureCounter));
         return_value.append(System.lineSeparator());
 
-        return_value += String.format("logTimeFormat:: %s", msg.getLogTime().getType());
-        return_value += System.lineSeparator();
-        return_value += String.format("logTime: %d", msg.getLogTime().toString());
+        return_value.append(String.format("logTimeFormat:: %s", msg.getLogTime().getType()));
+        return_value.append(System.lineSeparator());
+        return_value.append(String.format("logTime: %s", msg.getLogTime().toString()));
 
         printSignatureData(msg);
 
