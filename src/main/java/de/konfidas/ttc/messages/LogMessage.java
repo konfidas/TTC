@@ -3,14 +3,12 @@ package de.konfidas.ttc.messages;
 import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
-import org.apache.commons.codec.binary.BinaryCodec;
 import org.bouncycastle.asn1.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.*;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.util.*;
 
@@ -152,6 +150,9 @@ public abstract class LogMessage {
             lengthByte.put(prependBytes);
             lengthByte.put(lengthBytesFromElement);
             return lengthByte.getInt(0);
+
+
+
         }
 
     }
