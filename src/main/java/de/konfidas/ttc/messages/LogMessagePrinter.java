@@ -31,24 +31,9 @@ public class LogMessagePrinter {
         return_value.append(String.format("signatureCounter: %d", msg.signatureCounter));
         return_value.append(System.lineSeparator());
 
-        return_value.append(String.format("logTimeFormat:: %s", msg.logTimeType));
-        return_value.append(System.lineSeparator());
-
-        //Todo Kann vereinfacht werden, sobald https://github.com/konfidas/TTC/pull/44 gemergt wurde
-        switch (msg.logTimeType) {
-            case "unixTime":
-                return_value.append(String.format("logTime: %d", msg.logTimeUnixTime));
-                return_value.append(System.lineSeparator());
-                break;
-            case "utcTime":
-                return_value.append(String.format("logTime: %s", msg.logTimeUTC));
-                return_value.append(System.lineSeparator());
-                break;
-            case "generalizedTime":
-                return_value.append(String.format("logTime: %s", msg.logTimeGeneralizedTime));
-                return_value.append(System.lineSeparator());
-                break;
-        }
+        return_value += String.format("logTimeFormat:: %s", msg.getLogTime().getType());
+        return_value += System.lineSeparator();
+        return_value += String.format("logTime: %d", msg.getLogTime().toString());
 
         printSignatureData(msg);
 
