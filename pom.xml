@@ -35,7 +35,6 @@
             <version>1.68</version>
         </dependency>
         <dependency>
-            <version>30.1.1-jre</version>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-archiver</artifactId>
             <version>4.2.5</version>
