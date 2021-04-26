@@ -1,14 +1,15 @@
 package de.konfidas.ttc.messages.logtime;
 
 public class UnixLogTime extends LogTime {
-    int time;
-    public UnixLogTime(int time) {
+    long time;
+
+    public UnixLogTime(long time) {
         this.time = time;
     }
 
     @Override
     public String toString(){
-        return Integer.valueOf(time).toString();
+        return Long.valueOf(time).toString();
     }
 
     @Override
@@ -20,7 +21,7 @@ public class UnixLogTime extends LogTime {
     public Type getType() {
         return Type.UNIX;
     }
-    public int getValue(){
+    public long getValue(){
         return time;
     }
 }
