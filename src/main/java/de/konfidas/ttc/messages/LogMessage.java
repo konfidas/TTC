@@ -7,14 +7,12 @@ import de.konfidas.ttc.messages.logtime.UtcLogTime;
 import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
-import org.apache.commons.codec.binary.BinaryCodec;
 import org.bouncycastle.asn1.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.*;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
@@ -68,10 +66,10 @@ public abstract class LogMessage {
 
     int version = 0;
     oid certifiedDataType;
-    ArrayList<ASN1Primitive> certifiedData = new ArrayList<>();
+    ArrayList<ASN1Primitive> certifiedData = new ArrayList<ASN1Primitive>();
     byte[] serialNumber;
     String signatureAlgorithm = "";
-    ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<>();
+    ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<ASN1Primitive>();
 
     LogTime logTime;
 
@@ -155,6 +153,9 @@ public abstract class LogMessage {
             lengthByte.put(prependBytes);
             lengthByte.put(lengthBytesFromElement);
             return lengthByte.getInt(0);
+
+
+
         }
 
     }
