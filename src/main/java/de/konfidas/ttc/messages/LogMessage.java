@@ -1,9 +1,12 @@
 package de.konfidas.ttc.messages;
 
+import de.konfidas.ttc.messages.logtime.GeneralizedLogTime;
+import de.konfidas.ttc.messages.logtime.LogTime;
+import de.konfidas.ttc.messages.logtime.UnixLogTime;
+import de.konfidas.ttc.messages.logtime.UtcLogTime;
 import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
-import org.apache.commons.codec.binary.BinaryCodec;
 import org.bouncycastle.asn1.*;
 
 import java.io.File;
@@ -62,14 +65,13 @@ public abstract class LogMessage {
 
     int version = 0;
     oid certifiedDataType;
-    ArrayList<ASN1Primitive> certifiedData = new ArrayList<>();
+    ArrayList<ASN1Primitive> certifiedData = new ArrayList<ASN1Primitive>();
     byte[] serialNumber;
     String signatureAlgorithm = "";
-    ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<>();
-    String logTimeType = "";
-    String logTimeUTC = "";
-    String logTimeGeneralizedTime = "";
-    int logTimeUnixTime = 0;
+    ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<ASN1Primitive>();
+
+    LogTime logTime;
+    
     byte[] signatureValue = null;
     BigInteger signatureCounter = new BigInteger("5");
     byte[] seAuditData = null;
@@ -114,8 +116,7 @@ public abstract class LogMessage {
         return this.signatureAlgorithm;
     }
 
-    public int getLogTimeUnixTime() { return logTimeUnixTime; }
-
+    public LogTime getLogTime(){return logTime; }
     public BigInteger getSignatureCounter() { return signatureCounter; }
 
     /**
@@ -143,8 +144,17 @@ public abstract class LogMessage {
             if (elementNumberOfLengthBytes > 4) {
                 throw new ExtendLengthValueExceedsInteger("Der Wert der extended length überschreitet einen Integer", null);
             }
-            byte[] lengthBytes = Arrays.copyOfRange(elementContent, 1, elementNumberOfLengthBytes + 1);
-            return ByteBuffer.wrap(lengthBytes).getInt();
+
+            byte[] lengthBytesFromElement = Arrays.copyOfRange(elementContent, 2, 2+elementNumberOfLengthBytes); //we need to have 4 bytes for an integer
+            byte[] prependBytes = new byte[4-elementNumberOfLengthBytes];
+
+            ByteBuffer lengthByte = ByteBuffer.wrap(new byte[4]);
+            lengthByte.put(prependBytes);
+            lengthByte.put(lengthBytesFromElement);
+            return lengthByte.getInt(0);
+
+
+
         }
 
     }
@@ -277,17 +287,8 @@ public abstract class LogMessage {
 
     }
 
-    void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("seAuditData element not found"); }
-        ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof ASN1OctetString)) {
-            throw new LogMessageParsingException("seAuditData has to be ASN1OctetString, but is " + nextElement.getClass());
-        }
+    abstract void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException;
 
-        ASN1Primitive element = logMessageIterator.next();
-            this.seAuditData = ((ASN1OctetString) element).getOctets();
-            dtbsStream.write(this.getEncodedValue(element));
-    }
 
     private void parseSignatureCounter(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("signatureCounter element not found"); }
@@ -309,17 +310,14 @@ public abstract class LogMessage {
         ASN1Primitive element = logMessageIterator.next();
 
         if (element instanceof ASN1Integer) {
-            this.logTimeUnixTime = ((ASN1Integer) element).getValue().intValue();
+            this.logTime = new UnixLogTime(((ASN1Integer) element).getValue().intValue());
             dtbsStream.write(this.getEncodedValue(element));
-            this.logTimeType = "unixTime";
         } else if (element instanceof ASN1UTCTime) {
-            this.logTimeUTC = ((ASN1UTCTime) element).getTime();
+            this.logTime = new UtcLogTime(((ASN1UTCTime) element).getTime());
             dtbsStream.write(this.getEncodedValue(element));
-            this.logTimeType = "utcTime";
         } else if (element instanceof ASN1GeneralizedTime) {
-            this.logTimeGeneralizedTime = ((ASN1GeneralizedTime) element).getTime();
+            this.logTime = new GeneralizedLogTime(((ASN1GeneralizedTime) element).getTime());
             dtbsStream.write(this.getEncodedValue(element));
-            this.logTimeType = "generalizedTime";
         }
     }
 
@@ -360,7 +358,7 @@ public abstract class LogMessage {
             throw new LogMessageParsingException("LogMessage ohne Signatur");
         }
 
-        if (logTimeType == null) {
+        if (logTime == null) {
             throw new LogMessageParsingException("Es ist kein Typ für die LogZeit vorhanden");
         }
     }
