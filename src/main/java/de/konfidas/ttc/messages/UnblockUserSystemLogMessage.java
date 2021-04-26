@@ -34,43 +34,12 @@ public class UnblockUserSystemLogMessage extends SystemLogMessage {
 
 
     @Override
-    void parseSystemOperationDataContent(ASN1Primitive element) throws SystemLogParsingException, IOException {
+    void parseSystemOperationDataContent(DLTaggedObject element) throws SystemLogParsingException, IOException {
 
-        final ASN1InputStream systemOperationDataContentDecoder = new ASN1InputStream(element.getEncoded());
-
-        ASN1Sequence asn1 = ASN1Sequence.getInstance(systemOperationDataContentDecoder.readObject());
-//        ASN1Primitive test = systemOperationDataContentDecoder.readObject();
-//        ASN1Primitive test2 = systemOperationDataContentDecoder.readObject();
-        int a =0;
-
-//        DERApplicationSpecific app = (DERApplicationSpecific) systemOperationDataContentDecoder.readObject();
-//        DLSequence seq = (DLSequence) systemOperationDataContentDecoder.readObject();
-//        List<ASN1Primitive> logMessageAsASN1List = Collections.list(((ASN1Sequence) systemOperationDataContentDecoder.readObject()).getObjects());
-
-//        Enumeration secEnum = seq.getObjects();
-//        while (secEnum.hasMoreElements()) {
-//            ASN1Primitive seqObj = (ASN1Primitive) secEnum.nextElement();
-//            System.out.println(seqObj);
-//        }
+        //TODO: @DH: Kannst Du hier mal schauen?
+        Class tttt = element.getClass();
+        DERSet set = (DERSet) DERSet.getInstance(element,false);
 //
-
-//        systemOperationDataContentDecoder.rea
-//        if (!systemOperationDataContentDecoder.hasNext()) { throw new SystemLogParsingException("userID  element in parseSystemOperationData not found"); }
-//        ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-//        if (!(nextElement instanceof DLTaggedObject)) {
-//            throw new OperationTypeParsingException("operationsType has to be DLTaggedObject, but is " + nextElement.getClass());
-//        }
-//
-//        ASN1Primitive element = logMessageIterator.next();
-//
-//        int tag = ((DLTaggedObject) element).getTagNo() ;
-//        if (tag != 0){
-//            throw new OperationTypeParsingException("operationType not found. Expected Element [0] but got ["+tag+"]");
-//        }
-
-
-//        ASN1Primitive fristEntry = elementDecoder.readObject();
-//        int a=0;
 
 
 

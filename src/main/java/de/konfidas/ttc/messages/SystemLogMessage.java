@@ -14,7 +14,7 @@ import java.util.ListIterator;
 
 public abstract class SystemLogMessage extends LogMessage {
     ASN1Primitive operationType;
-    ASN1Primitive systemOperationData;
+    DLTaggedObject systemOperationData;
     ASN1Primitive additionalInternalData;
 
 
@@ -78,11 +78,11 @@ public abstract class SystemLogMessage extends LogMessage {
         }
 
         dtbsStream.write(element.getEncoded());
-        systemOperationData = element;
+        systemOperationData = (DLTaggedObject)element;
 
     }
 
-    abstract void parseSystemOperationDataContent(ASN1Primitive element) throws LogMessageParsingException, IOException;
+    abstract void parseSystemOperationDataContent(DLTaggedObject element) throws LogMessageParsingException, IOException;
 
     void parseAdditionalInternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("AdditionalInternalData element not found"); }
