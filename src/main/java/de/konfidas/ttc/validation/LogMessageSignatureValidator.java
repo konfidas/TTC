@@ -24,8 +24,7 @@ public class LogMessageSignatureValidator implements Validator {
             try {
                 logger.debug("Checking signature of LogMessage {}", msg.getFileName());
                 verifier.verify(msg);
-            }
-            catch (LogMessageVerificationException e) {
+            } catch (LogMessageVerificationException e) {
                 errors.add(new LogMessageSignatureValidationException(msg,e));
             }
         }
