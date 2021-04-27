@@ -279,7 +279,7 @@ public class TestParseSystemLog {
         try {
             SystemLogMessage msg = new SystemLogMessage(systemLog, "");
             fail();
-        }catch(LogMessage.CertifiedDataTypeParsingException e){
+        }catch(LogMessageImplementation.CertifiedDataTypeParsingException e){
             // expected
         }
     }
@@ -316,7 +316,7 @@ public class TestParseSystemLog {
         try {
             SystemLogMessage msg = new SystemLogMessage(systemLog, "");
             fail();
-        }catch(LogMessage.CertifiedDataTypeParsingException e){
+        }catch(LogMessageImplementation.CertifiedDataTypeParsingException e){
             // expected
         }
     }
@@ -388,7 +388,7 @@ public class TestParseSystemLog {
         try {
             SystemLogMessage msg = new SystemLogMessage(systemLog, "");
 
-    }catch(LogMessage.LogMessageParsingException e){
+    }catch(LogMessageImplementation.LogMessageParsingException e){
         // expected
     }
 

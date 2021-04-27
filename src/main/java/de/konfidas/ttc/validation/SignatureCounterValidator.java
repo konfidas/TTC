@@ -2,6 +2,7 @@ package de.konfidas.ttc.validation;
 
 import de.konfidas.ttc.exceptions.LogMessageValidationException;
 import de.konfidas.ttc.exceptions.ValidationException;
+import de.konfidas.ttc.messages.LogMessageImplementation;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import org.apache.commons.codec.binary.Hex;
@@ -30,7 +31,7 @@ public class SignatureCounterValidator implements Validator{
         LinkedList<ValidationException> result = new LinkedList<>();
 
         ArrayList<LogMessage> messages = new ArrayList<>(tar.getLogMessages());
-        messages.sort(new LogMessage.SignatureCounterComparator());
+        messages.sort(new LogMessageImplementation.SignatureCounterComparator());
 
         BigInteger expectedSignatureCounter;
         String serial;

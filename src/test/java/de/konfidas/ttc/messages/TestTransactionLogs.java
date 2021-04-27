@@ -71,7 +71,7 @@ public static String[][] provideParameters() {
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
             fail("Transaction Log Message parsing successful, but expected to fail");
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             //Expected
         }
     }
@@ -100,7 +100,7 @@ public static String[][] provideParameters() {
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
             fail("Transaction Log Message parsing successful, but expected to fail");
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             //Expected
         }
     }
@@ -129,7 +129,7 @@ public static String[][] provideParameters() {
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
             fail("Transaction Log Message parsing successful, but expected to fail");
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             //Expected
         }
     }
@@ -158,7 +158,7 @@ public static String[][] provideParameters() {
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
             fail("Transaction Log Message parsing successful, but expected to fail");
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             //Expected
         }
     }
@@ -187,7 +187,7 @@ public static String[][] provideParameters() {
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
             fail("Transaction Log Message parsing successful, but expected to fail");
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             //Expected
         }
     }
@@ -216,7 +216,7 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             fail("Transaction Log Message parsing with Additional External Data failed");
         }
     }
@@ -245,7 +245,7 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             fail("Transaction Log Message parsing with Additional Internal Data failed");
         }
     }
@@ -275,7 +275,7 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             fail("Transaction Log Message parsing with Additional Internal Data and AdditionalExternalData failed");
 
         }
@@ -305,7 +305,7 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             //Expected
             return;
         }
@@ -342,7 +342,7 @@ public static String[][] provideParameters() {
             byte[] processDataFromBuiltTransactionLog = transactionLogMessage.getProcessData();
             assert (processDataFromBuiltTransactionLog.length == sizeProcessDataInByte);
 
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             fail("Transaction Log Message parsing failed with one element that has extended length");
         }
     }
@@ -376,7 +376,7 @@ public static String[][] provideParameters() {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
             byte[] processDataFromBuiltTransactionLog = transactionLogMessage.getProcessData();
             assert (processDataFromBuiltTransactionLog.length == randomSizeProcessDataInByte);
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             fail("Transaction Log Message parsing failed with random process data (ha extended length)");
         }
     }

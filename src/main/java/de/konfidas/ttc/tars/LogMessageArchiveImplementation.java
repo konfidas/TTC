@@ -1,8 +1,8 @@
 package de.konfidas.ttc.tars;
 
 import de.konfidas.ttc.exceptions.*;
-import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.LogMessageFactory;
+import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.utilities.CertificateHelper;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;

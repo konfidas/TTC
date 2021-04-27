@@ -6,14 +6,15 @@ import org.bouncycastle.asn1.ASN1Primitive;
 public class LogMessagePrinter {
 
     static public String printMessage(LogMessage msg) {
-        StringBuilder return_value = new StringBuilder(String.format("The following log message has been extracted from file %s", msg.filename));
+        StringBuilder return_value = new StringBuilder(String.format("The following log message has been extracted from file %s", msg.getFileName()));
         return_value.append(System.lineSeparator());
-        return_value.append(String.format("version: %d", msg.version));
+        return_value.append(String.format("version: %d", msg.getVersion()));
         return_value.append( System.lineSeparator());
-        return_value.append(String.format("certifiedDataType: %s", msg.certifiedDataType));
+        return_value.append(String.format("certifiedDataType: %s", msg.getCertifiedDataType()));
         return_value.append( System.lineSeparator());
 
         if (msg instanceof TransactionLogMessage){return_value.append(printCertifiedDataOfTransactionLogMessage(msg)); }
+
         //TODO: Sind die folgenden Zeilen üpberflüssig?
 
 //        for (ASN1Primitive certifiedDatum : msg.certifiedData) {
@@ -21,14 +22,14 @@ public class LogMessagePrinter {
 //            return_value.append(System.lineSeparator());
 //        }
 
-        return_value.append(String.format("serialNumber: %s", Hex.encodeHexString(msg.serialNumber)));
+        return_value.append(String.format("serialNumber: %s", Hex.encodeHexString(msg.getSerialNumber())));
         return_value.append(System.lineSeparator());
 
         printSignatureAlgorithm(msg);
 
         printSeAuditData(msg);
 
-        return_value.append(String.format("signatureCounter: %d", msg.signatureCounter));
+        return_value.append(String.format("signatureCounter: %d", msg.getSignatureCounter()));
         return_value.append(System.lineSeparator());
 
         return_value.append(String.format("logTimeFormat:: %s", msg.getLogTime().getType()));
@@ -67,10 +68,10 @@ public class LogMessagePrinter {
     static public String printSignatureAlgorithm(LogMessage msg) {
         StringBuilder return_value = new StringBuilder();
 
-        return_value.append(String.format("signatureAlgorithm: %s", msg.signatureAlgorithm));
+        return_value.append(String.format("signatureAlgorithm: %s", msg.getSignatureAlgorithm()));
         return_value.append(System.lineSeparator());
 
-        for (ASN1Primitive signatureAlgorithmParameter : msg.signatureAlgorithmParameters) {
+        for (ASN1Primitive signatureAlgorithmParameter : msg.getSignatureAlgorithmParameters()) {
             return_value.append(String.format("signatureAlgorithmParameter: %s", signatureAlgorithmParameter.toString()));
             return_value.append(System.lineSeparator());
         }
@@ -82,8 +83,8 @@ public class LogMessagePrinter {
     static public String printSeAuditData(LogMessage msg) {
         StringBuilder return_value = new StringBuilder();
 
-        if (msg.seAuditData != null) {
-            return_value.append(String.format("seAuditData: %s", Hex.encodeHexString(msg.seAuditData)));
+        if (msg.getSeAuditData() != null) {
+            return_value.append(String.format("seAuditData: %s", Hex.encodeHexString(msg.getSeAuditData())));
             return_value.append(System.lineSeparator());
         }
 
@@ -95,14 +96,13 @@ public class LogMessagePrinter {
     static public String printSignatureData(LogMessage msg) {
         StringBuilder return_value = new StringBuilder();
 
-        return_value.append(String.format("signatureValue:: %s", Hex.encodeHexString(msg.signatureValue)));
+        return_value.append(String.format("signatureValue:: %s", Hex.encodeHexString(msg.getSignatureValue())));
         return_value.append(System.lineSeparator());
 
-        return_value.append(String.format("dtbs:: %s", Hex.encodeHexString(msg.dtbs)));
+        return_value.append(String.format("dtbs:: %s", Hex.encodeHexString(msg.getDTBS())));
         return_value.append(System.lineSeparator());
 
         return(return_value.toString());
 
     }
-
 }

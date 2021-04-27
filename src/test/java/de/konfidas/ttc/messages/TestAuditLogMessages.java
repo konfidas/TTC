@@ -72,7 +72,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
 
             AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
             fail();
-        } catch (LogMessage.LogMessageParsingException  e){
+        } catch (LogMessageImplementation.LogMessageParsingException  e){
             //expected
         }
     }
@@ -97,7 +97,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
 
             AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
             fail();
-        }catch (LogMessage.LogMessageParsingException  e){
+        }catch (LogMessageImplementation.LogMessageParsingException  e){
             //expected
 
         }
@@ -121,7 +121,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
             String filename = auditLogMessageBuilder.getFilename();
             AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
             fail();
-        } catch (LogMessage.LogMessageParsingException | IOException e){
+        } catch (LogMessageImplementation.LogMessageParsingException | IOException e){
             // Hier müssen wir aber sicherstellen, dass der Test aus dem richtigen Grund fehlschlägt
             if (!e.getMessage().contains("CertifiedData element found in an audit log message")){
                 fail();
@@ -156,7 +156,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
 
             AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
             fail();
-        } catch (LogMessage.LogMessageParsingException e){
+        } catch (LogMessageImplementation.LogMessageParsingException e){
             //expected
         } catch (IllegalAccessException| NoSuchMethodException| InvocationTargetException e) {
             fail();

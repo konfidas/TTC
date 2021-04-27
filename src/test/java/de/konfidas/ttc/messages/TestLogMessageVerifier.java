@@ -43,7 +43,7 @@ public class TestLogMessageVerifier extends TestCaseBasisWithCA {
             verifier.verify(auditLogMessage);
 
         }
-        catch (LogMessage.LogMessageParsingException| LogMessageVerificationException e){
+        catch (LogMessageImplementation.LogMessageParsingException| LogMessageVerificationException e){
             //expected
             return;
         }

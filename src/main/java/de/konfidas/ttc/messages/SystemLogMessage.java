@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
 
-public class SystemLogMessage extends LogMessage {
+public class SystemLogMessage extends LogMessageImplementation {
     ASN1Primitive operationType;
     ASN1Primitive systemOperationData;
     ASN1Primitive additionalInternalData;
@@ -26,7 +26,7 @@ public class SystemLogMessage extends LogMessage {
 
         super.parseCertifiedDataType(dtbsStream,logMessageAsASN1List,logMessageIterator);
         if(this.certifiedDataType != oid.id_SE_API_system_log){
-            throw new LogMessage.CertifiedDataTypeParsingException("Invalid Certified Data Type, expected id_SE_API_system_log but found "+this.certifiedDataType.getName(), null);
+            throw new LogMessageImplementation.CertifiedDataTypeParsingException("Invalid Certified Data Type, expected id_SE_API_system_log but found "+this.certifiedDataType.getName(), null);
         }
     }
 
