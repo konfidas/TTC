@@ -1,6 +1,6 @@
 package de.konfidas.ttc.messages.messages.systemlogs;
 
-import de.konfidas.ttc.messages.UnblockUserSystemLogMessage;
+import de.konfidas.ttc.messages.systemlogs.UnblockUserSystemLogMessage;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
