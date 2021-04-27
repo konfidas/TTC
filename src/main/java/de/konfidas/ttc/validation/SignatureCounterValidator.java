@@ -60,7 +60,7 @@ public class SignatureCounterValidator implements Validator{
         return result;
     }
 
-    static class SignatureCounterMissingException extends ValidationException{
+    static class SignatureCounterMissingException extends LogMessageValidationException{
         String serial;
         BigInteger expected;
         BigInteger foundNext;
@@ -73,7 +73,7 @@ public class SignatureCounterValidator implements Validator{
         }
     }
 
-    static class SignatureCounterDuplicateException extends ValidationException{
+    static class SignatureCounterDuplicateException extends LogMessageValidationException{
         BigInteger expected;
         LogMessage msg1;
 

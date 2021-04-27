@@ -54,7 +54,7 @@ public class TimeStampValidator implements Validator{
         return result;
     }
 
-    static class LogTimeMissMatchException extends ValidationException{
+    static class LogTimeMissMatchException extends LogMessageValidationException{
         LogTime previousLogTime;
 
         LogTimeMissMatchException(LogMessage msg, LogTime previousLogTime){

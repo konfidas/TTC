@@ -5,6 +5,10 @@ import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.LogMessageFactory;
 import de.konfidas.ttc.messages.LogMessageSignatureVerifier;
 import de.konfidas.ttc.utilities.CertificateHelper;
+import de.konfidas.ttc.validation.AggregatedValidator;
+import de.konfidas.ttc.validation.CertificateFileNameValidator;
+import de.konfidas.ttc.validation.CertificateValidator;
+import de.konfidas.ttc.validation.ValidationException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +22,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 
 
@@ -38,6 +44,9 @@ public class LogMessageArchive {
             this.parse(tarFile);
         }
     }
+
+    public HashMap<String, X509Certificate> getIntermediateCertificates(){return allIntermediateCertificates;}
+    public HashMap<String, X509Certificate> getClientCertificates(){return allClientCertificates;}
 
     public void parse(File tarFile) throws IOException, BadFormatForTARException{
         /********************************************************************
@@ -88,22 +97,17 @@ public class LogMessageArchive {
                  **********************/
                 else if (individualFileName.contains("X509")) {
                     logger.debug("{} schein ein X.509 Zertifikat zu sein. Starte Verarbeitung.", individualFileName);
-
                     try {
                         X509Certificate cer = CertificateHelper.loadCertificate(content);
                         // Prüfe die Eigenschaften des Zertifikats gegen den Dateinamen
                         boolean[] keyUsage = cer.getKeyUsage();
                         if (keyUsage == null || !keyUsage[5]) {
                             allClientCertificates.put(individualFileName.split("_")[0].toUpperCase(), cer);
-                            CertificateValidator.validateCertificateAgainstFilename(cer, individualFileName);
                         } else {
                             allIntermediateCertificates.put(individualFileName.split("_")[0].toUpperCase(), cer);
                         }
                     } catch (CertificateLoadException e) {
                         logger.error("Fehler beim Laden des Zertifikats {}", individualFileName);
-                    }
-                    catch (CertificateInconsistentToFilenameException e) {
-                        logger.error("Im Zertifikat {} ist die Konsistenzprüfung fehlgeschlagen. Es wird ignoriert.", individualFileName);
                     }
                 } else {
                     logger.error("{} sollte nicht in der TAR Datei vorhanden sein. Es wird ignoriert.", individualFileName);
@@ -132,13 +136,23 @@ public class LogMessageArchive {
          ** Sofern nicht darauf verzichtet wid, prüfen wir die Gültigkeit der Client-Zertifikate*
          ***************************************************************************************/
         if (!ignoreCertificate) {
-            for (X509Certificate cert : allClientCertificates.values()) {
-                try {
-                    Boolean result = CertificateValidator.checkCert(cert, trustedCert, new ArrayList<X509Certificate>(allIntermediateCertificates.values()));
-                    logger.debug("Prüfe das Zertifikat mit Seriennummer {} auf Korrektheit und prüfe die zugehörige Zertifikatskette. Ergebnis ist {}", cert.getSerialNumber(), result.toString());
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
+
+            AggregatedValidator validator = new AggregatedValidator()
+                    .add(new CertificateValidator(Collections.singleton(trustedCert)))
+                    .add(new CertificateFileNameValidator());
+
+            Collection<ValidationException> errors = validator.validate(this);
+            if(!errors.isEmpty()){
+                logger.debug("there were Errors while verifying the certificates in the TAR:");
+
+                for(ValidationException e : errors){
+                    if(e instanceof CertificateValidator.CertificateValidationException){
+                        CertificateValidator.CertificateValidationException c = (CertificateValidator.CertificateValidationException) e;
+                        logger.debug("failed to verify "+c.getCert()+" with error:");
+                        logger.debug(c.getError().toString());
+                    }else{
+                        logger.debug("Error during validation "+ e.toString());
+                    }
                 }
             }
         }

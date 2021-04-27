@@ -1,6 +1,9 @@
 package de.konfidas.ttc.tars;
 
+import de.konfidas.ttc.exceptions.CertificateInconsistentToFilenameException;
 import de.konfidas.ttc.utilities.CertificateHelper;
+import de.konfidas.ttc.validation.CertificateFileNameValidator;
+import de.konfidas.ttc.validation.CertificateValidator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +27,8 @@ public class CertificateValidatorTestCertConsistency {
     @Test
     public void testOk() throws Exception{
         X509Certificate good1Cert = CertificateHelper.loadCertificate(good1File.toPath());
-        CertificateValidator.validateCertificateAgainstFilename(good1Cert, "ADB6400083CDCB70BDBEEBFA86DEA3951394567DFE693D3C849C787947715F5C");
+
+        CertificateFileNameValidator.validateCertificateAgainstFilename(good1Cert, "ADB6400083CDCB70BDBEEBFA86DEA3951394567DFE693D3C849C787947715F5C");
     }
 
 
@@ -32,9 +36,9 @@ public class CertificateValidatorTestCertConsistency {
     public void testWrongSubject() throws Exception{
         X509Certificate good1Cert = CertificateHelper.loadCertificate(good1File.toPath());
         try {
-            CertificateValidator.validateCertificateAgainstFilename(good1Cert, "00B6400083CDCB70BDBEEBFA86DEA3951394567DFE693D3C849C787947715F5C");
+            CertificateFileNameValidator.validateCertificateAgainstFilename(good1Cert, "00B6400083CDCB70BDBEEBFA86DEA3951394567DFE693D3C849C787947715F5C");
             fail();
-        }catch(CertificateValidator.FilenameToSubjectMismatchException e){
+        }catch(CertificateInconsistentToFilenameException.FilenameToSubjectMismatchException e){
             // expected.
         }
     }
@@ -43,9 +47,9 @@ public class CertificateValidatorTestCertConsistency {
     public void testWrongPubkey() throws Exception{
         X509Certificate good1Cert = CertificateHelper.loadCertificate(broken1File.toPath());
         try {
-            CertificateValidator.validateCertificateAgainstFilename(good1Cert, "ADDON1DB43EAF69CAB07036CBF51C4EF78FAD15C532288B1A6D6B7C3E2475ED171766");
+            CertificateFileNameValidator.validateCertificateAgainstFilename(good1Cert, "ADDON1DB43EAF69CAB07036CBF51C4EF78FAD15C532288B1A6D6B7C3E2475ED171766");
             fail();
-        }catch(CertificateValidator.FilenameToPubKeyMismatchException e){
+        }catch(CertificateInconsistentToFilenameException.FilenameToPubKeyMismatchException e){
             // expected.
         }
     }

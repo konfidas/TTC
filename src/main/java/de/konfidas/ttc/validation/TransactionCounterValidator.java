@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+// FIXME: this is incomplete and does not work fully.
 public class TransactionCounterValidator implements Validator {
     HashMap<BigInteger,OpenTransaction> openTransactions;
     BigInteger transactionCounter;
@@ -89,7 +90,7 @@ public class TransactionCounterValidator implements Validator {
     }
 
 
-    static class DuplicateTransactionCounterFoundException extends ValidationException{
+    static class DuplicateTransactionCounterFoundException extends LogMessageValidationException{
         TransactionLogMessage msg2;
 
         public DuplicateTransactionCounterFoundException(TransactionLogMessage msg1, TransactionLogMessage msg2) {
@@ -98,7 +99,7 @@ public class TransactionCounterValidator implements Validator {
         }
     }
 
-    static class UpdateForNotOpenTransactionException extends ValidationException{
+    static class UpdateForNotOpenTransactionException extends LogMessageValidationException{
         BigInteger expectedTransactionCounter;
 
         public UpdateForNotOpenTransactionException(BigInteger transactionCounter, TransactionLogMessage msg) {
@@ -107,7 +108,7 @@ public class TransactionCounterValidator implements Validator {
         }
     }
 
-    static class WrongTransactionCounterException extends ValidationException{
+    static class WrongTransactionCounterException extends LogMessageValidationException{
         BigInteger expectedTransactionCounter;
 
         public WrongTransactionCounterException(BigInteger transactionCounter, TransactionLogMessage msg) {
