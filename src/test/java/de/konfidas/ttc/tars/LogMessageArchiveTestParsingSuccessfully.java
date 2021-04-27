@@ -59,8 +59,8 @@ public class LogMessageArchiveTestParsingSuccessfully {
         logger.info("============================================================================");
         logger.info("testing tar file {}:", file.getName());
 
-        LogMessageArchive tar  = new LogMessageArchive(this.file);
-        for (LogMessage message : tar.getAll_log_messages()) {
+        LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
+        for (LogMessage message : tar.getLogMessages()) {
             logger.info(LogMessagePrinter.printMessage(message));
         }
         Validator v = new AggregatedValidator()

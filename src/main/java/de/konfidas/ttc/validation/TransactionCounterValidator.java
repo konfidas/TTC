@@ -25,7 +25,7 @@ public class TransactionCounterValidator implements Validator {
     public Collection<ValidationException> validate(LogMessageArchive tar){
         ArrayList<ValidationException> result = new ArrayList<>();
 
-        ArrayList<LogMessage> msgs = tar.getAll_log_messages();
+        ArrayList<LogMessage> msgs = new ArrayList(tar.getLogMessages());
         msgs.sort(new LogMessage.SignatureCounterComparator());
 
 

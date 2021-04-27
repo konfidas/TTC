@@ -20,7 +20,7 @@ public class LogMessageSignatureValidator implements Validator {
         LinkedList<ValidationException> errors = new LinkedList<>();
 
         LogMessageSignatureVerifier verifier = new LogMessageSignatureVerifier(tar.getClientCertificates());
-        for (LogMessage msg : tar.getAll_log_messages()) {
+        for (LogMessage msg : tar.getLogMessages()) {
             try {
                 logger.debug("Checking signature of LogMessage {}", msg.getFileName());
                 verifier.verify(msg);

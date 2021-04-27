@@ -4,7 +4,7 @@ import de.konfidas.ttc.exceptions.CertificateLoadException;
 import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.LogMessagePrinter;
-import de.konfidas.ttc.tars.LogMessageArchive;
+import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
 import de.konfidas.ttc.utilities.CertificateHelper;
 import de.konfidas.ttc.validation.*;
 import org.apache.commons.cli.*;
@@ -67,8 +67,8 @@ public class TTC {
                 }
             }
 
-            LogMessageArchive tar = new LogMessageArchive(new File(cmd.getOptionValue("i")));
-            for (LogMessage message : tar.getAll_log_messages()) {
+            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(new File(cmd.getOptionValue("i")));
+            for (LogMessage message : tar.getLogMessages()) {
                 logger.debug(LogMessagePrinter.printMessage(message));
             }
 
@@ -90,7 +90,7 @@ public class TTC {
                     if(e instanceof CertificateValidator.CertificateValidationException){
                         CertificateValidator.CertificateValidationException c = (CertificateValidator.CertificateValidationException) e;
                         logger.debug("failed to verify "+c.getCert()+" with error:");
-                        logger.debug(c.getError().toString());
+                        logger.debug(c.getCause().toString());
                     }else{
                         logger.debug("Error during validation "+ e.toString());
                     }

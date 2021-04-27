@@ -55,7 +55,7 @@ public class LogMessageArchiveTestParsingFailing {
         logger.info("============================================================================");
         logger.info("testing tar file {}:", file.getName());
 
-        LogMessageArchive tar = new LogMessageArchive(this.file);
+        LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(this.file);
 
         Validator v = new AggregatedValidator()
                     .add(new CertificateFileNameValidator())

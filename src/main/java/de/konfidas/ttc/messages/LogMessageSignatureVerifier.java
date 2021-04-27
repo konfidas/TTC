@@ -11,15 +11,15 @@ import org.slf4j.LoggerFactory;
 
 import java.security.*;
 import java.security.cert.X509Certificate;
-import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class LogMessageSignatureVerifier {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-    final HashMap<String, X509Certificate> certs;
+    final Map<String, X509Certificate> certs;
 
-    public LogMessageSignatureVerifier(HashMap<String, X509Certificate> certs){
+    public LogMessageSignatureVerifier(Map<String, X509Certificate> certs){
         this.certs = certs;
     }
 

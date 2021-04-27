@@ -52,7 +52,7 @@ public class LogMessageArchiveTestInconsistentCertificate {
         logger.info("testing tar file {}:", file.getName());
 
         try {
-            new LogMessageArchive(this.file);
+            new LogMessageArchiveImplementation(this.file);
             fail("Log Message parsing successful, but expected to fail");
         }
         catch ( BadFormatForTARException e) {

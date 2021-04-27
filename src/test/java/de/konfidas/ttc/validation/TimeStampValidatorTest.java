@@ -2,7 +2,7 @@ package de.konfidas.ttc.validation;
 
 import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import de.konfidas.ttc.exceptions.ValidationException;
-import de.konfidas.ttc.tars.LogMessageArchive;
+import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class TimeStampValidatorTest {
         try {
             TimeStampValidator validator = new TimeStampValidator();
 
-            LogMessageArchive tar = new LogMessageArchive(this.file);
+            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(this.file);
 
             Collection<ValidationException>  errors = validator.validate(tar);
 
