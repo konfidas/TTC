@@ -1,18 +1,16 @@
 package de.konfidas.ttc.messages.messages.systemlogs;
 
-import de.konfidas.ttc.exceptions.BadFormatForTARException;
-import de.konfidas.ttc.messages.systemlogs.UnblockUserSystemLogMessage;
-import de.konfidas.ttc.tars.LogMessageArchive;
+import de.konfidas.ttc.messages.UnblockUserSystemLogMessage;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,6 +18,7 @@ import java.util.Collections;
 
 import static org.junit.Assert.fail;
 
+@RunWith(Parameterized.class)
 public class TestUnblockUser {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     final static File systemLogFiles = new File("testdata/systemlogs/unblockuser/");
