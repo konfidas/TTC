@@ -22,8 +22,8 @@ public class UpdateTransactionLogMessageBuilder extends TransactionLogMessageBui
         }
 
         filename = filename + signatureCounter.toString();
-        filename += (transactionNumber == null) ? "_Log_No-_Update" : "_Log_No-" +transactionNumber.toString()+ "_Update";
-        filename += (clientID == null) ? ".log" : clientID.toString()+".log";
+        filename += (transactionNumber == null) ? "_Log_No-_Update" : "_Log_No-" +transactionNumber+ "_Update";
+        filename += (clientID == null) ? ".log" : clientID+".log";
         return filename;
     }
 

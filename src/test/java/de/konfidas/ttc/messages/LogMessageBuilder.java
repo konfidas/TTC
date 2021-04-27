@@ -442,7 +442,7 @@ public abstract class LogMessageBuilder {
     ASN1GeneralizedTime logTimeGeneralizedTimeAsASN1;
     ASN1OctetString seAuditDataAsASN1;
     ASN1ObjectIdentifier certifiedDataTypeAsASN1;
-    List<ASN1Primitive> certifiedDataAsASN1 = new ArrayList<ASN1Primitive>();
+    List<ASN1Primitive> certifiedDataAsASN1 = new ArrayList<>();
 //    ASN1OctetString certifiedDataAsASN1;
     ASN1OctetString signatureValueAsASN1;
 
@@ -554,7 +554,7 @@ public abstract class LogMessageBuilder {
 
     }
     LogMessageBuilder sign(PrivateKey key) throws TestLogMessageCreationError {
-        Signature signer = null;
+        Signature signer;
         try {
             signer = Signature.getInstance(signatureAlgorithm);
         } catch (NoSuchAlgorithmException e) {
@@ -636,12 +636,13 @@ public abstract class LogMessageBuilder {
     abstract String constructFileName();
 
 
-    public class TestLogMessageCreationError extends Exception {
+    public static class TestLogMessageCreationError extends Exception {
         public TestLogMessageCreationError(String message, Exception reason) {
             super(message, reason);
         }
     }
-    public class TestLogMessageExportError extends Exception {
+
+    public static class TestLogMessageExportError extends Exception {
         public TestLogMessageExportError(String message, Exception reason) {
             super(message, reason);
         }

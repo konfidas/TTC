@@ -6,8 +6,8 @@ import java.text.ParseException;
 import java.util.Calendar;
 
 public class GeneralizedLogTime extends LogTime {
-    ASN1GeneralizedTime element;
-    long time;
+    final ASN1GeneralizedTime element;
+    final long time;
 
     // FIXME: I am currently unsure, where to take this offset into account!
     final static long offset =  Calendar.getInstance().get(Calendar.DST_OFFSET) + Calendar.getInstance().get(Calendar.ZONE_OFFSET);

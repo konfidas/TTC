@@ -24,11 +24,12 @@ import static ch.qos.logback.classic.Level.*;
 
 public class TTC {
 
-    private static Options options = new Options();
     final static ch.qos.logback.classic.Logger logger =  (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
         Security.addProvider(new BouncyCastleProvider());
+
+        Options options = new Options();
 
         options.addOption("i", "inputTAR", true, "Das TAR Archiv, das geprüft werden soll.");
         options.addOption("t", "trustAnker", true, "Trust Anker in Form eines X.509 Zertifikats für die Root-CA");
@@ -37,9 +38,9 @@ public class TTC {
 
         CommandLineParser parser = new DefaultParser();
 //        CommandLineParser parser = new GnuParser();
-        CommandLine cmd = null;
+        CommandLine cmd;
 
-        String trustCertPath = "";
+        String trustCertPath;
         X509Certificate trustedCert = null;
 
         /*********************************
@@ -50,10 +51,10 @@ public class TTC {
             if (cmd.hasOption("v")){
                 logger.setLevel(DEBUG);
             }
-            if (cmd.hasOption("i") == false) {
+            if (!cmd.hasOption("i")) {
                 System.err.println("Fehler beim Parsen der Kommandozeile. Kein TAR-Archiv zur Prüfung angegeben");
             }
-            if (cmd.hasOption("t") == false && cmd.hasOption("o") == false) {
+            if (!(cmd.hasOption("t")  ||cmd.hasOption("o"))) {
                 System.err.println("Fehler beim Parsen der Kommandozeile. Es muss entweder ein TrustStore für Root-Zertifikate angegeben werden (Option t) oder auf die Prüfung von Zertifikaten verzichtet werden (Option -o)");
             }
 
@@ -65,7 +66,7 @@ public class TTC {
                     e.printStackTrace();
                 }
             }
-            String tttt =cmd.getOptionValue("i");
+
             LogMessageArchive tar = new LogMessageArchive(new File(cmd.getOptionValue("i")));
             for (LogMessage message : tar.getAll_log_messages()) {
                 logger.debug(LogMessagePrinter.printMessage(message));

@@ -139,7 +139,7 @@ public class TransactionLogMessage extends LogMessage {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("processData in certifiedData  not found"); }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (((nextElement instanceof DLTaggedObject == false)&&(nextElement instanceof BERTaggedObject ==false))) { throw new LogMessageParsingException("processData in certifiedData has to be DLTaggedObject or BERTaggedObject, but is " + nextElement.getClass()); }
+        if ((!(nextElement instanceof DLTaggedObject)&&!(nextElement instanceof BERTaggedObject ))) { throw new LogMessageParsingException("processData in certifiedData has to be DLTaggedObject or BERTaggedObject, but is " + nextElement.getClass()); }
 
 
         if (((ASN1TaggedObject) nextElement).getTagNo() != 2){ throw new LogMessageParsingException("processData in certifiedData has to have a tag of 2 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
@@ -250,7 +250,7 @@ return;
     }
 
     @Override
-    void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+    void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException {
 
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("seAuditData element not found"); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());

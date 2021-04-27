@@ -73,7 +73,7 @@ public class CertificateHelper {
      * @throws CertificateLoadException
      */
     public static X509Certificate loadCertificate(byte[] certContent) throws CertificateLoadException {
-        X509Certificate cer = null;
+        X509Certificate cer;
         try {
             CertificateFactory cf = CertificateFactory.getInstance("X.509", BouncyCastleProvider.PROVIDER_NAME);
             InputStream in = new ByteArrayInputStream(certContent);
@@ -87,15 +87,17 @@ public class CertificateHelper {
         }
         catch (CertificateExpiredException e) {
             logger.error("Das Zertifikat ist abgelaufen.");
+            throw new CertificateLoadException("Certificate is expired",e);
         }
         catch (CertificateNotYetValidException e) {
             logger.error("Das Zertifikat ist noch nicht gültig.");
+            throw new CertificateLoadException("Certificate is not yet valid",e);
         }
         catch (java.security.cert.CertificateException e) {
-            throw new RuntimeException(e);
+            throw new CertificateLoadException("",e);
         }
         catch (NoSuchProviderException e) {
-            e.printStackTrace();
+            throw new CertificateLoadException("BouncyCastleProvider is missing",e);
         }
         return cer;
     }

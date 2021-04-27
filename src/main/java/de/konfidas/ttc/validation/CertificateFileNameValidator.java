@@ -23,7 +23,7 @@ import java.util.Map;
 public class CertificateFileNameValidator implements Validator {
 
     public static void validateCertificateAgainstFilename(X509Certificate cert, String filename) throws CertificateInconsistentToFilenameException {
-        X500Name certSubject = null;
+        X500Name certSubject;
         try {
             certSubject = new JcaX509CertificateHolder(cert).getSubject();
         } catch (CertificateEncodingException e) {
@@ -40,7 +40,7 @@ public class CertificateFileNameValidator implements Validator {
             throw new CertificateInconsistentToFilenameException.FilenameToSubjectMismatchException(certSubjectClean, keyHashFromFilename);
         }
 
-        MessageDigest digest = null;
+        MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {

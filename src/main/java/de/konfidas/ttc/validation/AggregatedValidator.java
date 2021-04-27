@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 public class AggregatedValidator implements Validator{
-    Collection<Validator> validators;
+    final Collection<Validator> validators;
 
     public AggregatedValidator(){
         this.validators = new LinkedList<>();
@@ -25,7 +25,7 @@ public class AggregatedValidator implements Validator{
 
     @Override
     public Collection<ValidationException> validate(LogMessageArchive tar) {
-        ArrayList<ValidationException> result = new ArrayList<ValidationException>();
+        ArrayList<ValidationException> result = new ArrayList<>();
 
         for(Validator v : validators){
             result.addAll(v.validate(tar));

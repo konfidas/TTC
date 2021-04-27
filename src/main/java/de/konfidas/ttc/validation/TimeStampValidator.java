@@ -14,8 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class TimeStampValidator implements Validator{
-
-    HashMap<String, LogTime> lastLogTime;
+    final HashMap<String, LogTime> lastLogTime;
 
     public TimeStampValidator(){
         lastLogTime = new HashMap<>();
@@ -57,7 +56,7 @@ public class TimeStampValidator implements Validator{
     }
 
     static class LogTimeMissMatchException extends LogMessageValidationException {
-        LogTime previousLogTime;
+        final LogTime previousLogTime;
 
         LogTimeMissMatchException(LogMessage msg, LogTime previousLogTime){
             super(msg);

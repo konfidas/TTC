@@ -30,7 +30,7 @@ public class LogMessageArchiveTestParsingSuccessfully {
     final static Logger logger = LoggerFactory.getLogger(LogMessageArchiveTestParsingSuccessfully.class);
     final static File correctTarFiles = new File("testdata/positive/");
 
-    File file;
+    final File file;
 
     @Before
     public void initialize() {
@@ -39,14 +39,12 @@ public class LogMessageArchiveTestParsingSuccessfully {
 
 
     @Parameterized.Parameters
-    public static Collection filesToTest(){
+    public static Collection<File> filesToTest(){
 
         logger.info("checking for Tars in "+correctTarFiles.getName());
-        if(null == correctTarFiles || !correctTarFiles.isDirectory()){
+        if(!correctTarFiles.isDirectory() || correctTarFiles.listFiles() == null){
             fail("not a directory.");
         }
-
-
         return Arrays.asList(correctTarFiles.listFiles());
     }
 
@@ -64,7 +62,6 @@ public class LogMessageArchiveTestParsingSuccessfully {
         LogMessageArchive tar  = new LogMessageArchive(this.file);
         for (LogMessage message : tar.getAll_log_messages()) {
             logger.info(LogMessagePrinter.printMessage(message));
-            int a =0;
         }
         Validator v = new AggregatedValidator()
                 .add(new CertificateFileNameValidator())

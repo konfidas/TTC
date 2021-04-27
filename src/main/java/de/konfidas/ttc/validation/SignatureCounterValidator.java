@@ -11,7 +11,7 @@ import java.util.*;
 
 
 public class SignatureCounterValidator implements Validator{
-    HashMap<String, BigInteger> nextSignatureCounters;
+    final HashMap<String, BigInteger> nextSignatureCounters;
 
     // we operate on sorted log messages, so if we are in the case, that multiple log messages have the
     // same signature counters, we process them one after another. To create meaningful exceptions, we track
@@ -61,9 +61,9 @@ public class SignatureCounterValidator implements Validator{
     }
 
     static class SignatureCounterMissingException extends LogMessageValidationException {
-        String serial;
-        BigInteger expected;
-        BigInteger foundNext;
+        final String serial;
+        final BigInteger expected;
+        final BigInteger foundNext;
 
         public SignatureCounterMissingException(LogMessage msg, String serial, BigInteger expected, BigInteger foundNext) {
             super(msg);
@@ -74,8 +74,8 @@ public class SignatureCounterValidator implements Validator{
     }
 
     static class SignatureCounterDuplicateException extends LogMessageValidationException{
-        BigInteger expected;
-        LogMessage msg1;
+        final BigInteger expected;
+        final LogMessage msg1;
 
         public SignatureCounterDuplicateException(BigInteger expected, LogMessage msg, LogMessage msg1) {
             super(msg);

@@ -16,7 +16,7 @@ import java.util.List;
 
 public class CertificateValidator implements Validator {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-    Collection<X509Certificate> trustedCerts;
+    final Collection<X509Certificate> trustedCerts;
 
     public CertificateValidator(Collection<X509Certificate> trustedCerts){
         this.trustedCerts = trustedCerts;
@@ -28,8 +28,8 @@ public class CertificateValidator implements Validator {
 
         for (X509Certificate cert : tar.getClientCertificates().values()) {
             try {
-                logger.debug("Prüfe das Zertifikat mit Seriennummer {} auf Korrektheit und prüfe die zugehörige Zertifikatskette. Ergebnis ist {}", cert.getSerialNumber());
-                checkCert(cert, trustedCerts, new ArrayList<X509Certificate>(tar.getIntermediateCertificates().values()));
+                logger.debug("Prüfe das Zertifikat mit Seriennummer {} auf Korrektheit und prüfe die zugehörige Zertifikatskette.", cert.getSerialNumber());
+                checkCert(cert, trustedCerts, new ArrayList<>(tar.getIntermediateCertificates().values()));
             }catch (Exception e) {
                 errors.add(new CertificateValidationException(cert, e));
             }
@@ -62,8 +62,9 @@ public class CertificateValidator implements Validator {
 
 
     public static class CertificateValidationException extends ValidationException{
-        X509Certificate cert;
-        Throwable e;
+        final X509Certificate cert;
+        final Throwable e;
+
         CertificateValidationException(X509Certificate cert, Throwable e) {
             super("Validation certificate "+ cert.getSerialNumber() +" failed.", null);
             this.cert = cert;

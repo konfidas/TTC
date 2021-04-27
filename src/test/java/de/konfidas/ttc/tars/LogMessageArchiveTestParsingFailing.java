@@ -25,7 +25,7 @@ public class LogMessageArchiveTestParsingFailing {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     final static File brokenTarFiles = new File("D:\\testdata\\brokenTars"); // TODO: as soon as we have publish-able test data, point path to it.
 
-    File file;
+    final File file;
 
     @Before
     public void initialize() {
@@ -34,10 +34,10 @@ public class LogMessageArchiveTestParsingFailing {
 
 
     @Parameterized.Parameters
-    public static Collection filesToTest(){
+    public static Collection<File> filesToTest(){
 
         logger.info("checking for Tars in "+brokenTarFiles.getName());
-        if(null == brokenTarFiles || !brokenTarFiles.isDirectory()){
+        if(!brokenTarFiles.isDirectory() ||brokenTarFiles.listFiles() == null){
             logger.error("not a directory.");
             return Collections.EMPTY_LIST;
         }

@@ -5,7 +5,7 @@ public abstract class LogTime{
 
 
     public enum Type{
-        UNIX, GENERALIZED, UTC;
+        UNIX, GENERALIZED, UTC
     }
 
     public boolean wasNotAfter(LogTime logTime){

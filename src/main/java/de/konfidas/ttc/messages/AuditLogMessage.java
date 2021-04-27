@@ -17,7 +17,7 @@ public class AuditLogMessage extends LogMessage {
     }
 
     @Override
-    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException,LogMessage.LogMessageParsingException, LogMessage.CertifiedDataTypeParsingException, ExtendLengthValueExceedsInteger {
+    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException,LogMessage.LogMessageParsingException {
         super.parseCertifiedDataType(dtbsStream,logMessageAsASN1List,logMessageIterator);
         if(this.certifiedDataType != oid.id_SE_API_SE_audit_log){
             throw new LogMessage.CertifiedDataTypeParsingException("Invalid Certified Data Type, expected id_SE_API_SE_audit_log but found "+this.certifiedDataType.getName(), null);

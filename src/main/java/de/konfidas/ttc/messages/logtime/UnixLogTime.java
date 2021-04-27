@@ -1,7 +1,7 @@
 package de.konfidas.ttc.messages.logtime;
 
 public class UnixLogTime extends LogTime {
-    long time;
+    final long time;
 
     public UnixLogTime(long time) {
         this.time = time;

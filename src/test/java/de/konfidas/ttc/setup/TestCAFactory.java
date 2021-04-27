@@ -28,15 +28,15 @@ import static de.konfidas.ttc.setup.Utilities.writeCertToFileBase64Encoded;
 
 public class TestCAFactory {
 
-    Date startDate = new Date(new Date().getTime());
-    Date endDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);  //Today + 1000 days
-    private String signatureAlgorithm = "SHA256withECDSA";
-    private int keySize = 384;
-    private X509Certificate rootCert;
-    private BigInteger rootSerialNum = new BigInteger(Long.toString(new SecureRandom().nextLong()));
-    private KeyPair rootKeyPair;
-    private String keyAlgorithm = "EC";
-    private String commonName = "root-cert";
+    final Date startDate = new Date(new Date().getTime());
+    final Date endDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);  //Today + 1000 days
+    final String signatureAlgorithm = "SHA256withECDSA";
+    final int keySize = 384;
+     X509Certificate rootCert;
+    final BigInteger rootSerialNum = new BigInteger(Long.toString(new SecureRandom().nextLong()));
+     KeyPair rootKeyPair;
+    final String keyAlgorithm = "EC";
+    final String commonName = "root-cert";
 
 
     public TestCAFactory(){
@@ -47,7 +47,7 @@ public class TestCAFactory {
         /****************************************
          ** Erst wird ein Schlüsselpaar erzeugt *
          ****************************************/
-        KeyPairGenerator keyPairGenerator = null;
+        KeyPairGenerator keyPairGenerator;
         try {
             keyPairGenerator = KeyPairGenerator.getInstance(keyAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
         }

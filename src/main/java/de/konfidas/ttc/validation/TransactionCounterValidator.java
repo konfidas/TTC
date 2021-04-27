@@ -14,7 +14,7 @@ import java.util.LinkedList;
 
 // FIXME: this is incomplete and does not work fully.
 public class TransactionCounterValidator implements Validator {
-    HashMap<BigInteger,OpenTransaction> openTransactions;
+    final HashMap<BigInteger,OpenTransaction> openTransactions;
     BigInteger transactionCounter;
 
     TransactionCounterValidator(){
@@ -67,12 +67,12 @@ public class TransactionCounterValidator implements Validator {
             if(!openTransactions.containsKey(msg.getTransactionNumber())){
                 result.add(new UpdateForNotOpenTransactionException(transactionCounter, msg));
             }else{
-
+                // TODO
             }
         }
 
         if("FINISH".equals(msg.getProcessType())){
-
+            // TODO
         }
 
         return result;
@@ -81,7 +81,7 @@ public class TransactionCounterValidator implements Validator {
 
     static class OpenTransaction{
         BigInteger signatureCounterLastUpdate;
-        LinkedList<TransactionLogMessage> msgs;
+        final LinkedList<TransactionLogMessage> msgs;
 
         public OpenTransaction(TransactionLogMessage msg) {
             this.signatureCounterLastUpdate = msg.getSignatureCounter();
@@ -92,7 +92,7 @@ public class TransactionCounterValidator implements Validator {
 
 
     static class DuplicateTransactionCounterFoundException extends LogMessageValidationException {
-        TransactionLogMessage msg2;
+        final TransactionLogMessage msg2;
 
         public DuplicateTransactionCounterFoundException(TransactionLogMessage msg1, TransactionLogMessage msg2) {
             super(msg1);
@@ -101,7 +101,7 @@ public class TransactionCounterValidator implements Validator {
     }
 
     static class UpdateForNotOpenTransactionException extends LogMessageValidationException{
-        BigInteger expectedTransactionCounter;
+        final BigInteger expectedTransactionCounter;
 
         public UpdateForNotOpenTransactionException(BigInteger transactionCounter, TransactionLogMessage msg) {
             super(msg);
@@ -110,7 +110,7 @@ public class TransactionCounterValidator implements Validator {
     }
 
     static class WrongTransactionCounterException extends LogMessageValidationException{
-        BigInteger expectedTransactionCounter;
+        final BigInteger expectedTransactionCounter;
 
         public WrongTransactionCounterException(BigInteger transactionCounter, TransactionLogMessage msg) {
             super(msg);

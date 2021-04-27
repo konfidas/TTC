@@ -61,15 +61,15 @@ import org.slf4j.LoggerFactory;
 public abstract class LogMessage {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-    String[] allowedCertifiedDataType = {"0.4.0.127.0.7.3.7.1.1", "0.4.0.127.0.7.3.7.1.2", "0.4.0.127.0.7.3.7.1.3"};
-    String[] allowedAlgorithms = {"0.4.0.127.0.7.1.1.4.1.2", "0.4.0.127.0.7.1.1.4.1.3", "0.4.0.127.0.7.1.1.4.1.4", "0.4.0.127.0.7.1.1.4.1.5", "0.4.0.127.0.7.1.1.4.1.8", "0.4.0.127.0.7.1.1.4.1.9", "0.4.0.127.0.7.1.1.4.1.10", "0.4.0.127.0.7.1.1.4.1.11", "0.4.0.127.0.7.1.1.4.4.1", "0.4.0.127.0.7.1.1.4.4.2", "0.4.0.127.0.7.1.1.4.4.3", "0.4.0.127.0.7.1.1.4.4.4", "0.4.0.127.0.7.1.1.4.4.5", "0.4.0.127.0.7.1.1.4.4.6", "0.4.0.127.0.7.1.1.4.4.7", "0.4.0.127.0.7.1.1.4.4.8"};
+    final static String[] allowedCertifiedDataType = {"0.4.0.127.0.7.3.7.1.1", "0.4.0.127.0.7.3.7.1.2", "0.4.0.127.0.7.3.7.1.3"};
+    final static String[] allowedAlgorithms = {"0.4.0.127.0.7.1.1.4.1.2", "0.4.0.127.0.7.1.1.4.1.3", "0.4.0.127.0.7.1.1.4.1.4", "0.4.0.127.0.7.1.1.4.1.5", "0.4.0.127.0.7.1.1.4.1.8", "0.4.0.127.0.7.1.1.4.1.9", "0.4.0.127.0.7.1.1.4.1.10", "0.4.0.127.0.7.1.1.4.1.11", "0.4.0.127.0.7.1.1.4.4.1", "0.4.0.127.0.7.1.1.4.4.2", "0.4.0.127.0.7.1.1.4.4.3", "0.4.0.127.0.7.1.1.4.4.4", "0.4.0.127.0.7.1.1.4.4.5", "0.4.0.127.0.7.1.1.4.4.6", "0.4.0.127.0.7.1.1.4.4.7", "0.4.0.127.0.7.1.1.4.4.8"};
 
     int version = 0;
     oid certifiedDataType;
-    ArrayList<ASN1Primitive> certifiedData = new ArrayList<ASN1Primitive>();
+    final ArrayList<ASN1Primitive> certifiedData = new ArrayList<>();
     byte[] serialNumber;
     String signatureAlgorithm = "";
-    ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<ASN1Primitive>();
+    final ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<>();
 
     LogTime logTime;
 
@@ -77,7 +77,7 @@ public abstract class LogMessage {
     BigInteger signatureCounter = new BigInteger("5");
     byte[] seAuditData = null;
     byte[] dtbs = null;
-    String filename = "";
+    final String filename;
 
 
     public LogMessage(File file) throws IOException, BadFormatForLogMessageException {
@@ -133,12 +133,12 @@ public abstract class LogMessage {
     private int getEncodedLength(ASN1Primitive element) throws IOException, ExtendLengthValueExceedsInteger {
         byte[] elementContent = element.getEncoded();
 
-        if ((byte) elementContent[1] == (byte) 0b10000000) {
+        if ( elementContent[1] == (byte) 0b10000000) {
             //indefinte length encoding
             return 0;
         } else if ((elementContent[1] & 0b10000000) == 0) {
             //Case: Definite length encocding, one byte
-            return Integer.valueOf(elementContent[1]);
+            return elementContent[1];
         } else {
             //Extended length encoding (limitiert auf max 4 bytes für die Länge)
             int elementNumberOfLengthBytes = (elementContent[1] & 0b01111111);
@@ -166,7 +166,7 @@ public abstract class LogMessage {
         return Arrays.copyOfRange(elementContent, elementContent.length - elementLength, elementContent.length + 1);
     }
 
-    int getEncodedTag(ASN1Primitive element) throws IOException, ExtendLengthValueExceedsInteger {
+    int getEncodedTag(ASN1Primitive element) throws IOException {
         byte[] elementContent = element.getEncoded();
         return elementContent[0];
     }

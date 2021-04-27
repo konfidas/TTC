@@ -10,23 +10,17 @@ import org.junit.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Random;
 
-
 import static junit.framework.TestCase.fail;
 
 public class TestAuditLogMessages extends TestCaseBasisWithCA {
-    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-
-
     @Test
-    public void validAuditLogMessage() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException { ;
+    public void validAuditLogMessage() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
         AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
         byte[] auditMessage = auditLogMessageBuilder.prepare()
                                 .calculateDTBS()
@@ -39,10 +33,8 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
         AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
     }
 
-
-
     @Test
-    public void validAuditLogMessageWithSeAuditDataWithExtendedLength() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException { ;
+    public void validAuditLogMessageWithSeAuditDataWithExtendedLength() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
         AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
          auditLogMessageBuilder.prepare();
 
@@ -67,8 +59,8 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
     public void wrongVersion() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
 
         try{
-        AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
-        // Falsche Version setzen
+            AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
+            // Falsche Version setzen
             byte[] auditMessage = auditLogMessageBuilder.setVersion(3)
                                 .prepare()
                                 .calculateDTBS()
@@ -76,14 +68,13 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
                                 .build()
                                 .finalizeMessage();
 
-        String filename = auditLogMessageBuilder.getFilename();
+            String filename = auditLogMessageBuilder.getFilename();
 
-        AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);}
-        catch (LogMessage.LogMessageParsingException  e){
+            AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
+            fail();
+        } catch (LogMessage.LogMessageParsingException  e){
             //expected
-            return;
         }
-        fail();
     }
 
     @ParameterizedTest
@@ -91,8 +82,8 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
     public void auditLogMessageWithWromgCertifiedDataType(oid wrongCertifiedDataType) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
         try{
 
-        AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
-        // CertifiedDataType falsch setzen
+            AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
+            // CertifiedDataType falsch setzen
 
             byte[] auditMessage = auditLogMessageBuilder
                                 .prepare()
@@ -102,22 +93,22 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
                                 .build()
                                 .finalizeMessage();
 
-        String filename = auditLogMessageBuilder.getFilename();
+            String filename = auditLogMessageBuilder.getFilename();
 
-        AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);}
-        catch (LogMessage.LogMessageParsingException  e){
+            AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
+            fail();
+        }catch (LogMessage.LogMessageParsingException  e){
             //expected
-            return;
+
         }
-        fail();
     }
 
     @Test
     public void auditLogMessageWithInvalidCertifiedData() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
         try{
 
-        AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
-        // CertifiedData setzen
+            AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
+            // CertifiedData setzen
 
             byte[] auditMessage = auditLogMessageBuilder
                                 .prepare()
@@ -127,15 +118,15 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
                                 .build()
                                 .finalizeMessage();
 
-        String filename = auditLogMessageBuilder.getFilename();
-        AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);}
-        catch (LogMessage.LogMessageParsingException | IOException e){
-            //expected
+            String filename = auditLogMessageBuilder.getFilename();
+            AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
+            fail();
+        } catch (LogMessage.LogMessageParsingException | IOException e){
             // Hier müssen wir aber sicherstellen, dass der Test aus dem richtigen Grund fehlschlägt
-            if (e.getMessage().contains("CertifiedData element found in an audit log message")) return;
-            else fail();
+            if (!e.getMessage().contains("CertifiedData element found in an audit log message")){
+                fail();
+            }
         }
-        fail();
     }
     
 
@@ -164,16 +155,13 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
             String filename = auditLogMessageBuilder.getFilename();
 
             AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
-        }
-
-        catch (LogMessage.LogMessageParsingException e){
+            fail();
+        } catch (LogMessage.LogMessageParsingException e){
             //expected
-            return;
-
         } catch (IllegalAccessException| NoSuchMethodException| InvocationTargetException e) {
+            fail();
             e.printStackTrace();
         }
-        fail();
     }
 
 

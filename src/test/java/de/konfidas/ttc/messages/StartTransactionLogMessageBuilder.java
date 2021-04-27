@@ -22,8 +22,8 @@ public class StartTransactionLogMessageBuilder extends TransactionLogMessageBuil
         }
 
         filename = filename + signatureCounter.toString();
-        filename += (transactionNumber == null) ? "_Log_No-_Start" : "_Log_No-" +transactionNumber.toString()+ "_Start";
-        filename += (clientID == null) ? ".log" : clientID.toString()+".log";
+        filename += (transactionNumber == null) ? "_Log_No-_Start" : "_Log_No-" +transactionNumber+ "_Start";
+        filename += (clientID == null) ? ".log" : clientID+".log";
         return filename;
     }
 

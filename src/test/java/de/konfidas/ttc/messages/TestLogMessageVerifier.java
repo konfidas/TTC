@@ -5,8 +5,6 @@ import de.konfidas.ttc.exceptions.LogMessageVerificationException;
 import de.konfidas.ttc.setup.TestCaseBasisWithCA;
 import org.bouncycastle.asn1.ASN1Integer;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -14,8 +12,6 @@ import java.util.HashMap;
 import static junit.framework.TestCase.fail;
 
 public class TestLogMessageVerifier extends TestCaseBasisWithCA {
-    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-
     @Test
     public void versionElementIsMissingInDTBS() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
 
@@ -39,7 +35,7 @@ public class TestLogMessageVerifier extends TestCaseBasisWithCA {
             AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
 
             //Jetzt brauhen wir einen Verifier
-            HashMap<String, X509Certificate> certiicates = new HashMap<String, X509Certificate>();
+            HashMap<String, X509Certificate> certiicates = new HashMap<>();
             certiicates.put(getClientCertificate().getSerialNumber().toString().toUpperCase(),getClientCertificate());
 
 

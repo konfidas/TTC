@@ -24,9 +24,9 @@ import java.util.HashMap;
 public class LogMessageArchive {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-    ArrayList<LogMessage> all_log_messages = new ArrayList<LogMessage>();
-    HashMap<String, X509Certificate> allClientCertificates = new HashMap<String, X509Certificate>();
-    HashMap<String, X509Certificate> allIntermediateCertificates = new HashMap<String, X509Certificate>();
+    final ArrayList<LogMessage> all_log_messages = new ArrayList<>();
+    final HashMap<String, X509Certificate> allClientCertificates = new HashMap<>();
+    final HashMap<String, X509Certificate> allIntermediateCertificates = new HashMap<>();
     Boolean infoCSVPresent = false;
 
     public LogMessageArchive() throws IOException, BadFormatForTARException {
@@ -47,7 +47,7 @@ public class LogMessageArchive {
          ** Wir lesen nun einmal durch das TAR Archiv (ohne es zu entpacken)*
          ********************************************************************/
         try(TarArchiveInputStream myTarFile = new TarArchiveInputStream(new FileInputStream(tarFile))) {
-            TarArchiveEntry entry = null;
+            TarArchiveEntry entry;
             String individualFileName;
             int offset;
 
@@ -71,7 +71,7 @@ public class LogMessageArchive {
                  ** info.csv *
                  *************/
                 else if (individualFileName.matches("^info.csv")) {
-                    logger.debug("info.csv gefunden. Starte Verarbeitung.", individualFileName);
+                    logger.debug("info.csv gefunden. Starte Verarbeitung.");
                     infoCSVPresent = true;
                     String info_string = new String(content, StandardCharsets.UTF_8);
                     logger.debug("Description laut info.csv: {}", StringUtils.substringsBetween(info_string, "description:\",\"", "\"," )[0]);

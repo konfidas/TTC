@@ -40,14 +40,14 @@ public class Utilities {
     public static int getEncodedLength(ASN1Primitive element) throws IOException, ExtendLengthValueExceedsInteger {
         byte[] elementContent = element.getEncoded();
 
-        if ((byte) elementContent[1] == (byte) 0b10000000) {
+        if (elementContent[1] == (byte) 0b10000000) {
             //indefinte length encoding
             return 0;
         }
 
         else if ((elementContent[1] & 0b10000000) == 0) {
             //Case: Definite length encocding, one byte
-            return Integer.valueOf(elementContent[1]);
+            return elementContent[1];
         }
 
         else {

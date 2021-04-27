@@ -3,7 +3,7 @@ package de.konfidas.ttc.exceptions;
 import de.konfidas.ttc.messages.LogMessage;
 
 public abstract class LogMessageValidationException extends ValidationException{
-    LogMessage msg;
+    final LogMessage msg;
 
     public LogMessageValidationException(LogMessage msg){
         this(msg,null);

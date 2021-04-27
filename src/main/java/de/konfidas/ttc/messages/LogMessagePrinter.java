@@ -83,7 +83,7 @@ public class LogMessagePrinter {
         StringBuilder return_value = new StringBuilder();
 
         if (msg.seAuditData != null) {
-            return_value.append(String.format("seAuditData: %s", msg.seAuditData.toString()));
+            return_value.append(String.format("seAuditData: %s", Hex.encodeHexString(msg.seAuditData)));
             return_value.append(System.lineSeparator());
         }
 
