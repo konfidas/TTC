@@ -1,6 +1,7 @@
 package de.konfidas.ttc.validation;
 
 import de.konfidas.ttc.exceptions.CertificateInconsistentToFilenameException;
+import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import de.konfidas.ttc.utilities.CertificateHelper;
 import org.apache.commons.codec.binary.Hex;

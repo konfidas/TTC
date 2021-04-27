@@ -1,6 +1,7 @@
 package de.konfidas.ttc.validation;
 
 import de.konfidas.ttc.exceptions.BadFormatForTARException;
+import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;

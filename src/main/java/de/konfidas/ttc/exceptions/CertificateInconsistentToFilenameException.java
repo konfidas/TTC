@@ -1,7 +1,5 @@
 package de.konfidas.ttc.exceptions;
 
-import de.konfidas.ttc.validation.ValidationException;
-
 /**
  * Diese Exception wird aus der Methode parse in LogMessageArchiove geworfen. Sie zeigt an,
  * dass beim Laden des Zertifikats ein Fehler aufgetreten ist.  Der Fehler zeigt an, dasa der

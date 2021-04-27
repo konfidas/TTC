@@ -1,23 +1,14 @@
 package de.konfidas.ttc.validation;
 
-import de.konfidas.ttc.exceptions.CertificateInconsistentToFilenameException;
+import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.tars.LogMessageArchive;
-import de.konfidas.ttc.utilities.CertificateHelper;
-import org.apache.commons.codec.binary.Hex;
-import org.bouncycastle.asn1.x500.RDN;
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.asn1.x500.style.IETFUtils;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.*;
 import java.security.cert.CertPathValidatorException;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.ECPublicKey;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;

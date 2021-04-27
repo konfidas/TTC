@@ -1,8 +1,9 @@
 package de.konfidas.ttc.validation;
 
+import de.konfidas.ttc.exceptions.LogMessageValidationException;
+import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.TransactionLogMessage;
-import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.tars.LogMessageArchive;
 
 import java.math.BigInteger;
@@ -90,7 +91,7 @@ public class TransactionCounterValidator implements Validator {
     }
 
 
-    static class DuplicateTransactionCounterFoundException extends LogMessageValidationException{
+    static class DuplicateTransactionCounterFoundException extends LogMessageValidationException {
         TransactionLogMessage msg2;
 
         public DuplicateTransactionCounterFoundException(TransactionLogMessage msg1, TransactionLogMessage msg2) {

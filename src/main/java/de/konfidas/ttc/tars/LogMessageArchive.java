@@ -8,7 +8,7 @@ import de.konfidas.ttc.utilities.CertificateHelper;
 import de.konfidas.ttc.validation.AggregatedValidator;
 import de.konfidas.ttc.validation.CertificateFileNameValidator;
 import de.konfidas.ttc.validation.CertificateValidator;
-import de.konfidas.ttc.validation.ValidationException;
+import de.konfidas.ttc.exceptions.ValidationException;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.lang3.StringUtils;

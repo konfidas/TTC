@@ -1,4 +1,4 @@
-package de.konfidas.ttc.validation;
+package de.konfidas.ttc.exceptions;
 
 import de.konfidas.ttc.exceptions.TtcException;
 import de.konfidas.ttc.messages.LogMessage;

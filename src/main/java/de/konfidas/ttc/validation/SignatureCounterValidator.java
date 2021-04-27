@@ -1,13 +1,13 @@
 package de.konfidas.ttc.validation;
 
+import de.konfidas.ttc.exceptions.LogMessageValidationException;
+import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import org.apache.commons.codec.binary.Hex;
 
 import java.math.BigInteger;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 public class SignatureCounterValidator implements Validator{
@@ -60,7 +60,7 @@ public class SignatureCounterValidator implements Validator{
         return result;
     }
 
-    static class SignatureCounterMissingException extends LogMessageValidationException{
+    static class SignatureCounterMissingException extends LogMessageValidationException {
         String serial;
         BigInteger expected;
         BigInteger foundNext;

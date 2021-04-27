@@ -1,5 +1,7 @@
 package de.konfidas.ttc.validation;
 
+import de.konfidas.ttc.exceptions.LogMessageValidationException;
+import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.SystemLogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
@@ -54,7 +56,7 @@ public class TimeStampValidator implements Validator{
         return result;
     }
 
-    static class LogTimeMissMatchException extends LogMessageValidationException{
+    static class LogTimeMissMatchException extends LogMessageValidationException {
         LogTime previousLogTime;
 
         LogTimeMissMatchException(LogMessage msg, LogTime previousLogTime){
