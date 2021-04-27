@@ -1,6 +1,5 @@
 package de.konfidas.ttc.tars;
 
-import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import de.konfidas.ttc.validation.AggregatedValidator;
 import de.konfidas.ttc.validation.CertificateFileNameValidator;
 import de.konfidas.ttc.validation.LogMessageSignatureValidator;
@@ -14,14 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
 public class LogMessageArchiveTestParsingFailing {

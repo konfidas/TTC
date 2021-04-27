@@ -3,12 +3,8 @@ package de.konfidas.ttc.tars;
 import de.konfidas.ttc.exceptions.*;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.LogMessageFactory;
-import de.konfidas.ttc.messages.LogMessageSignatureVerifier;
 import de.konfidas.ttc.utilities.CertificateHelper;
-import de.konfidas.ttc.validation.AggregatedValidator;
-import de.konfidas.ttc.validation.CertificateFileNameValidator;
-import de.konfidas.ttc.validation.CertificateValidator;
-import de.konfidas.ttc.exceptions.ValidationException;
+
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.lang3.StringUtils;
@@ -22,8 +18,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 
 

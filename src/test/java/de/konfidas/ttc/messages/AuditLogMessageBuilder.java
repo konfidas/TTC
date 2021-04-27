@@ -6,7 +6,6 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DEROctetString;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Random;
 import static de.konfidas.ttc.setup.Utilities.getEncodedValue;
 public class AuditLogMessageBuilder extends LogMessageBuilder {

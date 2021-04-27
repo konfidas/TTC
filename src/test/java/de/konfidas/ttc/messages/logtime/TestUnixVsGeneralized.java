@@ -7,7 +7,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

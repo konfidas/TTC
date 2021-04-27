@@ -1,10 +1,8 @@
 package de.konfidas.ttc.messages.logtime;
 
-import de.konfidas.ttc.exceptions.TtcException;
 import org.bouncycastle.asn1.ASN1UTCTime;
 
 import java.text.ParseException;
-import java.time.LocalDateTime;
 
 public class UtcLogTime extends LogTime{
     long time;

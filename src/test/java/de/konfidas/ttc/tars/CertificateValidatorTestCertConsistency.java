@@ -3,7 +3,6 @@ package de.konfidas.ttc.tars;
 import de.konfidas.ttc.exceptions.CertificateInconsistentToFilenameException;
 import de.konfidas.ttc.utilities.CertificateHelper;
 import de.konfidas.ttc.validation.CertificateFileNameValidator;
-import de.konfidas.ttc.validation.CertificateValidator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;

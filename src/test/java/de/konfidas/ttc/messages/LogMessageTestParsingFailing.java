@@ -1,7 +1,6 @@
 package de.konfidas.ttc.messages;
 
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
-import de.konfidas.ttc.tars.LogMessageArchiveTestParsingSuccessfully;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;

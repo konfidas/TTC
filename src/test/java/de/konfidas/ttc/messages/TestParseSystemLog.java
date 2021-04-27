@@ -1,7 +1,5 @@
 package de.konfidas.ttc.messages;
 
-import de.konfidas.ttc.TTC;
-
 import de.konfidas.ttc.messages.logtime.UnixLogTime;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;

@@ -7,13 +7,11 @@ import org.bouncycastle.util.encoders.Base64;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.util.Arrays;
-import java.util.Random;
 
 public class Utilities {
 

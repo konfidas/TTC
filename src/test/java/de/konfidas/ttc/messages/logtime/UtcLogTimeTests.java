@@ -1,6 +1,5 @@
 package de.konfidas.ttc.messages.logtime;
 
-import org.bouncycastle.asn1.ASN1GeneralizedTime;
 import org.bouncycastle.asn1.ASN1UTCTime;
 import org.junit.Test;
 
