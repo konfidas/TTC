@@ -1,10 +1,12 @@
 package de.konfidas.ttc;
 
 import de.konfidas.ttc.exceptions.CertificateLoadException;
+import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.LogMessagePrinter;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import de.konfidas.ttc.utilities.CertificateHelper;
+import de.konfidas.ttc.validation.*;
 import org.apache.commons.cli.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.security.Security;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
+import java.util.Collections;
 
 import static ch.qos.logback.classic.Level.*;
 
@@ -67,7 +71,30 @@ public class TTC {
                 logger.debug(LogMessagePrinter.printMessage(message));
             }
 
-            tar.verify(trustedCert, cmd.hasOption("o"));
+            AggregatedValidator validator = new AggregatedValidator()
+                    .add(new CertificateFileNameValidator())
+                    .add(new TimeStampValidator())
+                    .add(new SignatureCounterValidator())
+                    .add(new LogMessageSignatureValidator());
+
+            if(cmd.hasOption("o")) {
+                validator.add(new CertificateValidator(Collections.singleton(trustedCert)));
+            }
+
+            Collection<ValidationException> errors = validator.validate(tar);
+            if(!errors.isEmpty()){
+                logger.debug("there were Errors while Validating:");
+
+                for(ValidationException e : errors){
+                    if(e instanceof CertificateValidator.CertificateValidationException){
+                        CertificateValidator.CertificateValidationException c = (CertificateValidator.CertificateValidationException) e;
+                        logger.debug("failed to verify "+c.getCert()+" with error:");
+                        logger.debug(c.getError().toString());
+                    }else{
+                        logger.debug("Error during validation "+ e.toString());
+                    }
+                }
+            }
 
         }
         catch (Exception e) {

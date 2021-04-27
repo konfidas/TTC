@@ -6,7 +6,11 @@ public abstract class LogMessageValidationException extends ValidationException{
     LogMessage msg;
 
     public LogMessageValidationException(LogMessage msg){
-        super("Validating Log Message "+msg.getFileName()+" failed",null);
+        this(msg,null);
+    }
+
+    public LogMessageValidationException(LogMessage msg, Throwable t){
+        super("Validating Log Message "+msg.getFileName()+" failed",t);
         this.msg = msg;
     }
 

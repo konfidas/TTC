@@ -1,6 +1,10 @@
 package de.konfidas.ttc.tars;
 
 import de.konfidas.ttc.exceptions.BadFormatForTARException;
+import de.konfidas.ttc.validation.AggregatedValidator;
+import de.konfidas.ttc.validation.CertificateFileNameValidator;
+import de.konfidas.ttc.validation.LogMessageSignatureValidator;
+import de.konfidas.ttc.validation.Validator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
@@ -48,18 +53,18 @@ public class LogMessageArchiveTestParsingFailing {
     }
 
     @Test
-    public void parse() throws IOException{
+    public void parse() throws Exception{
         logger.info("");
         logger.info("============================================================================");
         logger.info("testing tar file {}:", file.getName());
 
-        try {
-            LogMessageArchive tar = new LogMessageArchive(this.file);
+        LogMessageArchive tar = new LogMessageArchive(this.file);
 
-            fail("Log Message parsing successful, but expected to fail");
-        }catch(IOException | BadFormatForTARException e){
-            // expected behaviour
-        }
+        Validator v = new AggregatedValidator()
+                    .add(new CertificateFileNameValidator())
+                    .add(new LogMessageSignatureValidator());
+
+        assertFalse(v.validate(tar).isEmpty());
 
     }
 }

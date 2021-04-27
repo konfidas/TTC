@@ -37,7 +37,7 @@ public class CertificateFileNameValidator implements Validator {
         String keyHashFromFilename = filename.split("_")[0].toUpperCase();
 
         if (!(certSubjectClean.equals(keyHashFromFilename))){
-            throw new CertificateInconsistentToFilenameException.FilenameToSubjectMismatchException(filename, keyHashFromFilename);
+            throw new CertificateInconsistentToFilenameException.FilenameToSubjectMismatchException(certSubjectClean, keyHashFromFilename);
         }
 
         MessageDigest digest = null;
@@ -62,14 +62,6 @@ public class CertificateFileNameValidator implements Validator {
         LinkedList<ValidationException> errors = new LinkedList<>();
 
         for(Map.Entry<String, X509Certificate> entry : tar.getClientCertificates().entrySet()) {
-            try {
-                validateCertificateAgainstFilename(entry.getValue(),entry.getKey());
-            }catch (CertificateInconsistentToFilenameException e) {
-                errors.add(e);
-            }
-        }
-
-        for(Map.Entry<String, X509Certificate> entry : tar.getIntermediateCertificates().entrySet()) {
             try {
                 validateCertificateAgainstFilename(entry.getValue(),entry.getKey());
             }catch (CertificateInconsistentToFilenameException e) {
