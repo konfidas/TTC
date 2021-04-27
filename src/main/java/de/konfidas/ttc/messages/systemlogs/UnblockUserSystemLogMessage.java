@@ -1,6 +1,7 @@
-package de.konfidas.ttc.messages;
+package de.konfidas.ttc.messages.systemlogs;
 
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
+import de.konfidas.ttc.messages.SystemLogMessage;
 import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.*;
