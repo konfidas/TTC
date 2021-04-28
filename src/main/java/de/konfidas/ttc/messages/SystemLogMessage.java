@@ -33,14 +33,26 @@ public abstract class SystemLogMessage extends LogMessage {
 
 
     @Override
-        void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-
-//
+    void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
         parseOperationType(dtbsStream, logMessageAsASN1List, logMessageIterator);
         parseSystemOperationDataElement(dtbsStream, logMessageAsASN1List, logMessageIterator);
-        parseSystemOperationDataContent(systemOperationData);
-        parseAdditionalInternalData(dtbsStream, logMessageAsASN1List, logMessageIterator);
 
+
+        // systemOperationData has tag 0x81 (i.e. context-specific, not-constructed, but contains a constructed element
+        // so BouncyCastle does not parse the content (because the tag does not signal, that there is ASN1 Structure within to parse.
+        // for this reason, we have to manually parse the content, which we do here:
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        systemOperationData.encodeTo(baos);
+        byte[] content = baos.toByteArray();
+        content[0] = 0x30;
+
+        try(ASN1InputStream inputStreamDecoder = new ASN1InputStream(content)) {
+            parseSystemOperationDataContent(inputStreamDecoder);
+        }
+        // A clean solution would be, to fix the ASN1 definition of systemlogs and use a context-specific constructed tag here, i.e. 0xA1 instead of 0x81,
+        // but this requires TR-03151 to be fixed.
+
+        parseAdditionalInternalData(dtbsStream, logMessageAsASN1List, logMessageIterator);
     }
 
 
@@ -82,7 +94,7 @@ public abstract class SystemLogMessage extends LogMessage {
 
     }
 
-    abstract void parseSystemOperationDataContent(DLTaggedObject element) throws LogMessageParsingException, IOException;
+    protected abstract void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException;
 
     void parseAdditionalInternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("AdditionalInternalData element not found"); }

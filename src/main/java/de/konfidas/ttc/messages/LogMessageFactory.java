@@ -1,6 +1,7 @@
 package de.konfidas.ttc.messages;
 
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
+import de.konfidas.ttc.messages.systemlogs.UnblockUserSystemLogMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
