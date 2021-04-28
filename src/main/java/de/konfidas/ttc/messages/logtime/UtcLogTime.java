@@ -1,14 +1,25 @@
 package de.konfidas.ttc.messages.logtime;
 
-public class UtcLogTime extends LogTime{
-    String time;
+import org.bouncycastle.asn1.ASN1UTCTime;
 
-    public UtcLogTime(String time) {
-        this.time = time;
+import java.text.ParseException;
+
+public class UtcLogTime extends LogTime{
+    final long time;
+    final ASN1UTCTime element;
+
+    public UtcLogTime(ASN1UTCTime element) throws ParseException {
+        this.element = element;
+        this.time = element.getDate().getTime();
     }
 
     @Override
     public String toString(){
+        return element.getTime();
+    }
+
+    @Override
+    public long getTime() {
         return time;
     }
 
@@ -16,4 +27,5 @@ public class UtcLogTime extends LogTime{
     public Type getType() {
         return Type.UTC;
     }
-}
+
+  }

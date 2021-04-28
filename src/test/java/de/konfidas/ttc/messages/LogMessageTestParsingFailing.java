@@ -1,7 +1,6 @@
 package de.konfidas.ttc.messages;
 
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
-import de.konfidas.ttc.tars.LogMessageArchiveTestParsingSuccessfully;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +23,7 @@ public class LogMessageTestParsingFailing {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     final static File brokenLogs = new File("D:\\testdata\\brokenLogs"); // TODO: as soon as we have publish-able test data, point path to it.
 
-    File file;
+    final File file;
 
     @Before
     public void initialize() {
@@ -33,10 +32,10 @@ public class LogMessageTestParsingFailing {
 
 
     @Parameterized.Parameters
-    public static Collection filesToTest(){
+    public static Collection<File> filesToTest(){
 
         logger.info("checking for Logs in "+brokenLogs.getName());
-        if(null == brokenLogs || !brokenLogs.isDirectory()){
+        if(!brokenLogs.isDirectory() || brokenLogs.listFiles() == null){
             logger.error("not a directory.");
             return Collections.EMPTY_LIST;
         }
@@ -55,8 +54,7 @@ public class LogMessageTestParsingFailing {
         logger.info("parsing log message {}:", file.getName());
 
         try {
-            LogMessage msg = LogMessageFactory.createLogMessage(this.file);
-
+            LogMessageFactory.createLogMessage(this.file);
             fail("Log message was parsed, but expected to fail.");
         }catch(BadFormatForLogMessageException e){
             // expected exception

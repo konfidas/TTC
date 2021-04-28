@@ -11,12 +11,12 @@ import java.nio.file.Files;
 public class LogMessageFactory {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-    public static LogMessage createLogMessage(File file) throws BadFormatForLogMessageException, IOException {
+    public static LogMessageImplementation createLogMessage(File file) throws BadFormatForLogMessageException, IOException {
         return createLogMessage(file.getName(), Files.readAllBytes(file.toPath()));
     }
 
 
-    public static LogMessage createLogMessage(String fileName, byte[] content) throws BadFormatForLogMessageException {
+    public static LogMessageImplementation createLogMessage(String fileName, byte[] content) throws BadFormatForLogMessageException {
 
         if (fileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+(Start|Update|Finish)_Client-.+log")) {
             logger.debug("{} scheint eine TransactionLog zu sein. Starte Verarbeitung.", fileName);

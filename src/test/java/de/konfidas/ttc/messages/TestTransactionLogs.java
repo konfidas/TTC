@@ -23,7 +23,7 @@ public static String[][] provideParameters() {
     @ParameterizedTest
     @MethodSource("provideParameters")
     public void testValidTransactionLogMessage(String builderClassString, String operationTypeString) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        ;
+
         Class<?> builderClass = Class.forName(builderClassString);
         TransactionLogMessageBuilder builder = (TransactionLogMessageBuilder) builderClass.getDeclaredConstructor().newInstance();
 
@@ -49,7 +49,7 @@ public static String[][] provideParameters() {
     @ParameterizedTest
     @MethodSource("provideParameters")
     public void startTransactionLogMessageWithInvalidOperationType(String builderClassString, String operationTypeString) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        ;
+
         Class<?> builderClass = Class.forName(builderClassString);
         TransactionLogMessageBuilder builder = (TransactionLogMessageBuilder) builderClass.getDeclaredConstructor().newInstance();
 
@@ -70,18 +70,16 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
-            //Exptected
-            return;
+            fail("Transaction Log Message parsing successful, but expected to fail");
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
+            //Expected
         }
-        fail("Transaction Log Message parsing successful, but expected to fail");
-
     }
 
     @ParameterizedTest
     @MethodSource("provideParameters")
     public void startTransactionLogMessageWithoutOperationType(String builderClassString, String operationTypeString) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        ;
+
         Class<?> builderClass = Class.forName(builderClassString);
         TransactionLogMessageBuilder builder = (TransactionLogMessageBuilder) builderClass.getDeclaredConstructor().newInstance();
 
@@ -101,18 +99,16 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
+            fail("Transaction Log Message parsing successful, but expected to fail");
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             //Expected
-            return;
         }
-        fail("Transaction Log Message parsing successful, but expected to fail");
-
     }
 
     @ParameterizedTest
     @MethodSource("provideParameters")
     public void startTransactionLogMessageWithoutClientID(String builderClassString, String operationTypeString) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
-        ;
+
         Class<?> builderClass = Class.forName(builderClassString);
         TransactionLogMessageBuilder builder = (TransactionLogMessageBuilder) builderClass.getDeclaredConstructor().newInstance();
 
@@ -132,18 +128,16 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
+            fail("Transaction Log Message parsing successful, but expected to fail");
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             //Expected
-            return;
         }
-        fail("Transaction Log Message parsing successful, but expected to fail");
-
     }
 
     @ParameterizedTest
     @MethodSource("provideParameters")
     public void startTransactionLogMessageWithoutProcessData(String builderClassString, String operationTypeString) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, ClassNotFoundException {
-        ;
+
         Class<?> builderClass = Class.forName(builderClassString);
         TransactionLogMessageBuilder builder = (TransactionLogMessageBuilder) builderClass.getDeclaredConstructor().newInstance();
 
@@ -163,13 +157,12 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
+            fail("Transaction Log Message parsing successful, but expected to fail");
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             //Expected
-            return;
         }
-        fail("Transaction Log Message parsing successful, but expected to fail");
-
     }
+
     @ParameterizedTest
     @MethodSource("provideParameters")
     public void startTransactionLogMessageWithoutProcessType(String builderClassString, String operationTypeString) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -193,17 +186,16 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
+            fail("Transaction Log Message parsing successful, but expected to fail");
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             //Expected
-            return;
         }
-        fail("Transaction Log Message parsing successful, but expected to fail");
-
     }
+
     @ParameterizedTest
     @MethodSource("provideParameters")
     public void startTransactionLogMessageWithAdditionalExternalData(String builderClassString, String operationTypeString) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        ;
+
         Class<?> builderClass = Class.forName(builderClassString);
         TransactionLogMessageBuilder builder = (TransactionLogMessageBuilder) builderClass.getDeclaredConstructor().newInstance();
 
@@ -224,13 +216,11 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             fail("Transaction Log Message parsing with Additional External Data failed");
-
         }
-
-
     }
+
     @ParameterizedTest
     @MethodSource("provideParameters")
     public void startTransactionLogMessageWithAdditionalInternalData(String builderClassString, String operationTypeString) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -255,13 +245,11 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             fail("Transaction Log Message parsing with Additional Internal Data failed");
-
         }
-
-
     }
+
     @ParameterizedTest
     @MethodSource("provideParameters")
     public void startTransactionLogMessageWithAdditionalInternalDataAndAdditionalExternalData(String builderClassString, String operationTypeString) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
@@ -287,7 +275,7 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             fail("Transaction Log Message parsing with Additional Internal Data and AdditionalExternalData failed");
 
         }
@@ -317,7 +305,7 @@ public static String[][] provideParameters() {
         String filename = builder.getFilename();
         try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             //Expected
             return;
         }
@@ -354,11 +342,9 @@ public static String[][] provideParameters() {
             byte[] processDataFromBuiltTransactionLog = transactionLogMessage.getProcessData();
             assert (processDataFromBuiltTransactionLog.length == sizeProcessDataInByte);
 
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             fail("Transaction Log Message parsing failed with one element that has extended length");
-            return;
         }
-
     }
 
     @ParameterizedTest
@@ -390,10 +376,9 @@ public static String[][] provideParameters() {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
             byte[] processDataFromBuiltTransactionLog = transactionLogMessage.getProcessData();
             assert (processDataFromBuiltTransactionLog.length == randomSizeProcessDataInByte);
-        } catch (LogMessage.LogMessageParsingException e) {
+        } catch (LogMessageImplementation.LogMessageParsingException e) {
             fail("Transaction Log Message parsing failed with random process data (ha extended length)");
         }
-        return;
     }
 
 

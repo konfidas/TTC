@@ -1,8 +1,13 @@
 package de.konfidas.ttc.tars;
 
 import de.konfidas.ttc.exceptions.BadFormatForTARException;
+import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.LogMessagePrinter;
+import de.konfidas.ttc.validation.AggregatedValidator;
+import de.konfidas.ttc.validation.CertificateFileNameValidator;
+import de.konfidas.ttc.validation.LogMessageSignatureValidator;
+import de.konfidas.ttc.validation.Validator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,8 +21,8 @@ import java.io.IOException;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
@@ -25,7 +30,7 @@ public class LogMessageArchiveTestParsingSuccessfully {
     final static Logger logger = LoggerFactory.getLogger(LogMessageArchiveTestParsingSuccessfully.class);
     final static File correctTarFiles = new File("testdata/positive/");
 
-    File file;
+    final File file;
 
     @Before
     public void initialize() {
@@ -34,14 +39,12 @@ public class LogMessageArchiveTestParsingSuccessfully {
 
 
     @Parameterized.Parameters
-    public static Collection filesToTest(){
+    public static Collection<File> filesToTest(){
 
         logger.info("checking for Tars in "+correctTarFiles.getName());
-        if(null == correctTarFiles || !correctTarFiles.isDirectory()){
+        if(!correctTarFiles.isDirectory() || correctTarFiles.listFiles() == null){
             fail("not a directory.");
         }
-
-
         return Arrays.asList(correctTarFiles.listFiles());
     }
 
@@ -56,11 +59,15 @@ public class LogMessageArchiveTestParsingSuccessfully {
         logger.info("============================================================================");
         logger.info("testing tar file {}:", file.getName());
 
-        LogMessageArchive tar  = new LogMessageArchive(this.file);
-        for (LogMessage message : tar.getAll_log_messages()) {
+        LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
+        for (LogMessage message : tar.getLogMessages()) {
             logger.info(LogMessagePrinter.printMessage(message));
-            int a =0;
         }
-        tar.verify(null,false);
+        Validator v = new AggregatedValidator()
+                .add(new CertificateFileNameValidator())
+                .add(new LogMessageSignatureValidator());
+
+        Collection<ValidationException> errors = v.validate(tar);
+        assertTrue(errors.isEmpty());
     }
 }

@@ -41,17 +41,16 @@ public class TestSubCAFactory {
     }
 
 
-    Date startDate = new Date(new Date().getTime());
-    Date endDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);  //Today + 1000 days
-    private String signatureAlgorithm = "SHA256withECDSA";
-    private int keySize = 384;
-    private X509Certificate rootCert;
-    private BigInteger subCASerialNum = new BigInteger(Long.toString(new SecureRandom().nextLong()));
-    private KeyPair rootKeyPair;
-    private String keyAlgorithm = "EC";
-    private String commonName = "subca-cert";
+    final Date startDate = new Date(new Date().getTime());
+    final Date endDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);  //Today + 1000 days
+    final String signatureAlgorithm = "SHA256withECDSA";
+    final int keySize = 384;
+    final X509Certificate rootCert;
+    final BigInteger subCASerialNum = new BigInteger(Long.toString(new SecureRandom().nextLong()));
+    final KeyPair rootKeyPair;
+    final String keyAlgorithm = "EC";
+    final String commonName = "subca-cert";
     X509Certificate subCACert  = null;
-    X509Certificate rootCertificate  = null;
     KeyPair subCAKeyPair = null;
 
 
@@ -66,7 +65,7 @@ public class TestSubCAFactory {
          ** Erst wird ein Schlüsselpaar erzeugt *
          ****************************************/
 
-        KeyPairGenerator keyPairGenerator = null;
+        KeyPairGenerator keyPairGenerator;
         try {
             keyPairGenerator = KeyPairGenerator.getInstance(keyAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
         }

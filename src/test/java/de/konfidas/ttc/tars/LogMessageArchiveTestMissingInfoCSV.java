@@ -24,7 +24,7 @@ public class LogMessageArchiveTestMissingInfoCSV {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     final static File brokenTarFiles = new File("testdata/negative/testdata_no_info_csv/");
 
-    File file;
+    final File file;
 
     @Before
     public void initialize() {
@@ -33,12 +33,10 @@ public class LogMessageArchiveTestMissingInfoCSV {
 
 
     @Parameterized.Parameters
-    public static Collection filesToTest() {
+    public static Collection<File> filesToTest() {
 
         logger.info("checking for Tars in " + brokenTarFiles.getName());
-        if (null == brokenTarFiles || !brokenTarFiles.isDirectory()) {
-            fail("not a directory.");
-
+        if (!brokenTarFiles.isDirectory() || brokenTarFiles.listFiles() == null) {
             return Collections.EMPTY_LIST;
         }
 
@@ -56,13 +54,11 @@ public class LogMessageArchiveTestMissingInfoCSV {
         logger.info("testing tar file {}:", file.getName());
 
         try {
-            LogMessageArchive tar = new LogMessageArchive(this.file);
-
+            new LogMessageArchiveImplementation(this.file);
             fail("Log Message parsing successful, but expected to fail");
         }
-        catch (IOException | BadFormatForTARException e) {
+        catch (BadFormatForTARException e) {
             // expected behaviour
-
         }
 
     }

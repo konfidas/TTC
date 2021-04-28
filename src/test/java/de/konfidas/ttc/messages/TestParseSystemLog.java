@@ -1,12 +1,8 @@
 package de.konfidas.ttc.messages;
 
-import de.konfidas.ttc.TTC;
-
 import de.konfidas.ttc.messages.logtime.UnixLogTime;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
 
@@ -14,8 +10,6 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.fail;
 
 public class TestParseSystemLog {
-    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-
     @Test
     public void parseNoAdditionalInputData() throws Exception {
         String hex = "30 49" +
@@ -285,7 +279,7 @@ public class TestParseSystemLog {
         try {
             SystemLogMessage msg = new SystemLogMessage(systemLog, "");
             fail();
-        }catch(LogMessage.CertifiedDataTypeParsingException e){
+        }catch(LogMessageImplementation.CertifiedDataTypeParsingException e){
             // expected
         }
     }
@@ -322,7 +316,7 @@ public class TestParseSystemLog {
         try {
             SystemLogMessage msg = new SystemLogMessage(systemLog, "");
             fail();
-        }catch(LogMessage.CertifiedDataTypeParsingException e){
+        }catch(LogMessageImplementation.CertifiedDataTypeParsingException e){
             // expected
         }
     }
@@ -394,7 +388,7 @@ public class TestParseSystemLog {
         try {
             SystemLogMessage msg = new SystemLogMessage(systemLog, "");
 
-    }catch(LogMessage.LogMessageParsingException e){
+    }catch(LogMessageImplementation.LogMessageParsingException e){
         // expected
     }
 

@@ -1,10 +1,12 @@
 package de.konfidas.ttc;
 
 import de.konfidas.ttc.exceptions.CertificateLoadException;
+import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.LogMessagePrinter;
-import de.konfidas.ttc.tars.LogMessageArchive;
+import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
 import de.konfidas.ttc.utilities.CertificateHelper;
+import de.konfidas.ttc.validation.*;
 import org.apache.commons.cli.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.LoggerFactory;
@@ -15,16 +17,19 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.security.Security;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
+import java.util.Collections;
 
 import static ch.qos.logback.classic.Level.*;
 
 public class TTC {
 
-    private static Options options = new Options();
     final static ch.qos.logback.classic.Logger logger =  (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
         Security.addProvider(new BouncyCastleProvider());
+
+        Options options = new Options();
 
         options.addOption("i", "inputTAR", true, "Das TAR Archiv, das geprüft werden soll.");
         options.addOption("t", "trustAnker", true, "Trust Anker in Form eines X.509 Zertifikats für die Root-CA");
@@ -33,9 +38,9 @@ public class TTC {
 
         CommandLineParser parser = new DefaultParser();
 //        CommandLineParser parser = new GnuParser();
-        CommandLine cmd = null;
+        CommandLine cmd;
 
-        String trustCertPath = "";
+        String trustCertPath;
         X509Certificate trustedCert = null;
 
         /*********************************
@@ -46,10 +51,10 @@ public class TTC {
             if (cmd.hasOption("v")){
                 logger.setLevel(DEBUG);
             }
-            if (cmd.hasOption("i") == false) {
+            if (!cmd.hasOption("i")) {
                 System.err.println("Fehler beim Parsen der Kommandozeile. Kein TAR-Archiv zur Prüfung angegeben");
             }
-            if (cmd.hasOption("t") == false && cmd.hasOption("o") == false) {
+            if (!(cmd.hasOption("t")  ||cmd.hasOption("o"))) {
                 System.err.println("Fehler beim Parsen der Kommandozeile. Es muss entweder ein TrustStore für Root-Zertifikate angegeben werden (Option t) oder auf die Prüfung von Zertifikaten verzichtet werden (Option -o)");
             }
 
@@ -61,16 +66,37 @@ public class TTC {
                     e.printStackTrace();
                 }
             }
-            String tttt =cmd.getOptionValue("i");
-            LogMessageArchive tar = new LogMessageArchive(new File(cmd.getOptionValue("i")));
-            for (LogMessage message : tar.getAll_log_messages()) {
+
+            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(new File(cmd.getOptionValue("i")));
+            for (LogMessage message : tar.getLogMessages()) {
                 logger.debug(LogMessagePrinter.printMessage(message));
             }
 
-            tar.verify(trustedCert, cmd.hasOption("o"));
+            AggregatedValidator validator = new AggregatedValidator()
+                    .add(new CertificateFileNameValidator())
+                    .add(new TimeStampValidator())
+                    .add(new SignatureCounterValidator())
+                    .add(new LogMessageSignatureValidator());
 
-        }
-        catch (Exception e) {
+            if(cmd.hasOption("o")) {
+                validator.add(new CertificateValidator(Collections.singleton(trustedCert)));
+            }
+
+            Collection<ValidationException> errors = validator.validate(tar);
+            if(!errors.isEmpty()){
+                logger.debug("there were Errors while Validating:");
+
+                for(ValidationException e : errors){
+                    if(e instanceof CertificateValidator.CertificateValidationException){
+                        CertificateValidator.CertificateValidationException c = (CertificateValidator.CertificateValidationException) e;
+                        logger.debug("failed to verify "+c.getCert()+" with error:");
+                        logger.debug(c.getCause().toString());
+                    }else{
+                        logger.debug("Error during validation "+ e.toString());
+                    }
+                }
+            }
+        } catch (Exception e) {
             logger.error("Fehler beim parsen der Kommandozeile. " + e.getLocalizedMessage());
         }
     }

@@ -37,17 +37,16 @@ import static de.konfidas.ttc.setup.Utilities.writeCertToFileBase64Encoded;
 
 public class TestClientCertificateFactory {
 
-    Date startDate = new Date(new Date().getTime());
-    Date endDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);  //Today + 1000 days
-    String signatureAlgorithm = "SHA256withECDSA";
-    int keySize = 384;
+    final Date startDate = new Date(new Date().getTime());
+    final Date endDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 24);  //Today + 1000 days
+    final String signatureAlgorithm = "SHA256withECDSA";
+    final int keySize = 384;
 
-    X509Certificate rootCert;
-    BigInteger clientCertSerialNum = new BigInteger(Long.toString(new SecureRandom().nextLong()));
+    final BigInteger clientCertSerialNum = new BigInteger(Long.toString(new SecureRandom().nextLong()));
     KeyPair signingKeyPair;
-    String keyAlgorithm = "EC";
+    final String keyAlgorithm = "EC";
     X509Certificate clientCert;
-    X509Certificate signingCertificate;
+    final X509Certificate signingCertificate;
 
     public KeyPair getClientKeyPair() {
         return clientKeyPair;
@@ -71,7 +70,7 @@ public class TestClientCertificateFactory {
          ** Schlüsselpaar erzeugen, Hash des privateKey ermitteln *
          **********************************************************/
 
-        KeyPairGenerator keyPairGenerator = null;
+        KeyPairGenerator keyPairGenerator;
         try {
             keyPairGenerator = KeyPairGenerator.getInstance(keyAlgorithm, BouncyCastleProvider.PROVIDER_NAME);
         }
@@ -82,12 +81,12 @@ public class TestClientCertificateFactory {
         clientKeyPair = keyPairGenerator.generateKeyPair();
         byte[] encodedCertPublicKey = CertificateHelper.publicKeyToUncompressedPoint((ECPublicKey) clientKeyPair.getPublic());
 
-        MessageDigest digest = null;
+        MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
         }
         catch (NoSuchAlgorithmException e) {
-            throw new ClientCertificateCreationException(String.format("Fehler bei der Erzeugung der Test-CA. Der Hash-Algorithmus wurde nicht gefunden"), e);
+            throw new ClientCertificateCreationException("Fehler bei der Erzeugung der Test-CA. Der Hash-Algorithmus wurde nicht gefunden", e);
         }
 
         byte[] hash = digest.digest(encodedCertPublicKey);
@@ -114,12 +113,12 @@ public class TestClientCertificateFactory {
         X509v3CertificateBuilder clientCertBuilder = new X509v3CertificateBuilder(clientCertIssuer, clientCertSerialNum, startDate, endDate, csr.getSubject(), csr.getSubjectPublicKeyInfo());
 
 
-        JcaX509ExtensionUtils clientCertExtUtils = null;
+        JcaX509ExtensionUtils clientCertExtUtils;
         try {
             clientCertExtUtils = new JcaX509ExtensionUtils();
         }
         catch (NoSuchAlgorithmException e) {
-            throw new ClientCertificateCreationException(String.format("Fehler bei der Erzeugung des ClientCert."), e);
+            throw new ClientCertificateCreationException("Fehler bei der Erzeugung des ClientCert.", e);
         }
 
         try {
@@ -131,7 +130,7 @@ public class TestClientCertificateFactory {
             clientCertBuilder.addExtension(Extension.keyUsage, false, new KeyUsage(KeyUsage.keyEncipherment));
         }
         catch (CertIOException | CertificateException e) {
-            throw new ClientCertificateCreationException(String.format("Fehler bei der Erzeugung des ClientCert. Fehler beim Hinzufügen von Extensions."), e);
+            throw new ClientCertificateCreationException("Fehler bei der Erzeugung des ClientCert. Fehler beim Hinzufügen von Extensions.", e);
         }
 
         X509CertificateHolder clientCertHolder = clientCertBuilder.build(csrContentSigner);
@@ -139,7 +138,7 @@ public class TestClientCertificateFactory {
             clientCert = new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(clientCertHolder);
         }
         catch (CertificateException e) {
-            throw new ClientCertificateCreationException(String.format("Fehler bei der Erzeugung des ClientCert. Fehler beim Extrahieren des Zertifikats"), e);
+            throw new ClientCertificateCreationException("Fehler bei der Erzeugung des ClientCert. Fehler beim Extrahieren des Zertifikats", e);
         }
 
         /******************************************************************
@@ -149,7 +148,7 @@ public class TestClientCertificateFactory {
             clientCert.verify(signingCertificate.getPublicKey(), BouncyCastleProvider.PROVIDER_NAME);
         }
         catch (CertificateException | NoSuchAlgorithmException | InvalidKeyException | NoSuchProviderException | SignatureException e) {
-            throw new ClientCertificateCreationException(String.format("Fehler bei der Erzeugung des ClientCert. Das erzeugte Zertifikat konnte nicht verifziert werden."), e);
+            throw new ClientCertificateCreationException("Fehler bei der Erzeugung des ClientCert. Das erzeugte Zertifikat konnte nicht verifziert werden.", e);
         }
     }
 
