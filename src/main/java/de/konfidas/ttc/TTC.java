@@ -37,7 +37,6 @@ public class TTC {
         options.addOption("v", "overwriteCertCheck", false, "Wenn diese Option gesetzt wird, gibt TTC detaillierte Informationen aus.");
 
         CommandLineParser parser = new DefaultParser();
-//        CommandLineParser parser = new GnuParser();
         CommandLine cmd;
 
         String trustCertPath;

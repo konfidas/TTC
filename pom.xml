@@ -7,7 +7,7 @@
 
     <groupId>com.konfidas</groupId>
     <artifactId>TTC</artifactId>
-    <version>0.1-PRE-ALPHA</version>
+    <version>0.2-PRE-ALPHA</version>
     <dependencies>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -96,7 +96,7 @@
                     <manifest>
                         <addClasspath>true</addClasspath>
                         <classpathPrefix>lib/</classpathPrefix>
-                        <mainClass>TTC</mainClass>
+                        <mainClass>de.konfidas.ttc.TTC</mainClass>
 
                     </manifest>
 <!--                    <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>-->
