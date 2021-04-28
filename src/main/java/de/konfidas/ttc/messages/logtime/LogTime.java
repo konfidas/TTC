@@ -12,6 +12,15 @@ public abstract class LogTime{
         return this.getTime() <= logTime.getTime();
     }
 
+    @Override
+    public boolean equals(Object t){
+        if(t instanceof LogTime) {
+            return ((LogTime)t).wasNotAfter(this) && this.wasNotAfter((LogTime)t);
+        }else{
+            return false;
+        }
+    }
+
     public abstract long getTime();
     public abstract Type getType();
 }

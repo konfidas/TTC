@@ -17,8 +17,7 @@ public class UtcLogTimeTests {
         UtcLogTime t1 = new UtcLogTime(element);
         UtcLogTime t2 = new UtcLogTime(element);
 
-        assertTrue(t1.wasNotAfter(t2));
-        assertTrue(t2.wasNotAfter(t1));
+        assertTrue(t1.equals(t2));
     }
 
     @Test
@@ -29,8 +28,7 @@ public class UtcLogTimeTests {
         UtcLogTime t1 = new UtcLogTime(element);
         UtcLogTime t2 = new UtcLogTime(element);
 
-        assertTrue(t1.wasNotAfter(t2));
-        assertTrue(t2.wasNotAfter(t1));
+        assertTrue(t1.equals(t2));
     }
 
 
@@ -39,7 +37,7 @@ public class UtcLogTimeTests {
 
         UtcLogTime t1 = new UtcLogTime(new ASN1UTCTime("200421124355Z"));
         UtcLogTime t2 = new UtcLogTime(new ASN1UTCTime("200421124455Z"));
-
+        
         assertTrue(t1.wasNotAfter(t2));
         assertFalse(t2.wasNotAfter(t1));
     }

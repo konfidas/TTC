@@ -21,8 +21,7 @@ public class GeneralizedLogTimeTests {
         GeneralizedLogTime t1 = new GeneralizedLogTime(element);
         GeneralizedLogTime t2 = new GeneralizedLogTime(element);
 
-        assertTrue(t1.wasNotAfter(t2));
-        assertTrue(t2.wasNotAfter(t1));
+        assertTrue(t1.equals(t2));
     }
 
     @Test
@@ -30,8 +29,7 @@ public class GeneralizedLogTimeTests {
         GeneralizedLogTime t1 = new GeneralizedLogTime(new ASN1GeneralizedTime("20200421124355Z"));
         GeneralizedLogTime t2 = new GeneralizedLogTime(new ASN1GeneralizedTime("20200421124355+0000"));
 
-        assertTrue(t1.wasNotAfter(t2));
-        assertTrue(t2.wasNotAfter(t1));
+        assertTrue(t1.equals(t2));
     }
 
     @Test
@@ -39,8 +37,7 @@ public class GeneralizedLogTimeTests {
         GeneralizedLogTime t1 = new GeneralizedLogTime(new ASN1GeneralizedTime("20200421124355Z"));
         GeneralizedLogTime t2 = new GeneralizedLogTime(new ASN1GeneralizedTime("20200421124355-0000"));
 
-        assertTrue(t1.wasNotAfter(t2));
-        assertTrue(t2.wasNotAfter(t1));
+        assertTrue(t1.equals(t2));
     }
 
     @Test
@@ -48,8 +45,7 @@ public class GeneralizedLogTimeTests {
         GeneralizedLogTime t1 = new GeneralizedLogTime(new ASN1GeneralizedTime("20200421124355Z"));
         GeneralizedLogTime t2 = new GeneralizedLogTime(new ASN1GeneralizedTime("20200421124455+0001"));
 
-        assertTrue(t1.wasNotAfter(t2));
-        assertTrue(t2.wasNotAfter(t1));
+        assertTrue(t1.equals(t2));
     }
 
     @Test
@@ -57,8 +53,7 @@ public class GeneralizedLogTimeTests {
         GeneralizedLogTime t1 = new GeneralizedLogTime(new ASN1GeneralizedTime("20200421125955Z"));
         GeneralizedLogTime t2 = new GeneralizedLogTime(new ASN1GeneralizedTime("20200421130055+0001"));
 
-        assertTrue(t1.wasNotAfter(t2));
-        assertTrue(t2.wasNotAfter(t1));
+        assertTrue(t1.equals(t2));
     }
 
 
@@ -67,8 +62,7 @@ public class GeneralizedLogTimeTests {
         GeneralizedLogTime t1 = new GeneralizedLogTime(new ASN1GeneralizedTime("20200421124355Z"));
         GeneralizedLogTime t2 = new GeneralizedLogTime(new ASN1GeneralizedTime("20200421114355-0100"));
 
-        assertTrue(t1.wasNotAfter(t2));
-        assertTrue(t2.wasNotAfter(t1));
+        assertTrue(t1.equals(t2));
     }
 
     @Test
@@ -76,8 +70,7 @@ public class GeneralizedLogTimeTests {
         GeneralizedLogTime t1 = new GeneralizedLogTime(new ASN1GeneralizedTime("20200421124355Z"));
         GeneralizedLogTime t2 = new GeneralizedLogTime(new ASN1GeneralizedTime("20200421134355+0100"));
 
-        assertTrue(t1.wasNotAfter(t2));
-        assertTrue(t2.wasNotAfter(t1));
+        assertTrue(t1.equals(t2));
     }
 
 

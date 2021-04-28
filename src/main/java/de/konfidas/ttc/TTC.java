@@ -96,9 +96,7 @@ public class TTC {
                     }
                 }
             }
-
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Fehler beim parsen der Kommandozeile. " + e.getLocalizedMessage());
         }
     }

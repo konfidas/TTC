@@ -26,8 +26,7 @@ public class UnixLogTimeTests {
         UnixLogTime t1 = new UnixLogTime(time);
         UnixLogTime t2 = new UnixLogTime(time);
 
-        assertTrue(t1.wasNotAfter(t2));
-        assertTrue(t2.wasNotAfter(t1));
+        assertTrue(t1.equals(t2));
     }
 
     @Test

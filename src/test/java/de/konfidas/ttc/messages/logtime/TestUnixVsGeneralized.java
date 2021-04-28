@@ -26,9 +26,7 @@ public class TestUnixVsGeneralized {
         GeneralizedLogTime t1 = new GeneralizedLogTime(new ASN1GeneralizedTime(formatter.format(date)+"Z"));
         UnixLogTime t2 = new UnixLogTime(((l)/1000));
 
-
-        assertTrue(t1.wasNotAfter(t2));
-        assertTrue(t2.wasNotAfter(t1));
+        assertTrue(t1.equals(t2));
     }
 
 
