@@ -42,10 +42,16 @@ public class SignatureCounterValidatorMockedTest {
     }
     static class LogMessageMock implements LogMessage {
         BigInteger signatureCounter;
-
+        byte[] serial;
         LogMessageMock(BigInteger signatureCounter){
-            this.signatureCounter = signatureCounter;
+            this(signatureCounter,new byte[0]);
         }
+
+        LogMessageMock(BigInteger signatureCounter, byte[] serial){
+            this.signatureCounter = signatureCounter;
+            this.serial = serial;
+        }
+
 
         @Override
         public LogTime getLogTime() {
@@ -59,7 +65,7 @@ public class SignatureCounterValidatorMockedTest {
 
         @Override
         public byte[] getSerialNumber() {
-            return new byte[0];
+            return serial;
         }
 
         @Override
@@ -171,6 +177,126 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.valueOf(3)));
 
         assertTrue(validator.validate(tar).size()==1);
+    }
+
+
+    // Testing multiple serial numbers in one tar:
+
+    @Test
+    public void testDuplicateCounterInDifferentSerials(){
+        SignatureCounterValidator validator = new SignatureCounterValidator();
+        LogMessageArchive tar = new TestTar();
+
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x02}));
+
+        assertTrue(validator.validate(tar).isEmpty());
+    }
+
+    @Test
+    public void testOk2(){
+        SignatureCounterValidator validator = new SignatureCounterValidator();
+        LogMessageArchive tar = new TestTar();
+
+        // This test makes sure, that SignatureCounterValidator sorts the messages w.r.t. to the content of the serial number,
+        // and not with respect to the instance of the byte []
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x01}));
+
+        assertTrue(validator.validate(tar).isEmpty());
+    }
+
+
+    @Test
+    public void testOk3(){
+        SignatureCounterValidator validator = new SignatureCounterValidator();
+        LogMessageArchive tar = new TestTar();
+
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x02}));
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
+
+        assertTrue(validator.validate(tar).isEmpty());
+    }
+
+    @Test
+    public void testMissingCounterDifferentSerials(){
+        SignatureCounterValidator validator = new SignatureCounterValidator();
+        LogMessageArchive tar = new TestTar();
+
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x02}));
+        this.messages.add(new LogMessageMock(BigInteger.valueOf(3), new byte[]{0x02}));
+
+        assertTrue(validator.validate(tar).size() == 1);
+    }
+
+    @Test
+    public void testMissingCounterDifferentSerialsTwice(){
+        SignatureCounterValidator validator = new SignatureCounterValidator();
+        LogMessageArchive tar = new TestTar();
+
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.valueOf(3), new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x02}));
+        this.messages.add(new LogMessageMock(BigInteger.valueOf(3), new byte[]{0x02}));
+
+        assertTrue(validator.validate(tar).size() == 2);
+    }
+
+    @Test
+    public void testMissingOneDifferentSerialsTwice(){
+        SignatureCounterValidator validator = new SignatureCounterValidator();
+        LogMessageArchive tar = new TestTar();
+
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
+
+        assertTrue(validator.validate(tar).size() == 2);
+    }
+
+    @Test
+    public void testMissingOneDifferentSerials(){
+        SignatureCounterValidator validator = new SignatureCounterValidator();
+        LogMessageArchive tar = new TestTar();
+
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x02}));
+
+        assertTrue(validator.validate(tar).size() == 1);
+    }
+
+    @Test
+    public void testDuplicateCounterDifferentSerials(){
+        SignatureCounterValidator validator = new SignatureCounterValidator();
+        LogMessageArchive tar = new TestTar();
+
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x02}));
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
+
+        assertTrue(validator.validate(tar).size() == 1);
+    }
+
+
+    @Test
+    public void testDuplicateCounterDifferentSerialsTwice(){
+        SignatureCounterValidator validator = new SignatureCounterValidator();
+        LogMessageArchive tar = new TestTar();
+
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x02}));
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x01}));
+        this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
+        this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x01}));
+
+        assertTrue(validator.validate(tar).size() == 2);
     }
 
 }
