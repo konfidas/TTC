@@ -40,6 +40,7 @@ Optionale Parameter:
 | Parameter               | Bedeutung                                                                                                                   |
 |-------------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | -t --trustAnker         | Zertifikat der Root-Datei als .cer Datei. Wenn diese Parameter nicht angegeben wird, MUSS der Parameter -o verwendet werden |
+| -v --verbose.           | Wenn dieser Parameter gesetzt wird, wird das Logging-Level erhöht.                                                          |
 | -o --overwriteCertCheck | Wenn dieser Parameter gesetzt wird, werden die Zertifikate in der TAR-Datei nicht auf die Root-CA zurückgeführt.            |
 |                         |                                                                                                                             |
 
