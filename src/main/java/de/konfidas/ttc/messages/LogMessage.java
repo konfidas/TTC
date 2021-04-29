@@ -7,6 +7,9 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import java.math.BigInteger;
 import java.util.Collection;
 
+/**
+ *  This interfaces represents a parsed Log Message. It gives access to all of its components
+ */
 public interface LogMessage {
     LogTime getLogTime();
     BigInteger getSignatureCounter();
