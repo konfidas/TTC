@@ -3,6 +3,7 @@ package de.konfidas.ttc.messages;
 import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
+import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.DLTaggedObject;
@@ -13,7 +14,7 @@ import java.util.ListIterator;
 
 public class SystemLogMessage extends LogMessageImplementation {
     ASN1Primitive operationType;
-    ASN1Primitive systemOperationData;
+    DLTaggedObject systemOperationData;
     ASN1Primitive additionalInternalData;
 
 
@@ -36,7 +37,21 @@ public class SystemLogMessage extends LogMessageImplementation {
 
 //
         parseOperationType(dtbsStream, logMessageAsASN1List, logMessageIterator);
-        parseSystemOperationData(dtbsStream, logMessageAsASN1List, logMessageIterator);
+        parseSystemOperationDataElement(dtbsStream, logMessageAsASN1List, logMessageIterator);
+        // systemOperationData has tag 0x81 (i.e. context-specific, not-constructed, but contains a constructed element
+        // so BouncyCastle does not parse the content (because the tag does not signal, that there is ASN1 Structure within to parse.
+        // for this reason, we have to manually parse the content, which we do here:
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        systemOperationData.encodeTo(baos);
+        byte[] content = baos.toByteArray();
+        content[0] = 0x30;
+
+        try(ASN1InputStream inputStreamDecoder = new ASN1InputStream(content)) {
+            parseSystemOperationDataContent(inputStreamDecoder);
+        }
+        // A clean solution would be, to fix the ASN1 definition of systemlogs and use a context-specific constructed tag here, i.e. 0xA1 instead of 0x81,
+        // but this requires TR-03151 to be fixed.
+
         parseAdditionalInternalData(dtbsStream, logMessageAsASN1List, logMessageIterator);
 
     }
@@ -61,7 +76,7 @@ public class SystemLogMessage extends LogMessageImplementation {
 
     }
 
-    void parseSystemOperationData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+    void parseSystemOperationDataElement(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
         if (!logMessageIterator.hasNext()) { throw new SystemOperationDataParsingException("SystemOperationData element not found"); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof DLTaggedObject)) {
@@ -76,8 +91,11 @@ public class SystemLogMessage extends LogMessageImplementation {
         }
 
         dtbsStream.write(element.getEncoded());
-        systemOperationData = element;
+        systemOperationData = (DLTaggedObject) element;
     }
+
+//    protected abstract void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException;
+    void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException{}
 
     void parseAdditionalInternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("AdditionalInternalData element not found"); }

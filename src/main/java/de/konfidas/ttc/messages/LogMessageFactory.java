@@ -1,6 +1,7 @@
 package de.konfidas.ttc.messages;
 
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
+import de.konfidas.ttc.messages.systemlogs.UnblockUserSystemLogMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,11 @@ public class LogMessageFactory {
         if (fileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+(Start|Update|Finish)_Client-.+log")) {
             logger.debug("{} scheint eine TransactionLog zu sein. Starte Verarbeitung.", fileName);
            return new TransactionLogMessage(content, fileName);
+        }
+
+        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_unblockUser.+log")) {
+            logger.debug("{} scheint ein unblockUser systemLog zu sein. Starte Verarbeitung ", fileName);
+            return new UnblockUserSystemLogMessage(content, fileName);
         }
 
         if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")) {
