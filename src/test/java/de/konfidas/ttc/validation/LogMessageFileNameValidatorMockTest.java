@@ -1,8 +1,8 @@
 package de.konfidas.ttc.validation;
 
+import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
-import de.konfidas.ttc.messages.logtime.UnixLogTime;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.ASN1Primitive;
@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigInteger;
-
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,14 +17,16 @@ import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
-public class TimeStampValidatorMockedTest {
+public class LogMessageFileNameValidatorMockTest {
+
+
     ArrayList<LogMessage> messages;
 
-    public TimeStampValidatorMockedTest(){
+    public LogMessageFileNameValidatorMockTest(){
         messages = new ArrayList<>();
     }
 
-    class TestTar implements LogMessageArchive{
+    class TestTar implements LogMessageArchive {
         @Override
         public Map<String, X509Certificate> getIntermediateCertificates() {
             return null;
@@ -41,13 +42,17 @@ public class TimeStampValidatorMockedTest {
             return messages;
         }
     }
-    static class LMM extends LogMessageMock{
-        LogTime time;
+    static class LMM extends LogMessageMock {
         BigInteger signatureCounter;
+        byte[] serial;
+        LogTime time;
+        String filename;
 
-        LMM(LogTime time, BigInteger signatureCounter){
-            this.time = time;
+       LMM(BigInteger signatureCounter, byte[] serial, LogTime time, String filename){
             this.signatureCounter = signatureCounter;
+            this.serial = serial;
+            this.filename = filename;
+            this.time = time;
         }
 
         @Override
@@ -59,6 +64,16 @@ public class TimeStampValidatorMockedTest {
         public BigInteger getSignatureCounter() {
             return signatureCounter;
         }
+
+        @Override
+        public byte[] getSerialNumber() {
+            return serial;
+        }
+
+        @Override
+        public String getFileName() {
+            return filename;
+        }
     }
 
     @Before
@@ -69,32 +84,24 @@ public class TimeStampValidatorMockedTest {
 
     @Test
     public void testEmpty(){
-        TimeStampValidator validator = new TimeStampValidator();
+        LogMessageFileNameValidator validator = new LogMessageFileNameValidator();
         LogMessageArchive tar = new TestTar();
 
         assertTrue(validator.validate(tar).isEmpty());
     }
 
-    @Test
-    public void testTwoMessagesOk(){
-        TimeStampValidator validator = new TimeStampValidator();
-        LogMessageArchive tar = new TestTar();
-
-        this.messages.add(new LMM(new UnixLogTime(1), BigInteger.ONE));
-        this.messages.add(new LMM(new UnixLogTime(2), BigInteger.TWO));
-
-        assertTrue(validator.validate(tar).isEmpty());
-    }
 
     @Test
-    public void testTwoMessagesNotOk(){
-        TimeStampValidator validator = new TimeStampValidator();
+    public void testEmptyFileName(){
+        LogMessageFileNameValidator validator = new LogMessageFileNameValidator();
         LogMessageArchive tar = new TestTar();
 
-        this.messages.add(new LMM(new UnixLogTime(1), BigInteger.TWO));
-        this.messages.add(new LMM(new UnixLogTime(2), BigInteger.ONE));
+        messages.add(new LMM(BigInteger.ONE, new byte[]{}, null, ""));
 
-        assertTrue(validator.validate(tar).size()==1);
+        Collection<ValidationException> r = validator.validate(tar);
+
+        
+        assertTrue(validator.validate(tar).size() == 1);
     }
 
 }
