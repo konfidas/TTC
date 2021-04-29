@@ -1,6 +1,5 @@
 package de.konfidas.ttc.messages.systemlogs;
 
-import de.konfidas.ttc.messages.systemlogs.UnblockUserSystemLogMessage;
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
@@ -35,12 +34,11 @@ public class TestUnblockUser {
     public static Collection filesToTest() {
 
         logger.info("checking for SystemLogs in " + systemLogFiles.getName());
-        if (null == systemLogFiles || !systemLogFiles.isDirectory()) {
+        if (!systemLogFiles.isDirectory()) {
             fail("not a directory.");
 
             return Collections.EMPTY_LIST;
         }
-
         return Arrays.asList(systemLogFiles.listFiles());
     }
 

@@ -15,13 +15,6 @@ public class LogMessagePrinter {
 
         if (msg instanceof TransactionLogMessage){return_value.append(printCertifiedDataOfTransactionLogMessage(msg)); }
 
-        //TODO: Sind die folgenden Zeilen üpberflüssig?
-
-//        for (ASN1Primitive certifiedDatum : msg.certifiedData) {
-//            return_value.append(String.format("certifiedData: %s", certifiedDatum.toString()));
-//            return_value.append(System.lineSeparator());
-//        }
-
         return_value.append(String.format("serialNumber: %s", Hex.encodeHexString(msg.getSerialNumber())));
         return_value.append(System.lineSeparator());
 

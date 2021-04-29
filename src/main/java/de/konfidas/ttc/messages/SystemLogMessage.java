@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
 
-public class SystemLogMessage extends LogMessageImplementation {
+public abstract class SystemLogMessage extends LogMessageImplementation {
     ASN1Primitive operationType;
     DLTaggedObject systemOperationData;
     ASN1Primitive additionalInternalData;
@@ -94,8 +94,7 @@ public class SystemLogMessage extends LogMessageImplementation {
         systemOperationData = (DLTaggedObject) element;
     }
 
-//    protected abstract void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException;
-    void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException{}
+    protected abstract void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException;
 
     void parseAdditionalInternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("AdditionalInternalData element not found"); }

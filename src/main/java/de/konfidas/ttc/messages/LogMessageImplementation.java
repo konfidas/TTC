@@ -87,7 +87,6 @@ public abstract class LogMessageImplementation implements LogMessage {
     public LogMessageImplementation(byte[] content, String filename) throws BadFormatForLogMessageException {
         this.filename = filename;
         parse(content);
-        checkContent();
     }
 
     /**
@@ -237,11 +236,14 @@ public abstract class LogMessageImplementation implements LogMessage {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("Version element not found"); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1Integer)) {
-            throw new LogMessageParsingException("vesrion has to be ASN1Integer, but is " + nextElement.getClass());
+            throw new LogMessageParsingException("version has to be ASN1Integer, but is " + nextElement.getClass());
         }
 
         ASN1Primitive element = logMessageIterator.next();
         this.version = ((ASN1Integer) element).intValueExact();
+        if (this.version != 2) {
+            throw new LogMessageParsingException("Die Versionsnummer ist nicht 2");
+        }
         dtbsStream.write(this.getEncodedValue(element));
     }
 
@@ -360,33 +362,6 @@ public abstract class LogMessageImplementation implements LogMessage {
 
     abstract void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException;
 
-    void checkContent() throws LogMessageParsingException {
-        // Die Versionsnummer muss 2 sein
-        if (this.version != 2) {
-            throw new LogMessageParsingException("Die Versionsnummer ist nicht 2");
-        }
-
-        // TODO: no longer required here. Done as part of parsing.
-        // Prüfen, dass der certifiedDataType ein erlaubter Wert ist
-        if (!Arrays.asList(allowedCertifiedDataType).contains(this.certifiedDataType.getReadable())) {
-            throw new LogMessageParsingException(String.format("Der Wert von certifiedDataType ist nicht erlaubt. er lautet %s", this.certifiedDataType));
-        }
-
-        // Prüfen, dass die Serial Number auch da ist.
-        if (this.serialNumber == null) {
-            throw new LogMessageParsingException("Die Serial Number ist null");
-        }
-
-        // Und die Signatur muss auch da sein
-
-        if (this.signatureValue == null) {
-            throw new LogMessageParsingException("LogMessage ohne Signatur");
-        }
-
-        if (logTime == null) {
-            throw new LogMessageParsingException("Es ist kein Typ für die LogZeit vorhanden");
-        }
-    }
 
     public class LogMessageParsingException extends BadFormatForLogMessageException {
         public LogMessageParsingException(String message) {

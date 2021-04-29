@@ -2,17 +2,11 @@ package de.konfidas.ttc.messages.systemlogs;
 
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.messages.SystemLogMessage;
-import de.konfidas.ttc.utilities.ByteArrayOutputStream;
-import de.konfidas.ttc.utilities.oid;
-import org.apache.commons.codec.binary.Hex;
+
 import org.bouncycastle.asn1.*;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.ListIterator;
+
 
 /**
  * Diese Klasse repräsentiert eine unblockUserSystemLog Message. Dabei werden in der Methode
@@ -35,10 +29,15 @@ public class UnblockUserSystemLogMessage extends SystemLogMessage {
     }
 
 
-//    @Override
+    @Override
     protected void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogMessage.SystemLogParsingException, IOException {
+
+        try{
         userId = stream.readObject();
-        unblockResult = stream.readObject();
+        unblockResult = stream.readObject();}
+        catch (Exception ex){
+            throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent",ex);
+        }
     }
 
 
