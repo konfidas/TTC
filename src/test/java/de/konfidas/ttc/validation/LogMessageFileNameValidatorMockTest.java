@@ -4,8 +4,6 @@ import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.tars.LogMessageArchive;
-import de.konfidas.ttc.utilities.oid;
-import org.bouncycastle.asn1.ASN1Primitive;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -100,7 +98,6 @@ public class LogMessageFileNameValidatorMockTest {
 
         Collection<ValidationException> r = validator.validate(tar);
 
-        
         assertTrue(validator.validate(tar).size() == 1);
     }
 

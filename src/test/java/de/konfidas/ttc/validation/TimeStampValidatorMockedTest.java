@@ -4,8 +4,6 @@ import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.messages.logtime.UnixLogTime;
 import de.konfidas.ttc.tars.LogMessageArchive;
-import de.konfidas.ttc.utilities.oid;
-import org.bouncycastle.asn1.ASN1Primitive;
 import org.junit.Before;
 import org.junit.Test;
 

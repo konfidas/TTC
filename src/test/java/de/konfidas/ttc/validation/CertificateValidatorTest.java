@@ -35,7 +35,7 @@ public class CertificateValidatorTest {
         }
 
         @Override
-        public Map<String, X509Certificate> getClientCertificates() {
+        public  Map<String, X509Certificate> getClientCertificates() {
             return client;
         }
 
