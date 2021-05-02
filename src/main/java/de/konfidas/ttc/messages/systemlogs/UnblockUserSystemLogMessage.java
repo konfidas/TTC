@@ -27,6 +27,22 @@ import java.util.NoSuchElementException;
  * // ╚═══════════════════════╧══════╧══════════════════════════════════╧═════════════════════════════════════════╝
  */
 public class UnblockUserSystemLogMessage extends SystemLogMessage {
+    public DLTaggedObject getUserId() {
+        return userId;
+    }
+
+    public DLTaggedObject getUnblockResult() {
+        return unblockResult;
+    }
+
+    public String getUserIDAsString() {
+        return userIDAsString;
+    }
+
+    public BigInteger getUnblockResultsAsBigInteger() {
+        return unblockResultsAsBigInteger;
+    }
+
     DLTaggedObject userId;
     DLTaggedObject unblockResult;
     String userIDAsString;
