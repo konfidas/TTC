@@ -52,7 +52,7 @@ public class LogMessageFileNameValidator implements Validator{
 
         String[] components = msg.getFileName().split("_");
 
-        if(!(components.length == 4)){
+        if(!(components.length == getNumExpectedComponents())){
             result.add(new MissingComponentException(msg));
         }
 
@@ -67,20 +67,25 @@ public class LogMessageFileNameValidator implements Validator{
         return result;
     }
 
+    protected int getNumExpectedComponents() {
+        return 4;
+    }
+
     Collection<ValidationException> checkSigCounter(String component, LogMessage msg) {
         LinkedList<ValidationException> result = new LinkedList<>();
         String[] sigCounter = component.split("-");
 
         if(!(sigCounter.length == 2)){
-
+            result.add(new BadFormattedMissingSigTagException(msg));
+            return result;
         }
 
         if(!sigCounter[0].equals("Sig")){
-
+            result.add(new MissingSigTagException(msg));
         }
 
         if(!msg.getSignatureCounter().equals(new BigInteger(sigCounter[1]))){
-
+            result.add(new DifferentSigCounterException(msg, msg.getSignatureCounter()));
         }
 
         return result;
@@ -161,6 +166,27 @@ public class LogMessageFileNameValidator implements Validator{
         public DifferentLogTimeException(LogMessage msg, LogTime expected) {
             super(msg);
             this.expected = expected;
+        }
+    }
+
+    public static class DifferentSigCounterException extends LogMessageFileNameValidationException {
+        final BigInteger expected;
+
+        public DifferentSigCounterException(LogMessage msg, BigInteger expected) {
+            super(msg,null);
+            this.expected = expected;
+        }
+    }
+
+    public static class MissingSigTagException extends LogMessageFileNameValidationException {
+        public MissingSigTagException(LogMessage msg) {
+            super(msg, null);
+        }
+    }
+
+    public static class BadFormattedMissingSigTagException extends LogMessageFileNameValidationException {
+        public BadFormattedMissingSigTagException(LogMessage msg) {
+            super(msg, null);
         }
     }
 
