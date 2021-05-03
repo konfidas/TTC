@@ -30,8 +30,7 @@ public class SignatureCounterValidator implements Validator{
     public Collection<ValidationException> validate(LogMessageArchive tar) {
         LinkedList<ValidationException> result = new LinkedList<>();
 
-        ArrayList<LogMessage> messages = new ArrayList<>(tar.getLogMessages());
-        messages.sort(new LogMessageImplementation.SignatureCounterComparator());
+        Collection<LogMessage> messages =tar.getSortedLogMessages();
 
         BigInteger expectedSignatureCounter;
         String serial;

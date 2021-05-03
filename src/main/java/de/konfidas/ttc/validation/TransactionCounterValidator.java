@@ -2,7 +2,7 @@ package de.konfidas.ttc.validation;
 
 import de.konfidas.ttc.exceptions.LogMessageValidationException;
 import de.konfidas.ttc.exceptions.ValidationException;
-import de.konfidas.ttc.messages.LogMessageImplementation;
+import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.TransactionLogMessage;
 import de.konfidas.ttc.tars.LogMessageArchive;
 
@@ -25,16 +25,13 @@ public class TransactionCounterValidator implements Validator {
     public Collection<ValidationException> validate(LogMessageArchive tar){
         ArrayList<ValidationException> result = new ArrayList<>();
 
-        ArrayList<LogMessageImplementation> msgs = new ArrayList(tar.getLogMessages());
-        msgs.sort(new LogMessageImplementation.SignatureCounterComparator());
+        Collection<LogMessage> msgs = tar.getSortedLogMessages();
 
-
-        for(LogMessageImplementation msg : msgs){
+        for(LogMessage msg : msgs){
             if(msg instanceof TransactionLogMessage){
                 result.addAll(updateState((TransactionLogMessage) msg));
             }
         }
-
 
         return result;
     }
