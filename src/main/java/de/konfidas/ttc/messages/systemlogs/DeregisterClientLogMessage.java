@@ -11,11 +11,13 @@ import java.io.IOException;
 /**
  * Diese Klasse repräsentiert eine deregisterClient Message. Dabei werden in der Methode
  * parseSystemOperationDataContent die folgenden Elemente aus systemOperationData geparst
- * // ╔═══════════════════════╤══════╤═══════════════════════════════════════════════════════════════╤════════════╗
- * // ║ Data field            │ Tag  │ Data Type                                                     │ Mandatory? ║
- * // ╠═══════════════════════╪══════╪═══════════════════════════════════════════════════════════════╪════════════╣
- * // ║ client                │ 0x81 │ PrintableString                                               │ m          ║
- * // ╚═══════════════════════╧══════╧════════════════════════════════════════════════════════════════════════════╝
+ * <pre>
+ * ╔═══════════════════════╤══════╤═══════════════════════════════════════════════════════════════╤════════════╗
+ * ║ Data field            │ Tag  │ Data Type                                                     │ Mandatory? ║
+ * ╠═══════════════════════╪══════╪═══════════════════════════════════════════════════════════════╪════════════╣
+ * ║ client                │ 0x81 │ PrintableString                                               │ m          ║
+ * ╚═══════════════════════╧══════╧════════════════════════════════════════════════════════════════════════════╝
+ * </pre>
  */
 public class DeregisterClientLogMessage extends SystemLogMessage {
     ASN1Primitive clientId;

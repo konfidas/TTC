@@ -18,13 +18,15 @@ import java.util.NoSuchElementException;
 /**
  * Diese Klasse repräsentiert eine unblockUserSystemLog Message. Dabei werden in der Methode
  * parseSystemOperationDataContent die folgenden Elemente aus systemOperationData geparst
- * // ╔═══════════════════════╤══════╤═══════════════════════════════════════════════════════════════╤════════════╗
- * // ║ Data field            │ Tag  │ Data Type                                                     │ Mandatory? ║
- * // ╠═══════════════════════╪══════╪═══════════════════════════════════════════════════════════════╪════════════╣
- * // ║ userID                │ 0x81 │ PrintableString                                               │ m          ║
- * // ╟───────────────────────┼──────┼───────────────────────────────────────────────────────────────┼────────────╢
- * // ║ unblockResult         │ 0x82 │ ENUMERATED UnblockResult{ ok, failed, unknownUserId, error }  │ m          ║
- * // ╚═══════════════════════╧══════╧══════════════════════════════════╧═════════════════════════════════════════╝
+ * <pre>
+ * ╔═══════════════════════╤══════╤═══════════════════════════════════════════════════════════════╤════════════╗
+ * ║ Data field            │ Tag  │ Data Type                                                     │ Mandatory? ║
+ * ╠═══════════════════════╪══════╪═══════════════════════════════════════════════════════════════╪════════════╣
+ * ║ userID                │ 0x81 │ PrintableString                                               │ m          ║
+ * ╟───────────────────────┼──────┼───────────────────────────────────────────────────────────────┼────────────╢
+ * ║ unblockResult         │ 0x82 │ ENUMERATED UnblockResult{ ok, failed, unknownUserId, error }  │ m          ║
+ * ╚═══════════════════════╧══════╧══════════════════════════════════╧═════════════════════════════════════════╝
+ * </pre>
  */
 public class UnblockUserSystemLogMessage extends SystemLogMessage {
     public DLTaggedObject getUserId() {
