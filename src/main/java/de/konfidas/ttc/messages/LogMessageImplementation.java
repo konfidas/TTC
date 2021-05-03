@@ -431,6 +431,7 @@ public abstract class LogMessageImplementation implements LogMessage {
     public byte[] getEncoded(){
         return this.encoded;
     }
+
     @Override
     public boolean equals(Object o){
         if(o instanceof LogMessage){
@@ -442,6 +443,11 @@ public abstract class LogMessageImplementation implements LogMessage {
         }
 
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Arrays.hashCode(encoded);
     }
 }
 

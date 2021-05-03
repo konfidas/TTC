@@ -5,6 +5,7 @@ import de.konfidas.ttc.messages.LogMessageImplementation;
 
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AggregatedLogMessageArchive implements LogMessageArchive{
     final LinkedList<LogMessageArchive> archives = new LinkedList<>();
@@ -46,11 +47,12 @@ public class AggregatedLogMessageArchive implements LogMessageArchive{
     @Override
     public Collection<LogMessage> getLogMessages() {
         if(null == logMessages){
-            // Taking the de-tour via the HashSet removes duplicates. Note that LogMessages are equal
-            // if and only if their encodings are equal!
-            HashSet<LogMessage> collector = new HashSet<>();
-            archives.stream().map(c -> c.getLogMessages()).forEach(collector::addAll);
-            logMessages = new ArrayList<>(collector);
+            logMessages = archives.stream().map(c -> c.getLogMessages())
+                                            .flatMap(Collection::stream)
+                                            .unordered()
+                                            .distinct()
+                                            .collect(Collectors.toCollection(ArrayList::new));
+
         }
         return logMessages;
     }
