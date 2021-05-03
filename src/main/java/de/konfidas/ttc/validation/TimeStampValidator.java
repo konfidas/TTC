@@ -25,7 +25,7 @@ public class TimeStampValidator implements Validator{
     public Collection<ValidationException> validate(LogMessageArchive tar) {
         LinkedList<ValidationException> result = new LinkedList<>();
 
-        Collection<LogMessage> messages = tar.getSortedLogMessages();
+        Collection<? extends LogMessage> messages = tar.getSortedLogMessages();
 
         String serial;
 

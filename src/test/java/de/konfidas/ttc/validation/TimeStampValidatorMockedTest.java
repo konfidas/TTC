@@ -40,6 +40,11 @@ public class TimeStampValidatorMockedTest {
         public Collection<LogMessage> getLogMessages() {
             return messages;
         }
+
+        @Override
+        public Collection<? extends LogMessage> getSortedLogMessages() {
+            return messages;
+        }
     }
     static class LogMessageMock implements LogMessage {
         LogTime time;
@@ -104,6 +109,11 @@ public class TimeStampValidatorMockedTest {
         public byte[] getSeAuditData() {
             return new byte[0];
         }
+
+        @Override
+        public byte[] getEncoded() {
+            return new byte[0];
+        }
     }
 
     @Before
@@ -136,8 +146,8 @@ public class TimeStampValidatorMockedTest {
         TimeStampValidator validator = new TimeStampValidator();
         LogMessageArchive tar = new TestTar();
 
-        this.messages.add(new LogMessageMock(new UnixLogTime(1), BigInteger.TWO));
         this.messages.add(new LogMessageMock(new UnixLogTime(2), BigInteger.ONE));
+        this.messages.add(new LogMessageMock(new UnixLogTime(1), BigInteger.TWO));
 
         assertTrue(validator.validate(tar).size()==1);
     }

@@ -61,7 +61,7 @@ public class CertificateFileNameValidator implements Validator {
     public Collection<ValidationException> validate(LogMessageArchive tar) {
         LinkedList<ValidationException> errors = new LinkedList<>();
 
-        for(Map.Entry<String, X509Certificate> entry : tar.getClientCertificates().entrySet()) {
+        for(Map.Entry<? extends String,? extends X509Certificate> entry : tar.getClientCertificates().entrySet()) {
             try {
                 validateCertificateAgainstFilename(entry.getValue(),entry.getKey());
             }catch (CertificateInconsistentToFilenameException e) {

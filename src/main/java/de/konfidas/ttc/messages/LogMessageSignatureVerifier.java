@@ -17,9 +17,9 @@ import java.util.Map;
 public class LogMessageSignatureVerifier {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-    final Map<String, X509Certificate> certs;
+    final Map<? extends String, ? extends X509Certificate> certs;
 
-    public LogMessageSignatureVerifier(Map<String, X509Certificate> certs){
+    public LogMessageSignatureVerifier(Map<? extends String, ? extends X509Certificate> certs){
         this.certs = certs;
     }
 
