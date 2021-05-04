@@ -4,9 +4,11 @@
 ![Maven Build](https://github.com/konfidas/TTC/actions/workflows/maven.yml/badge.svg)
 
 
+Der (T)SE (T)ar File (C)hecker ist eine Java-Applikation für die Kommandozeile (in Form einer JAR Datei) zur Prüfung von Tar Dateien aus dem Export einer Technischen Sicherheitseinrichtung (TSE).
 
+TTC konzentriert sich dabei auf die Prüfung von Aspekten, die in der Technischen Richtlinie BSI TR03153 definiert werden. Die Prüfung der eigentlichen Daten, die mit Hilfe der TSE gesichert werden (i.e. processData) liegen aktuell außerhalb des Fokus (Aber Unterstützung in diesem Bereich ist sicherlich willkommen). 
 
-Der (T)SE (T)ar File (C)hecker ist eine Java-Applikation für die Kommandozeile (in Form einer JAR Datei) zur Prüfung von Tar Dateien aus dem Export einer Technischen Sicherheitseinrichtung (TSE)
+Die Motivation zu TTC entstammt der Arbeit mit verschiedenen TSE verschiedenere Hersteller. 
 
 ## Was kann TTC
 - TAR Dateien aus dem Export einer TSE parsen
@@ -16,7 +18,6 @@ Der (T)SE (T)ar File (C)hecker ist eine Java-Applikation für die Kommandozeile 
 - Zertifikate des TAR Archivs prüfen 
 
 ## Was kann TTC nicht
-- Prüfung der Konsistenz des Verlaufs des Transaktionszählers (vielleicht später)
 - Prüfung der Inhaltsdaten von Transaktionen 
 
 ## Das Ziel von TTC ist es
