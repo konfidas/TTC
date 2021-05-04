@@ -49,6 +49,11 @@ public class LogMessageFactory {
             return new DeregisterClientLogMessage(content, fileName);
         }
 
+        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_startAudit.+log")) {
+            logger.debug("{} scheint ein startAudit systemLog zu sein. Starte Verarbeitung ", fileName);
+            return new StartAuditSystemLogMessage(content, fileName);
+        }
+
 //        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")) {
 //            logger.debug("{} scheint ein systemLog zu sein. Starte Verarbeitung ", fileName);
 //            return new SystemLogMessage(content, fileName);
