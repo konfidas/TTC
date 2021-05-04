@@ -25,6 +25,9 @@ Die Motivation zu TTC entstammt der Arbeit mit verschiedenen TSE verschiedenere 
 - Spass an der Entwicklung zu haben,
 - Als Framework und Building-Block für weitere Entwicklungen zu dienen
 
+## Stand der Entwicklung
+TTC liegt aktuell als Alpha-Version vor. Die geplanten Funktionen sind noch nicht vollständig implementiert. 
+
 ## Lizenz 
 TTC steht unter der MIT Lizenz. 
 
