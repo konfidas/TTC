@@ -1,4 +1,4 @@
-# TTC (T)SE (T)ar File (C)hecker i
+# TTC
 ----
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ![Maven Build](https://github.com/konfidas/TTC/actions/workflows/maven.yml/badge.svg)
