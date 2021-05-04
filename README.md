@@ -56,4 +56,3 @@ java -jar TTC.tar -i test.tar -t trust.cer
 ```
 mvn package 
 ```
-## Übersicht über die wichtigsten Klassen 
