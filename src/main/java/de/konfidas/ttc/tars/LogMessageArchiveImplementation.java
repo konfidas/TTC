@@ -3,6 +3,7 @@ package de.konfidas.ttc.tars;
 import de.konfidas.ttc.exceptions.*;
 import de.konfidas.ttc.messages.LogMessageFactory;
 import de.konfidas.ttc.messages.LogMessage;
+import de.konfidas.ttc.messages.LogMessageImplementation;
 import de.konfidas.ttc.utilities.CertificateHelper;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -119,4 +120,16 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
     public ArrayList<LogMessage> getLogMessages(){
         return this.all_log_messages;
     }
+
+    ArrayList<LogMessage> sortedLogMessages;
+
+    public ArrayList<LogMessage> getSortedLogMessages(){
+        if(null == sortedLogMessages){
+            sortedLogMessages = new ArrayList<>(getLogMessages());
+            sortedLogMessages.sort(new LogMessageImplementation.SignatureCounterComparator());
+        }
+
+        return sortedLogMessages;
+    }
+
 }

@@ -20,4 +20,6 @@ public interface LogMessage {
     Collection<ASN1Primitive> getSignatureAlgorithmParameters();
 
     byte[] getSeAuditData();
+
+    byte[] getEncoded();
 }

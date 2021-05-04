@@ -73,10 +73,11 @@ public abstract class LogMessageImplementation implements LogMessage {
 
     LogTime logTime;
 
-    byte[] signatureValue = null;
+    byte[] encoded;
+    byte[] signatureValue;
     BigInteger signatureCounter = new BigInteger("5");
-    byte[] seAuditData = null;
-    byte[] dtbs = null;
+    byte[] seAuditData;
+    byte[] dtbs;
     final String filename;
 
 
@@ -191,6 +192,8 @@ public abstract class LogMessageImplementation implements LogMessage {
     }
 
     void parse(byte[] content) throws LogMessageParsingException {
+        this.encoded = content;
+
         try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
             final ASN1InputStream inputStreamDecoder = new ASN1InputStream(content);
             ASN1Primitive logMessageAsASN1 = inputStreamDecoder.readObject();
@@ -417,6 +420,29 @@ public abstract class LogMessageImplementation implements LogMessage {
         public int compare(LogMessage o1, LogMessage o2) {
             return o1.getSignatureCounter().compareTo(o2.getSignatureCounter());
         }
+    }
+
+    @Override
+    public byte[] getEncoded(){
+        return this.encoded;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof LogMessage){
+            return Arrays.equals(this.getEncoded(), ((LogMessage) o).getEncoded());
+        }
+
+        if(o instanceof byte[]){
+            return Arrays.equals(this.getEncoded(), (byte[])o);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Arrays.hashCode(encoded);
     }
 }
 
