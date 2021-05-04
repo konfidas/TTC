@@ -54,6 +54,11 @@ public class LogMessageFactory {
             return new StartAuditSystemLogMessage(content, fileName);
         }
 
+        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_initialize.+log")) {
+            logger.debug("{} scheint ein initialize systemLog zu sein. Starte Verarbeitung ", fileName);
+            return new InitializeSystemLogMessage(content, fileName);
+        }
+
 //        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")) {
 //            logger.debug("{} scheint ein systemLog zu sein. Starte Verarbeitung ", fileName);
 //            return new SystemLogMessage(content, fileName);
