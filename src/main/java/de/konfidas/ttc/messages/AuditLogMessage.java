@@ -36,15 +36,6 @@ public class AuditLogMessage extends LogMessageImplementation {
         }
 
 
-    @Override
-    void checkContent() throws LogMessageParsingException {
-
-        if (this.seAuditData == null){ throw new LogMessageParsingException("AuditLogMessage ohne seAuditData");}
-        super.checkContent();
-
-        if (this.certifiedDataType != oid.id_SE_API_SE_audit_log){ throw new LogMessageParsingException("AuditLogMessage mit falschem certifiedDataType");}
-//        if (this.certifiedData != null){ throw new LogMessageParsingException("AuditLogMessage mit certifiedData");}
-    }
 
     @Override
     void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {

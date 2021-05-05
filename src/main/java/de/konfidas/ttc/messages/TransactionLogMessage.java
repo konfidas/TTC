@@ -4,6 +4,8 @@ import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -14,6 +16,7 @@ import java.util.ListIterator;
 
 
 public class TransactionLogMessage extends LogMessageImplementation {
+    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     String operationType;
     String clientID;
     byte[] processData;
@@ -172,22 +175,19 @@ public class TransactionLogMessage extends LogMessageImplementation {
     void parseAdditionalExternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
 
         if (!logMessageIterator.hasNext()) {
-//            throw new LogMessageParsingException("additionalExternalData in certifiedData  not found");
-//            TODO: logging
+            logger.debug("additionalExternalData in certifiedData not found for message: "+this.getFileName());
             return;
             }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof DLTaggedObject)) {
-//            throw new LogMessageParsingException("additionalExternalData in certifiedData has to be DLTaggedObject, but is " + nextElement.getClass());
-//        TODO: logging
+            logger.debug("additionalExternalData in certifiedData has to be DLTaggedObject, but is " + nextElement.getClass());
             return;
 
         }
 
         if (((DLTaggedObject) nextElement).getTagNo() != 4){
-//            throw new LogMessageParsingException("additionalExternalData in certifiedData has to have a tag of 4 (int), but is " + ((DLTaggedObject) nextElement).getTagNo());
-//            TODO: logging
+            logger.debug("additionalExternalData in certifiedData has to have a tag of 4 (int), but is " + ((DLTaggedObject) nextElement).getTagNo());
             return;
         }
 
@@ -260,21 +260,7 @@ return;
         }
 
     }
-    @Override
-    void checkContent() throws LogMessageParsingException {
-        if (operationType==null){
-            throw new LogMessageParsingException("Transaction Log Message without serialNumber");
-        }
-        if (!((operationType.equals("StartTransaction"))||(operationType.equals("UpdateTransaction"))||(operationType.equals("FinishTransaction")))) {
-            throw new LogMessageParsingException("Invalid operationType: " + operationType);
-        }
-        if (serialNumber==null){
-            throw new LogMessageParsingException("Transaction Log Message without serialNumber");
-        }
 
-
-        super.checkContent();
-    }
 
     @Override
     public int getVersion() {

@@ -1,10 +1,16 @@
 package de.konfidas.ttc.messages.logtime;
 
+import org.bouncycastle.asn1.ASN1Integer;
+
 public class UnixLogTime extends LogTime {
     final long time;
 
     public UnixLogTime(long time) {
         this.time = time;
+    }
+
+    public UnixLogTime(ASN1Integer time) {
+        this.time = time.getValue().longValue();
     }
 
     @Override
