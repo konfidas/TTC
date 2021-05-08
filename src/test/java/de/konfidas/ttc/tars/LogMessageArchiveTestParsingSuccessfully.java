@@ -4,6 +4,8 @@ import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.LogMessagePrinter;
+import de.konfidas.ttc.reporting.LogMessageReporter;
+import de.konfidas.ttc.reporting.ReportTextPrinter;
 import de.konfidas.ttc.validation.AggregatedValidator;
 import de.konfidas.ttc.validation.CertificateFileNameValidator;
 import de.konfidas.ttc.validation.LogMessageSignatureValidator;
@@ -61,7 +63,8 @@ public class LogMessageArchiveTestParsingSuccessfully {
 
         LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
         for (LogMessage message : tar.getLogMessages()) {
-            logger.info(LogMessagePrinter.printMessage(message));
+            LogMessageReporter testReporter = new LogMessageReporter(message);
+            logger.info( ReportTextPrinter.printReportToText(testReporter,0));
         }
         Validator v = new AggregatedValidator()
                 .add(new CertificateFileNameValidator())

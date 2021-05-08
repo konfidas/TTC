@@ -68,6 +68,8 @@ public class TTC {
 
             LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(new File(cmd.getOptionValue("i")));
             for (LogMessage message : tar.getLogMessages()) {
+
+
                 logger.debug(LogMessagePrinter.printMessage(message));
             }
 
