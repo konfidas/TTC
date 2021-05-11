@@ -127,7 +127,7 @@ abstract class AbstractLogMessageFileNameValidator implements Validator{
     Collection<ValidationException> checkLogTimeType(String component, LogMessage msg) {
         LinkedList<ValidationException> result = new LinkedList<>();
         switch (component){
-            case "Unix":
+            case "Unixt":
                 if(msg.getLogTime().getType() != LogTime.Type.UNIX){
                     result.add(new DifferentLogTimeTypeException(msg, LogTime.Type.UNIX));
                 }
@@ -155,7 +155,7 @@ abstract class AbstractLogMessageFileNameValidator implements Validator{
         LogTime timeFromFileName = null;
 
         switch (type){
-            case "Unix":
+            case "Unixt":
                 try {
                     timeFromFileName = new UnixLogTime(Long.valueOf(component));
                 }catch(Throwable e){

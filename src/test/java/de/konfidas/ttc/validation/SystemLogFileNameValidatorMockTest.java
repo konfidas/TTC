@@ -297,7 +297,7 @@ public class SystemLogFileNameValidatorMockTest {
         messages.add(new SLM(BigInteger.valueOf(1743),
                 new byte[]{},
                 new UnixLogTime(123),
-                "Unix_AAA_Sig-1743_Log-Sys_UpdateTime.log"));
+                "Unixt_AAA_Sig-1743_Log-Sys_UpdateTime.log"));
 
         Collection<ValidationException> r = validator.validate(tar);
 
@@ -314,7 +314,7 @@ public class SystemLogFileNameValidatorMockTest {
         messages.add(new SLM(BigInteger.valueOf(1743),
                 new byte[]{},
                 new UnixLogTime(123),
-                "Unix_123_Sig-1743_Log-Sys_UpdateTime.log"));
+                "Unixt_123_Sig-1743_Log-Sys_UpdateTime.log"));
 
         Collection<ValidationException> r = validator.validate(tar);
         assertTrue(r.isEmpty());
@@ -328,7 +328,7 @@ public class SystemLogFileNameValidatorMockTest {
         messages.add(new SLM(BigInteger.valueOf(1743),
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109084236Z")),
-                "Unix_123_Sig-1743_Log-Sys_UpdateTime.log"));
+                "Unixt_123_Sig-1743_Log-Sys_UpdateTime.log"));
         Collection<ValidationException> r = validator.validate(tar);
         assertTrue(r.size() == 2); // Times are also different.
         assertTrue(r.stream().findFirst().get() instanceof AbstractLogMessageFileNameValidator.DifferentLogTimeTypeException);
@@ -343,7 +343,7 @@ public class SystemLogFileNameValidatorMockTest {
         messages.add(new SLM(BigInteger.valueOf(1743),
                 new byte[]{},
                 new UnixLogTime(124),
-                "Unix_123_Sig-1743_Log-Sys_UpdateTime.log"));
+                "Unixt_123_Sig-1743_Log-Sys_UpdateTime.log"));
 
         Collection<ValidationException> r = validator.validate(tar);
         assertTrue(r.size() == 1);

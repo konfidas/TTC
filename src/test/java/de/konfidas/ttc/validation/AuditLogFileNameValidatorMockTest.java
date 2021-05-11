@@ -120,7 +120,7 @@ public class AuditLogFileNameValidatorMockTest {
         messages.add(new ALM(BigInteger.valueOf(1853),
                  new byte[]{},
                  new UnixLogTime(1543565694),
-                "Unix_1543565694_Sig-1853_Log-Aud_Fc-1.log"));
+                "Unixt_1543565694_Sig-1853_Log-Aud_Fc-1.log"));
 
         Collection<ValidationException> r = validator.validate(tar);
 
