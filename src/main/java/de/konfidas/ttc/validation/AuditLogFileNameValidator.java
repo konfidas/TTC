@@ -24,11 +24,8 @@ public class AuditLogFileNameValidator extends AbstractLogMessageFileNameValidat
 
             String[] components = getComponents();
 
-            if(components.length >= 5) {
-                // TODO.
-            }else{
-                result.add(new MissingComponentException(msg));
-            }
+            // TODO
+
             return result;
         }else{
             return new LinkedList<>();

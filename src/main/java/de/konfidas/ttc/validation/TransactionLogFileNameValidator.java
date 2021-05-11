@@ -64,7 +64,7 @@ public class TransactionLogFileNameValidator extends AbstractLogMessageFileNameV
             result.add(new UnknownOperationTypeException(component, msg));
         }
 
-        if(!component.equals(msg.getOperationType())){
+        if(!(component+"Transaction").equals(msg.getOperationType())){
             result.add(new OperationTypeMismatchException(component, msg.getOperationType(), msg));
         }
 
