@@ -177,13 +177,15 @@ public abstract class LogMessageImplementation implements LogMessage {
             }
 
             byte[] lengthBytesFromElement = Arrays.copyOfRange(elementContent, 2, 2+elementNumberOfLengthBytes); //we need to have 4 bytes for an integer
-            return new BigInteger(lengthBytesFromElement).intValue();
+            return new BigInteger(1,lengthBytesFromElement).intValue();
         }
     }
 
     byte[] getEncodedValue(ASN1Primitive element) throws IOException, ExtendLengthValueExceedsInteger {
         byte[] elementContent = element.getEncoded();
         int elementLength = this.getEncodedLength(element);
+        logger.info(String.valueOf(elementContent.length));
+        logger.info(String.valueOf(elementLength));
         return Arrays.copyOfRange(elementContent, elementContent.length - elementLength, elementContent.length + 1);
     }
 
