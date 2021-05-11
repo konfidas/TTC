@@ -62,6 +62,9 @@ public class HtmlReporterTest {
 
         HtmlReporter reporter = new HtmlReporter(reportFile).skipLegitLogMessages();
 
+        // enable the following line ot make the reporter ignore this Exception class, i.e. not reporting it:
+        // reporter.ignoreIssue(SignatureCounterValidator.SignatureCounterMissingException.class);
+
         reporter.createReport(Collections.singleton(tar), result);
         System.out.println(reportFile.getAbsoluteFile());
     }

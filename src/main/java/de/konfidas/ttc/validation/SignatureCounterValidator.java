@@ -60,7 +60,7 @@ public class SignatureCounterValidator implements Validator{
         return new ValidationResultImpl().append(Collections.singleton(this), result);
     }
 
-    static class SignatureCounterMissingException extends LogMessageValidationException {
+    public static class SignatureCounterMissingException extends LogMessageValidationException {
         final String serial;
         final BigInteger expected;
         final BigInteger foundNext;
@@ -78,7 +78,7 @@ public class SignatureCounterValidator implements Validator{
         }
     }
 
-    static class SignatureCounterDuplicateException extends LogMessageValidationException{
+    public static class SignatureCounterDuplicateException extends LogMessageValidationException{
         final BigInteger expected;
         final LogMessage msg1;
 

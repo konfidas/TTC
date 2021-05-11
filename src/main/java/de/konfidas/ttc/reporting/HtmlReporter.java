@@ -13,15 +13,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 public class HtmlReporter implements Reporter<Integer> { // I do not need the int here. Interface does not really fit me.
     File file;
     boolean skipLegitLogMessages;
-
+    HashSet<Class<? extends ValidationException>> issuesToIgnore;
 
     public HtmlReporter(File file){
         this.file= file;
+        this.issuesToIgnore = new HashSet<>();
         skipLegitLogMessages = false;
     }
 
@@ -32,6 +34,16 @@ public class HtmlReporter implements Reporter<Integer> { // I do not need the in
 
     HtmlReporter skipLegitLogMessages(boolean skipLegitLogMessages){
         this.skipLegitLogMessages = skipLegitLogMessages;
+        return this;
+    }
+
+    HtmlReporter ignoreIssue(Class<? extends ValidationException> t){
+        issuesToIgnore.add(t);
+        return this;
+    }
+
+    HtmlReporter ignoreIssues(Collection<Class<? extends ValidationException>> c){
+        issuesToIgnore.addAll(c);
         return this;
     }
 
@@ -57,12 +69,15 @@ public class HtmlReporter implements Reporter<Integer> { // I do not need the in
         return Integer.valueOf(0);
     }
 
-    static void printNonLogMessageValidationExceptions(BufferedWriter bw, Collection<ValidationException> validationErrors) throws IOException {
+    void printNonLogMessageValidationExceptions(BufferedWriter bw, Collection<ValidationException> validationErrors) throws IOException {
         bw.write("<p> The following Issues, where found, but are not directly linked to Log Messages:");
         bw.write("<ul>");
         for(ValidationException v : validationErrors){
             if(!(v instanceof LogMessageValidationException)){
-                bw.write("<li>"+v.toString()+"</li>");
+
+                if(!issuesToIgnore.contains(v.getClass())) {
+                    bw.write("<li>" + v.toString() + "</li>");
+                }
             }
         }
         bw.write("</ul></p>");
@@ -73,12 +88,14 @@ public class HtmlReporter implements Reporter<Integer> { // I do not need the in
         HashMap<LogMessage, LinkedList<LogMessageValidationException>> map = new HashMap<>();
         for(ValidationException e: vResult.getValidationErrors()){
             if(e instanceof LogMessageValidationException){
-                if(map.containsKey(((LogMessageValidationException) e).getLogMessage())){
-                    map.get(((LogMessageValidationException) e).getLogMessage()).add((LogMessageValidationException) e);
-                }else{
-                    LinkedList<LogMessageValidationException> l = new LinkedList<>();
-                    l.add((LogMessageValidationException) e);
-                    map.put(((LogMessageValidationException) e).getLogMessage(),l);
+                if(!issuesToIgnore.contains(e.getClass())) {
+                    if (map.containsKey(((LogMessageValidationException) e).getLogMessage())) {
+                        map.get(((LogMessageValidationException) e).getLogMessage()).add((LogMessageValidationException) e);
+                    } else {
+                        LinkedList<LogMessageValidationException> l = new LinkedList<>();
+                        l.add((LogMessageValidationException) e);
+                        map.put(((LogMessageValidationException) e).getLogMessage(), l);
+                    }
                 }
             }
         }
