@@ -71,6 +71,11 @@ public class SignatureCounterValidator implements Validator{
             this.foundNext = foundNext;
             this.serial = serial;
         }
+
+        @Override
+        public String toString(){
+            return "For TSE "+serial+" signature counter "+expected+ " is missing. Next found signature counter was "+foundNext+".";
+        }
     }
 
     static class SignatureCounterDuplicateException extends LogMessageValidationException{
