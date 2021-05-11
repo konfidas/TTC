@@ -15,7 +15,6 @@ public class AggregatedValidator implements Validator{
     }
 
     public AggregatedValidator add(Validator v){
-
         if(v instanceof  AggregatedValidator){
             this.validators.addAll(((AggregatedValidator) v).validators);
         }else {
