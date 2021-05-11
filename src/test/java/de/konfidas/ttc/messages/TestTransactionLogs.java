@@ -48,36 +48,6 @@ public static String[][] provideParameters() {
 
     @ParameterizedTest
     @MethodSource("provideParameters")
-    public void startTransactionLogMessageWithInvalidOperationType(String builderClassString, String operationTypeString) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-
-        Class<?> builderClass = Class.forName(builderClassString);
-        TransactionLogMessageBuilder builder = (TransactionLogMessageBuilder) builderClass.getDeclaredConstructor().newInstance();
-
-        builder.setOperationType(operationTypeString+"b");
-        builder.setSerialNumber(new byte[]{0x4f, 0x20, 0x3a, 0x69, 0x10});
-        builder.setClientID("client-ID kommt hier rein");
-        builder.setProcessType("Hier kann ein Wert für processType stehen");
-        builder.setProcessData(new byte[]{0x5f, 0x20, 0x3a, 0x69, 0x10});
-        builder.setTransactionNumber(new BigInteger(new byte[]{0x20}));
-
-
-        byte[] startTransactionLog = builder.prepare()
-                .calculateDTBS()
-                .sign(getClientCertKeyPair().getPrivate())
-                .build()
-                .finalizeMessage();
-
-        String filename = builder.getFilename();
-        try {
-            TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-            fail("Transaction Log Message parsing successful, but expected to fail");
-        } catch (LogMessageImplementation.LogMessageParsingException e) {
-            //Expected
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideParameters")
     public void startTransactionLogMessageWithoutOperationType(String builderClassString, String operationTypeString) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
 
         Class<?> builderClass = Class.forName(builderClassString);

@@ -43,6 +43,11 @@ public class CertificateValidatorTest {
         public Collection<LogMessage> getLogMessages() {
             return null;
         }
+
+        @Override
+        public Collection<? extends LogMessage> getSortedLogMessages() {
+            return null;
+        }
     }
 
     @BeforeClass

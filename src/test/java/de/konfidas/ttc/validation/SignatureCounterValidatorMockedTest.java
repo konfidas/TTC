@@ -35,6 +35,11 @@ public class SignatureCounterValidatorMockedTest {
         public Collection<LogMessage> getLogMessages() {
             return messages;
         }
+
+        @Override
+        public Collection<? extends LogMessage> getSortedLogMessages() {
+            return messages;
+        }
     }
     static class LMM extends LogMessageMock {
         BigInteger signatureCounter;

@@ -24,39 +24,41 @@ import org.slf4j.LoggerFactory;
 /**
  * Diese Klasse repräsentiert eine LogMessage. Der Konstruktur erhält den Inhalt der LogMessage und den Dateinamen, aus der
  * die LogMessage gelesen wurde. Die LogMessage wird geparst. Dabei wird das folgende Format erwartet
- * // ╔═══════════════════════╤══════╤══════════════════════════════════╤════════════╗
- * // ║ Data field            │ Tag  │ Data Type                        │ Mandatory? ║
- * // ╠═══════════════════════╪══════╪══════════════════════════════════╪════════════╣
- * // ║ LogMessage            │ 0x30 │ SEQUENCE                         │ m          ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║    version            │ 0x02 │ INTEGER                          │ m          ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║    certifiedDataType  │ 0x06 │ OBJECT IDENTIFIER                │ m          ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║    certifiedData      │      │ ANY DEFINED BY certifiedDataType │ o          ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║    serialNumber       │ 0x04 │ OCTET STRING                     │ m          ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║    signatureAlgorithm │ 0x30 │ SEQUENCE                         │ m          ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║       algorithm       │ 0x06 │ OBJECT IDENTIFIER                │ m          ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║       parameters      │      │ ANY DEFINED BY algorithm         │ o          ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║    seAuditData        │ 0x04 │ OCTET STRING                     │ c          ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║    signatureCounter   │ 0x02 │ INTEGER                          │ c          ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║    logTime            │      │ CHOICE                           │ m          ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║       utcTime         │ 0x17 │ UTCTime                          │            ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║       generalizedTime │ 0x18 │ GeneralizedTime                  │            ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║       unixTime        │ 0x02 │ INTEGER                          │            ║
- * // ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
- * // ║    signatureValue     │ 0x04 │ OCTET STRING                     │ m          ║
- * // ╚═══════════════════════╧══════╧══════════════════════════════════╧════════════╝
+ * <pre>
+ * ╔═══════════════════════╤══════╤══════════════════════════════════╤════════════╗
+ * ║ Data field            │ Tag  │ Data Type                        │ Mandatory? ║
+ * ╠═══════════════════════╪══════╪══════════════════════════════════╪════════════╣
+ * ║ LogMessage            │ 0x30 │ SEQUENCE                         │ m          ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║    version            │ 0x02 │ INTEGER                          │ m          ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║    certifiedDataType  │ 0x06 │ OBJECT IDENTIFIER                │ m          ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║    certifiedData      │      │ ANY DEFINED BY certifiedDataType │ o          ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║    serialNumber       │ 0x04 │ OCTET STRING                     │ m          ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║    signatureAlgorithm │ 0x30 │ SEQUENCE                         │ m          ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║       algorithm       │ 0x06 │ OBJECT IDENTIFIER                │ m          ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║       parameters      │      │ ANY DEFINED BY algorithm         │ o          ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║    seAuditData        │ 0x04 │ OCTET STRING                     │ c          ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║    signatureCounter   │ 0x02 │ INTEGER                          │ c          ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║    logTime            │      │ CHOICE                           │ m          ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║       utcTime         │ 0x17 │ UTCTime                          │            ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║       generalizedTime │ 0x18 │ GeneralizedTime                  │            ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║       unixTime        │ 0x02 │ INTEGER                          │            ║
+ * ╟───────────────────────┼──────┼──────────────────────────────────┼────────────╢
+ * ║    signatureValue     │ 0x04 │ OCTET STRING                     │ m          ║
+ * ╚═══════════════════════╧══════╧══════════════════════════════════╧════════════╝
+ * </pre>
  */
 public abstract class LogMessageImplementation implements LogMessage {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
@@ -73,10 +75,11 @@ public abstract class LogMessageImplementation implements LogMessage {
 
     LogTime logTime;
 
-    byte[] signatureValue = null;
+    byte[] encoded;
+    byte[] signatureValue;
     BigInteger signatureCounter = new BigInteger("5");
-    byte[] seAuditData = null;
-    byte[] dtbs = null;
+    byte[] seAuditData;
+    byte[] dtbs;
     final String filename;
 
 
@@ -87,7 +90,6 @@ public abstract class LogMessageImplementation implements LogMessage {
     public LogMessageImplementation(byte[] content, String filename) throws BadFormatForLogMessageException {
         this.filename = filename;
         parse(content);
-        checkContent();
     }
 
     /**
@@ -175,12 +177,7 @@ public abstract class LogMessageImplementation implements LogMessage {
             }
 
             byte[] lengthBytesFromElement = Arrays.copyOfRange(elementContent, 2, 2+elementNumberOfLengthBytes); //we need to have 4 bytes for an integer
-            byte[] prependBytes = new byte[4-elementNumberOfLengthBytes];
-
-            ByteBuffer lengthByte = ByteBuffer.wrap(new byte[4]);
-            lengthByte.put(prependBytes);
-            lengthByte.put(lengthBytesFromElement);
-            return lengthByte.getInt(0);
+            return new BigInteger(lengthBytesFromElement).intValue();
         }
     }
 
@@ -196,6 +193,8 @@ public abstract class LogMessageImplementation implements LogMessage {
     }
 
     void parse(byte[] content) throws LogMessageParsingException {
+        this.encoded = content;
+
         try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
             final ASN1InputStream inputStreamDecoder = new ASN1InputStream(content);
             ASN1Primitive logMessageAsASN1 = inputStreamDecoder.readObject();
@@ -237,11 +236,14 @@ public abstract class LogMessageImplementation implements LogMessage {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("Version element not found"); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1Integer)) {
-            throw new LogMessageParsingException("vesrion has to be ASN1Integer, but is " + nextElement.getClass());
+            throw new LogMessageParsingException("version has to be ASN1Integer, but is " + nextElement.getClass());
         }
 
         ASN1Primitive element = logMessageIterator.next();
         this.version = ((ASN1Integer) element).intValueExact();
+        if (this.version != 2) {
+            throw new LogMessageParsingException("Die Versionsnummer ist nicht 2");
+        }
         dtbsStream.write(this.getEncodedValue(element));
     }
 
@@ -360,33 +362,6 @@ public abstract class LogMessageImplementation implements LogMessage {
 
     abstract void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException;
 
-    void checkContent() throws LogMessageParsingException {
-        // Die Versionsnummer muss 2 sein
-        if (this.version != 2) {
-            throw new LogMessageParsingException("Die Versionsnummer ist nicht 2");
-        }
-
-        // TODO: no longer required here. Done as part of parsing.
-        // Prüfen, dass der certifiedDataType ein erlaubter Wert ist
-        if (!Arrays.asList(allowedCertifiedDataType).contains(this.certifiedDataType.getReadable())) {
-            throw new LogMessageParsingException(String.format("Der Wert von certifiedDataType ist nicht erlaubt. er lautet %s", this.certifiedDataType));
-        }
-
-        // Prüfen, dass die Serial Number auch da ist.
-        if (this.serialNumber == null) {
-            throw new LogMessageParsingException("Die Serial Number ist null");
-        }
-
-        // Und die Signatur muss auch da sein
-
-        if (this.signatureValue == null) {
-            throw new LogMessageParsingException("LogMessage ohne Signatur");
-        }
-
-        if (logTime == null) {
-            throw new LogMessageParsingException("Es ist kein Typ für die LogZeit vorhanden");
-        }
-    }
 
     public class LogMessageParsingException extends BadFormatForLogMessageException {
         public LogMessageParsingException(String message) {
@@ -422,6 +397,29 @@ public abstract class LogMessageImplementation implements LogMessage {
         public int compare(LogMessage o1, LogMessage o2) {
             return o1.getSignatureCounter().compareTo(o2.getSignatureCounter());
         }
+    }
+
+    @Override
+    public byte[] getEncoded(){
+        return this.encoded;
+    }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof LogMessage){
+            return Arrays.equals(this.getEncoded(), ((LogMessage) o).getEncoded());
+        }
+
+        if(o instanceof byte[]){
+            return Arrays.equals(this.getEncoded(), (byte[])o);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Arrays.hashCode(encoded);
     }
 }
 

@@ -34,7 +34,7 @@ public class TTC {
         options.addOption("i", "inputTAR", true, "Das TAR Archiv, das geprüft werden soll.");
         options.addOption("t", "trustAnker", true, "Trust Anker in Form eines X.509 Zertifikats für die Root-CA");
         options.addOption("o", "overwriteCertCheck", false, "Wenn diese Option gesetzt wird, werden die Zertifikate im TAR Archiv nicht gegen eine Root-CA geprüft");
-        options.addOption("v", "overwriteCertCheck", false, "Wenn diese Option gesetzt wird, gibt TTC detaillierte Informationen aus.");
+        options.addOption("v", "verbose", false, "Wenn diese Option gesetzt wird, gibt TTC detaillierte Informationen aus.");
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd;

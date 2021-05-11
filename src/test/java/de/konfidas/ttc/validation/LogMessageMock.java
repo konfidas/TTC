@@ -63,4 +63,9 @@ public class LogMessageMock implements LogMessage {
     public byte[] getSeAuditData() {
         return new byte[0];
     }
+
+    @Override
+    public byte[] getEncoded() {
+        return new byte[0];
+    }
 }
