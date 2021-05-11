@@ -92,18 +92,4 @@ public class LogMessageFileNameValidatorMockTest {
 
         assertTrue(validator.validate(tar).isEmpty());
     }
-
-
-    @Test
-    public void testEmptyFileName(){
-        LogMessageFileNameValidator validator = new LogMessageFileNameValidator();
-        LogMessageArchive tar = new TestTar();
-
-        messages.add(new LMM(BigInteger.ONE, new byte[]{}, null, ""));
-
-        Collection<ValidationException> r = validator.validate(tar);
-
-        assertTrue(r.size() == 1);
-    }
-
 }

@@ -39,7 +39,7 @@ import java.util.LinkedList;
 // fields if present.     
 public class LogMessageFileNameValidator extends AggregatedValidator{
     public  LogMessageFileNameValidator(){
-        this.add(new LogMessageFileNameValidator());
+        this.add(new TransactionLogFileNameValidator());
         this.add(new SystemLogFileNameValidator());
         this.add(new AuditLogFileNameValidator());
     }

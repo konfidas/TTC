@@ -2,6 +2,7 @@ package de.konfidas.ttc.validation;
 
 
 import de.konfidas.ttc.exceptions.ValidationException;
+import de.konfidas.ttc.messages.AuditLogMessage;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.SystemLogMessage;
 
@@ -28,7 +29,7 @@ public class AuditLogFileNameValidator extends AbstractLogMessageFileNameValidat
 
     @Override
     protected LinkedList<ValidationException> checkMsg(LogMessage msg) {
-        if(msg instanceof SystemLogMessage) {
+        if(msg instanceof AuditLogMessage) {
             LinkedList<ValidationException> result = super.checkMsg(msg);
 
             String[] components = msg.getFileName().split("_");
