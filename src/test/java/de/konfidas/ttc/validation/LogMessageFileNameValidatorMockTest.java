@@ -103,7 +103,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         Collection<ValidationException> r = validator.validate(tar);
 
-        assertTrue(validator.validate(tar).size() == 1);
+        assertTrue(r.size() == 1);
     }
 
 }
