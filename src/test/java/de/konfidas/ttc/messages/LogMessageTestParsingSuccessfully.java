@@ -19,7 +19,7 @@ import java.util.Collections;
 @RunWith(Parameterized.class)
 public class LogMessageTestParsingSuccessfully {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-    final static File correctLogs = new File("D:\\testdata\\logMessages"); // TODO: as soon as we have publish-able test data, point path to it.
+    final static File correctLogs = new File("./testData/logMessages"); // TODO: as soon as we have publish-able test data, point path to it.
 
     final File file;
 
