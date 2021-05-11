@@ -1,6 +1,5 @@
 package de.konfidas.ttc.messages;
 
-import de.konfidas.ttc.exceptions.LogMessageException;
 import de.konfidas.ttc.messages.logtime.GeneralizedLogTime;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.messages.logtime.UnixLogTime;
@@ -365,12 +364,12 @@ public abstract class LogMessageImplementation implements LogMessage {
 
 
     public class LogMessageParsingException extends BadFormatForLogMessageException {
-        public LogMessageParsingException(String message, LogMessage logMessage) {
-            super("Parsing Message " + filename + " failed: " + message, null,logMessage);
+        public LogMessageParsingException(String message) {
+            super("Parsing Message " + filename + " failed: " + message, null);
         }
 
-        public LogMessageParsingException(String message, Exception reason, LogMessage logMessage) {
-            super("Parsing Message " + filename + " failed: " + message, reason, logMessage);
+        public LogMessageParsingException(String message, Exception reason) {
+            super("Parsing Message " + filename + " failed: " + message, reason);
         }
     }
 
