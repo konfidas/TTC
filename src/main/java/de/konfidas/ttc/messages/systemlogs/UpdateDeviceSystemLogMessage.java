@@ -3,10 +3,7 @@ package de.konfidas.ttc.messages.systemlogs;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.messages.SystemLogMessage;
 import de.konfidas.ttc.utilities.DLTaggedObjectConverter;
-import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.DLTaggedObject;
+import org.bouncycastle.asn1.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,16 +24,13 @@ import java.util.NoSuchElementException;
  * ╠═══════════════════════╪══════╪═══════════════════════════════════════════════════════════════╪════════════╣
  * ║ userID                │ 0x81 │ PrintableString                                               │ m          ║
  * ╟───────────────────────┼──────┼───────────────────────────────────────────────────────────────┼────────────╢
- * ║ role                  │ 0x82 │ ENUMERATED{ admin, timeAdmin }                                │ c          ║
- * ╟───────────────────────┼──────┼───────────────────────────────────────────────────────────────┼────────────╢
- * ║ authenticationResult  │ 0x83 │ BOOLEAN                                                       │ m          ║
- * ╟───────────────────────┼──────┼───────────────────────────────────────────────────────────────┼────────────╢
- * ║ remainingRetries      │ 0x84 │ INTEGER                                                       │ o          ║
+ * ║ oldVersion            │ 0x84 │ OCTECTSTRING                                                  │ m          ║
  * ╚═══════════════════════╧══════╧══════════════════════════════════╧═════════════════════════════════════════╝
  * </pre>
  */
-public class AuthenticateSmaersAdminSystemLogMessage extends SystemLogMessage {
+public class UpdateDeviceSystemLogMessage extends SystemLogMessage {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+
 
 
     public DLTaggedObject getUserId() {
@@ -47,28 +41,12 @@ public class AuthenticateSmaersAdminSystemLogMessage extends SystemLogMessage {
         this.userId = userId;
     }
 
-    public DLTaggedObject getRole() {
-        return role;
+    public DLTaggedObject getOldVersion() {
+        return oldVersion;
     }
 
-    public void setRole(DLTaggedObject role) {
-        this.role = role;
-    }
-
-    public DLTaggedObject getAuthenticationResult() {
-        return authenticationResult;
-    }
-
-    public void setAuthenticationResult(DLTaggedObject authenticationResult) {
-        this.authenticationResult = authenticationResult;
-    }
-
-    public DLTaggedObject getRemainingRetries() {
-        return remainingRetries;
-    }
-
-    public void setRemainingRetries(DLTaggedObject remainingRetries) {
-        this.remainingRetries = remainingRetries;
+    public void setOldVersion(DLTaggedObject oldVersion) {
+        this.oldVersion = oldVersion;
     }
 
     public String getUserIDAsString() {
@@ -79,43 +57,60 @@ public class AuthenticateSmaersAdminSystemLogMessage extends SystemLogMessage {
         this.userIDAsString = userIDAsString;
     }
 
-    public BigInteger getRoleAsBigInteger() {
-        return roleAsBigInteger;
+    public String getOldVersionComponentName() {
+        return oldVersionComponentName;
     }
 
-    public void setRoleAsBigInteger(BigInteger roleAsBigInteger) {
-        this.roleAsBigInteger = roleAsBigInteger;
+    public void setOldVersionComponentName(String oldVersionComponentName) {
+        this.oldVersionComponentName = oldVersionComponentName;
     }
 
-    public boolean isAuthenticationResultAsBoolean() {
-        return authenticationResultAsBoolean;
+    public String getOldVersionManufacturer() {
+        return oldVersionManufacturer;
     }
 
-    public void setAuthenticationResultAsBoolean(boolean authenticationResultAsBoolean) {
-        this.authenticationResultAsBoolean = authenticationResultAsBoolean;
+    public void setOldVersionManufacturer(String oldVersionManufacturer) {
+        this.oldVersionManufacturer = oldVersionManufacturer;
     }
 
-    public BigInteger getRemainingRetriesAsBigInteger() {
-        return remainingRetriesAsBigInteger;
+    public String getOldVersionModel() {
+        return oldVersionModel;
     }
 
-    public void setRemainingRetriesAsBigInteger(BigInteger remainingRetriesAsBigInteger) {
-        this.remainingRetriesAsBigInteger = remainingRetriesAsBigInteger;
+    public void setOldVersionModel(String oldVersionModel) {
+        this.oldVersionModel = oldVersionModel;
+    }
+
+    public String getOldVersionVersion() {
+        return oldVersionVersion;
+    }
+
+    public void setOldVersionVersion(String oldVersionVersion) {
+        this.oldVersionVersion = oldVersionVersion;
+    }
+
+    public String getOldVersionCertificationID() {
+        return oldVersionCertificationID;
+    }
+
+    public void setOldVersionCertificationID(String oldVersionCertificationID) {
+        this.oldVersionCertificationID = oldVersionCertificationID;
     }
 
     DLTaggedObject userId;
-    DLTaggedObject role;
-    DLTaggedObject authenticationResult;
-    DLTaggedObject remainingRetries;
+    DLTaggedObject oldVersion;
+
 
     String userIDAsString;
-    BigInteger roleAsBigInteger;
-    boolean authenticationResultAsBoolean;
-    BigInteger remainingRetriesAsBigInteger;
+    String oldVersionComponentName;
+    String oldVersionManufacturer;
+    String oldVersionModel;
+    String oldVersionVersion;
+    String oldVersionCertificationID;
 
 
 
-    public AuthenticateSmaersAdminSystemLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
+    public UpdateDeviceSystemLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
         super(content, filename);
     }
 
@@ -137,28 +132,55 @@ public class AuthenticateSmaersAdminSystemLogMessage extends SystemLogMessage {
             this.userId = (DLTaggedObject) systemOperationDataIterator.next();
             this.userIDAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.userId);
 
-            //role einlesen
-            nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 2) {logger.debug(" Das Feld unblockResiult wurde nicht gefunden");}
-            else {
-                this.role = (DLTaggedObject) systemOperationDataIterator.next();
-                this.roleAsBigInteger = DLTaggedObjectConverter.dLTaggedObjectFromEnumerationToBigInteger(this.role);
-            }
-
-            //authenticationResult einlesen
+            //oldVersion einlesen
              nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 3) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld authenticationResult wurde nicht gefunden");
+            if (nextElement.getTagNo() != 3) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld oldVersion wurde nicht gefunden");
 
-            this.authenticationResult = (DLTaggedObject) systemOperationDataIterator.next();
-            this.authenticationResultAsBoolean = DLTaggedObjectConverter.dLTaggedObjectToBoolean(this.authenticationResult);
+            this.oldVersion = (DLTaggedObject) systemOperationDataIterator.next();
 
-            //remainingRetries einlesen
-            nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 4) {logger.debug(" Das Feld remainingRetries wurde nicht gefunden");}
-            else {
-                this.remainingRetries = (DLTaggedObject) systemOperationDataIterator.next();
-                this.remainingRetriesAsBigInteger = DLTaggedObjectConverter.dLTaggedObjectFromEnumerationToBigInteger(this.remainingRetries);
+            //oldVersion is a Sequence in itself. Parsing follows
+
+            if (this.oldVersion.getObject() instanceof ASN1Sequence) {
+
+                List<ASN1Primitive> deviceInformationSetAsASN1List = Collections.list(((ASN1Sequence) this.oldVersion.getObject()).getObjects());
+                ListIterator<ASN1Primitive> deviceInformationSetIterator = deviceInformationSetAsASN1List.listIterator();
+
+                if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException("DeviceInformationSet of updateTime ended early"); }
+
+                List<ASN1Primitive> componentInformationSetAsASN1 = Collections.list(((ASN1Sequence) deviceInformationSetAsASN1List.get(deviceInformationSetIterator.nextIndex())).getObjects());
+                ListIterator<ASN1Primitive> componentInformationSetItertator = componentInformationSetAsASN1.listIterator();
+
+                //component Name
+                if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException("componentInformationSet of updateTime ended early"); }
+                ASN1Primitive element = deviceInformationSetIterator.next();
+                this.oldVersionComponentName = ((ASN1String) element).getString();
+
+                //manufacturer
+                if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException("componentInformationSet of updateTime ended early"); }
+                element = deviceInformationSetIterator.next();
+                this.oldVersionManufacturer = ((ASN1String) element).getString();
+
+                //model
+                if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException("componentInformationSet of updateTime ended early"); }
+                element = deviceInformationSetIterator.next();
+                this.oldVersionModel = ((ASN1String) element).getString();
+
+                //version
+                if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException("componentInformationSet of updateTime ended early"); }
+                element = deviceInformationSetIterator.next();
+                this.oldVersionVersion = ((ASN1String) element).getString();                //version
+
+                if (deviceInformationSetIterator.hasNext()) {
+                element = deviceInformationSetIterator.next();
+                this.oldVersionCertificationID = ((ASN1String) element).getString();
+                }
+
             }
+            else throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld oldVersion startet nicht mit einer Sequenz");
+
+
+
+
 
 
         }
