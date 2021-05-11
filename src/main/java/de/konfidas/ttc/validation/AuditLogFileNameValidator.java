@@ -12,7 +12,7 @@ import java.util.LinkedList;
 
 
 public class AuditLogFileNameValidator extends AbstractLogMessageFileNameValidator{
-    final static String LogFormat="Log-Sys";
+    final static String LogFormat="Log-Aud";
     
     @Override
     protected String getExpectedLogFormat(){

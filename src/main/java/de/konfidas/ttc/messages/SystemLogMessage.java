@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
 
-public abstract class SystemLogMessage extends LogMessageImplementation {
+public abstract class SystemLogMessage extends LogMessageImplementation implements SystemLog {
     ASN1Primitive operationType;
     DLTaggedObject systemOperationData;
     ASN1Primitive additionalInternalData;

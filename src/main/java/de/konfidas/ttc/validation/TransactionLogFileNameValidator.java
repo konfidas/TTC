@@ -27,14 +27,6 @@ public class TransactionLogFileNameValidator extends AbstractLogMessageFileNameV
     }
 
     @Override
-    protected Collection<? extends ValidationException> checkLogFormat(String component, LogMessage msg) {
-        if(!LogFormat.equals(component)){
-            return Collections.singleton(new WrongLogFormatException(LogFormat, component, msg));
-        }
-        return null;
-    }
-
-    @Override
     protected LinkedList<ValidationException> checkMsg(LogMessage msg) {
         if(msg instanceof TransactionLogMessage) {
             LinkedList<ValidationException> result = super.checkMsg(msg);

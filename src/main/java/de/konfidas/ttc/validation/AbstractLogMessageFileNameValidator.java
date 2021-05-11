@@ -36,7 +36,7 @@ import java.util.LinkedList;
  *
  * DATE-FORMAT_DATE_Sig-SIGNATURE-COUNTER_LOG_Fc-FILE-COUNTER.log
  */
-public abstract class AbstractLogMessageFileNameValidator implements Validator{
+abstract class AbstractLogMessageFileNameValidator implements Validator{
     @Override
     public Collection<ValidationException> validate(LogMessageArchive tar) {
         LinkedList<ValidationException> result = new LinkedList<>();
@@ -53,19 +53,27 @@ public abstract class AbstractLogMessageFileNameValidator implements Validator{
 
         String[] components = msg.getFileName().split("_");
 
-        if(components.length >= 1){
-            result.addAll(checkLogTime(components[0], msg));
-        }else{
+        if( msg.getFileName().length() == 0){
             result.add(new MissingComponentException(msg));
         }
 
+        if(components.length >= 1){
+            result.addAll(checkLogTimeType(components[0], msg));
+        }
+
         if(components.length >= 2){
-            result.addAll(checkSigCounter(components[1], msg));
+            result.addAll(checkLogTime(components[0],components[1], msg));
         }else{
             result.add(new MissingComponentException(msg));
         }
 
         if(components.length >= 3){
+            result.addAll(checkSigCounter(components[2], msg));
+        }else{
+            result.add(new MissingComponentException(msg));
+        }
+
+        if(components.length >= 4){
             result.addAll(checkLogFormat(components[3], msg));
         }else{
             result.add(new MissingComponentException(msg));
@@ -101,73 +109,84 @@ public abstract class AbstractLogMessageFileNameValidator implements Validator{
         if(!getExpectedLogFormat().equals(component)){
             return Collections.singleton(new WrongLogFormatException(getExpectedLogFormat(), component, msg));
         }
-        return null;
+        return Collections.emptyList();
     }
 
-    Collection<ValidationException> checkLogTime(String component, LogMessage msg) {
+
+    Collection<ValidationException> checkLogTimeType(String component, LogMessage msg) {
         LinkedList<ValidationException> result = new LinkedList<>();
-        String[] logTime = component.split("-");
-
-        if(!(logTime.length == 2)){
-            result.add(new WrongLogTimeInNameException(msg));
-        }
-
-        LogTime timeFromFileName = null;
-
-        switch (logTime[0]){
-            case "Unixt":
+        switch (component){
+            case "Unix":
                 if(msg.getLogTime().getType() != LogTime.Type.UNIX){
                     result.add(new DifferentLogTimeTypeException(msg, LogTime.Type.UNIX));
-                } else {
-                    timeFromFileName = new UnixLogTime(Long.valueOf(logTime[1]));
                 }
                 break;
             case "Utc":
                 if(msg.getLogTime().getType() != LogTime.Type.UTC) {
                     result.add(new DifferentLogTimeTypeException(msg, LogTime.Type.UTC));
-                } else {
-                    try {
-                        timeFromFileName = new UtcLogTime(new ASN1UTCTime(logTime[1]));
-                    } catch(ParseException e){
-                        result.add(new WrongLogTimeInNameException(msg, e));
-                    }
                 }
                 break;
             case "Gent":
                 if(msg.getLogTime().getType() != LogTime.Type.GENERALIZED) {
                     result.add(new DifferentLogTimeTypeException(msg, LogTime.Type.GENERALIZED));
-                } else {
-                    try {
-                        timeFromFileName = new GeneralizedLogTime(new ASN1GeneralizedTime(logTime[1]));
-                    } catch(ParseException e){
-                        result.add(new WrongLogTimeInNameException(msg, e));
-                    }
                 }
                 break;
             default: result.add(new DifferentLogTimeTypeException(msg, null));
         }
 
+        return result;
+    }
+
+
+    Collection<ValidationException> checkLogTime(String type, String component, LogMessage msg) {
+        LinkedList<ValidationException> result = new LinkedList<>();
+
+        LogTime timeFromFileName = null;
+
+        switch (type){
+            case "Unix":
+                try {
+                    timeFromFileName = new UnixLogTime(Long.valueOf(component));
+                }catch(Throwable e){
+                    result.add(new WrongLogTimeInNameException(msg, e));
+                }
+                break;
+            case "Utc":
+                try {
+                    timeFromFileName = new UtcLogTime(new ASN1UTCTime(component));
+                } catch(Throwable e){
+                    result.add(new WrongLogTimeInNameException(msg, e));
+                }
+                break;
+            case "Gent":
+                try {
+                    timeFromFileName = new GeneralizedLogTime(new ASN1GeneralizedTime(component));
+
+                } catch(Throwable e){
+                    result.add(new WrongLogTimeInNameException(msg, e));
+                }
+                break;
+        }
+
         if(null != timeFromFileName){
-            if(timeFromFileName.getTime() != msg.getLogTime().getTime()){
+            if(!timeFromFileName.equals(msg.getLogTime())){
                 result.add(new DifferentLogTimeException(msg, timeFromFileName));
             }
-        }else{
-            result.add(new WrongLogTimeInNameException(msg));
         }
         return result;
     }
 
     public static class LogMessageFileNameValidationException extends LogMessageValidationException{
-        public LogMessageFileNameValidationException(LogMessage msg, Throwable t) {
+        LogMessageFileNameValidationException(LogMessage msg, Throwable t) {
             super(msg,t);
         }
     }
 
     public static class WrongLogTimeInNameException extends LogMessageFileNameValidationException{
-        public WrongLogTimeInNameException(LogMessage msg, Throwable t) {
+        WrongLogTimeInNameException(LogMessage msg, Throwable t) {
             super(msg,t );
         }
-        public WrongLogTimeInNameException(LogMessage msg) {
+        WrongLogTimeInNameException(LogMessage msg) {
             this(msg,null);
         }
     }
@@ -177,7 +196,7 @@ public abstract class AbstractLogMessageFileNameValidator implements Validator{
         String expectedLogFormat;
         String foundLogFormat;
 
-        public WrongLogFormatException(String expected, String found, LogMessage msg) {
+        WrongLogFormatException(String expected, String found, LogMessage msg) {
             super(msg);
             this.expectedLogFormat = expected;
             this.foundLogFormat = found;
@@ -187,7 +206,7 @@ public abstract class AbstractLogMessageFileNameValidator implements Validator{
     public static class DifferentLogTimeException extends WrongLogTimeInNameException {
         final LogTime expected;
 
-        public DifferentLogTimeException(LogMessage msg, LogTime expected) {
+        DifferentLogTimeException(LogMessage msg, LogTime expected) {
             super(msg);
             this.expected = expected;
         }
@@ -196,20 +215,20 @@ public abstract class AbstractLogMessageFileNameValidator implements Validator{
     public static class DifferentSigCounterException extends LogMessageFileNameValidationException {
         final BigInteger expected;
 
-        public DifferentSigCounterException(LogMessage msg, BigInteger expected) {
+        DifferentSigCounterException(LogMessage msg, BigInteger expected) {
             super(msg,null);
             this.expected = expected;
         }
     }
 
     public static class MissingSigTagException extends LogMessageFileNameValidationException {
-        public MissingSigTagException(LogMessage msg) {
+        MissingSigTagException(LogMessage msg) {
             super(msg, null);
         }
     }
 
     public static class BadFormattedSigTagException extends LogMessageFileNameValidationException {
-        public BadFormattedSigTagException(LogMessage msg) {
+        BadFormattedSigTagException(LogMessage msg) {
             super(msg, null);
         }
     }
@@ -218,14 +237,14 @@ public abstract class AbstractLogMessageFileNameValidator implements Validator{
     public static class DifferentLogTimeTypeException extends WrongLogTimeInNameException {
         final LogTime.Type expectedType;
 
-        public DifferentLogTimeTypeException(LogMessage msg, LogTime.Type expectedType) {
+        DifferentLogTimeTypeException(LogMessage msg, LogTime.Type expectedType) {
             super(msg);
             this.expectedType = expectedType;
         }
     }
 
     public static class MissingComponentException extends LogMessageFileNameValidationException {
-        public MissingComponentException(LogMessage msg) {
+        MissingComponentException(LogMessage msg) {
             super(msg, null);
         }
     }
