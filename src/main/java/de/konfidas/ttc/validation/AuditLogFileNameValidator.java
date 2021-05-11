@@ -2,12 +2,10 @@ package de.konfidas.ttc.validation;
 
 
 import de.konfidas.ttc.exceptions.ValidationException;
-import de.konfidas.ttc.messages.AuditLogMessage;
+import de.konfidas.ttc.messages.AuditLog;
 import de.konfidas.ttc.messages.LogMessage;
-import de.konfidas.ttc.messages.SystemLogMessage;
 
-import java.util.Collection;
-import java.util.Collections;
+
 import java.util.LinkedList;
 
 
@@ -20,23 +18,14 @@ public class AuditLogFileNameValidator extends AbstractLogMessageFileNameValidat
     }
 
     @Override
-    protected Collection<? extends ValidationException> checkLogFormat(String component, LogMessage msg) {
-        if(!LogFormat.equals(component)){
-            return Collections.singleton(new WrongLogFormatException(LogFormat, component, msg));
-        }
-        return null;
-    }
-
-    @Override
     protected LinkedList<ValidationException> checkMsg(LogMessage msg) {
-        if(msg instanceof AuditLogMessage) {
+        if(msg instanceof AuditLog) {
             LinkedList<ValidationException> result = super.checkMsg(msg);
 
-            String[] components = msg.getFileName().split("_");
+            String[] components = getComponents();
 
             if(components.length >= 5) {
-                // FIXME:
-                // ((SystemLogMessage) msg).
+                // TODO.
             }else{
                 result.add(new MissingComponentException(msg));
             }

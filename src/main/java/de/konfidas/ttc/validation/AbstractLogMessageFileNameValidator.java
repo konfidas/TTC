@@ -12,7 +12,6 @@ import org.bouncycastle.asn1.ASN1GeneralizedTime;
 import org.bouncycastle.asn1.ASN1UTCTime;
 
 import java.math.BigInteger;
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -37,6 +36,8 @@ import java.util.LinkedList;
  * DATE-FORMAT_DATE_Sig-SIGNATURE-COUNTER_LOG_Fc-FILE-COUNTER.log
  */
 abstract class AbstractLogMessageFileNameValidator implements Validator{
+    String[] components;
+
     @Override
     public Collection<ValidationException> validate(LogMessageArchive tar) {
         LinkedList<ValidationException> result = new LinkedList<>();
@@ -48,14 +49,24 @@ abstract class AbstractLogMessageFileNameValidator implements Validator{
         return result;
     }
 
+    protected String[] getComponents(){return components;}
+
     protected LinkedList<ValidationException> checkMsg(LogMessage msg) {
         LinkedList<ValidationException> result = new LinkedList<>();
 
-        String[] components = msg.getFileName().split("_");
+        String fileName = msg.getFileName();
 
-        if( msg.getFileName().length() == 0){
+        if( fileName.length() == 0){
             result.add(new MissingComponentException(msg));
         }
+
+        if(!fileName.endsWith(".log")){
+            result.add(new WrongFileNameExtensionException(msg));
+        }else{
+            fileName = fileName.substring(0, fileName.length()-4);
+        }
+
+        components = fileName.split("_");
 
         if(components.length >= 1){
             result.addAll(checkLogTimeType(components[0], msg));
@@ -174,6 +185,12 @@ abstract class AbstractLogMessageFileNameValidator implements Validator{
             }
         }
         return result;
+    }
+
+    public static class WrongFileNameExtensionException extends LogMessageFileNameValidationException{
+        WrongFileNameExtensionException(LogMessage msg) {
+            super(msg, null);
+        }
     }
 
     public static class LogMessageFileNameValidationException extends LogMessageValidationException{

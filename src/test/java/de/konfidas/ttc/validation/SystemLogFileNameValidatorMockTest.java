@@ -106,7 +106,7 @@ public class SystemLogFileNameValidatorMockTest {
 
         Collection<ValidationException> r = validator.validate(tar);
 
-        assertTrue(r.size() == 6);
+        assertTrue(r.size() == 7);
     }
 
 

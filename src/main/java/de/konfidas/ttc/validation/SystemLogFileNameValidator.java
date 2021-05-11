@@ -4,8 +4,6 @@ package de.konfidas.ttc.validation;
 import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.SystemLog;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 
 
@@ -22,11 +20,10 @@ public class SystemLogFileNameValidator extends AbstractLogMessageFileNameValida
         if(msg instanceof SystemLog) {
             LinkedList<ValidationException> result = super.checkMsg(msg);
 
-            String[] components = msg.getFileName().split("_");
+            String[] components = getComponents();
 
             if(components.length >= 5) {
-                // FIXME:
-                // ((SystemLogMessage) msg).
+                // TODO: compare this component to the content of the system log message.
             }else{
                 result.add(new MissingComponentException(msg));
             }
