@@ -94,8 +94,8 @@ public class SignatureCounterValidatorMockedTest {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
-        this.messages.add(new LMM(BigInteger.TWO));
         this.messages.add(new LMM(BigInteger.ONE));
+        this.messages.add(new LMM(BigInteger.TWO));
 
         assertTrue(validator.validate(tar).isEmpty());
     }
@@ -217,9 +217,9 @@ public class SignatureCounterValidatorMockedTest {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
+        this.messages.add(new LMM(BigInteger.ONE, new byte[]{0x02}));
         this.messages.add(new LMM(BigInteger.TWO, new byte[]{0x01}));
         this.messages.add(new LMM(BigInteger.TWO, new byte[]{0x02}));
-        this.messages.add(new LMM(BigInteger.ONE, new byte[]{0x02}));
 
         assertTrue(validator.validate(tar).size() == 1);
     }
@@ -229,10 +229,10 @@ public class SignatureCounterValidatorMockedTest {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
-        this.messages.add(new LMM(BigInteger.TWO, new byte[]{0x01}));
-        this.messages.add(new LMM(BigInteger.TWO, new byte[]{0x02}));
         this.messages.add(new LMM(BigInteger.ONE, new byte[]{0x02}));
         this.messages.add(new LMM(BigInteger.ONE, new byte[]{0x01}));
+        this.messages.add(new LMM(BigInteger.TWO, new byte[]{0x01}));
+        this.messages.add(new LMM(BigInteger.TWO, new byte[]{0x02}));
         this.messages.add(new LMM(BigInteger.TWO, new byte[]{0x02}));
 
         assertTrue(validator.validate(tar).size() == 1);
@@ -244,12 +244,13 @@ public class SignatureCounterValidatorMockedTest {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
-        this.messages.add(new LMM(BigInteger.TWO, new byte[]{0x01}));
-        this.messages.add(new LMM(BigInteger.TWO, new byte[]{0x02}));
+        this.messages.add(new LMM(BigInteger.ONE, new byte[]{0x01}));
         this.messages.add(new LMM(BigInteger.ONE, new byte[]{0x02}));
         this.messages.add(new LMM(BigInteger.ONE, new byte[]{0x01}));
+        this.messages.add(new LMM(BigInteger.TWO, new byte[]{0x01}));
         this.messages.add(new LMM(BigInteger.TWO, new byte[]{0x02}));
-        this.messages.add(new LMM(BigInteger.ONE, new byte[]{0x01}));
+        this.messages.add(new LMM(BigInteger.TWO, new byte[]{0x02}));
+
 
         assertTrue(validator.validate(tar).size() == 2);
     }

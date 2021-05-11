@@ -94,8 +94,8 @@ public class TimeStampValidatorMockedTest {
         TimeStampValidator validator = new TimeStampValidator();
         LogMessageArchive tar = new TestTar();
 
-        this.messages.add(new LMM(new UnixLogTime(1), BigInteger.TWO));
         this.messages.add(new LMM(new UnixLogTime(2), BigInteger.ONE));
+        this.messages.add(new LMM(new UnixLogTime(1), BigInteger.TWO));
 
         assertTrue(validator.validate(tar).size()==1);
     }
