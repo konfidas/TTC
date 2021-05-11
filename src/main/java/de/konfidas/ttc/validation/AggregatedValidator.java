@@ -15,12 +15,21 @@ public class AggregatedValidator implements Validator{
     }
 
     public AggregatedValidator add(Validator v){
-        this.validators.add(v);
+
+        if(v instanceof  AggregatedValidator){
+            this.validators.addAll(((AggregatedValidator) v).validators);
+        }else {
+            this.validators.add(v);
+        }
+
         return this;
     }
 
     public AggregatedValidator(Collection<Validator> validators){
-        this.validators = validators;
+        this();
+        for( Validator v : validators){
+            this.add(v);
+        }
     }
 
     @Override
