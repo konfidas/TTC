@@ -9,32 +9,28 @@ import java.util.List;
  * @param <T> The type of the data to be reported
  */
 public class Report<T> {
-
-
-    private T data = null;
-    private String name;
-
-    private List<Report<T>> children = new ArrayList<>();
-
-    private Report<T> parent = null;
+    T data = null;
+    String name;
+    List<Report<?>> children = new ArrayList<>();
+    Report<?> parent = null;
 
     public Report(String name, T data) {
         this.data = data;
         this.name= name;
     }
 
-    public Report<T> addChild(Report<T> child) {
+    public Report<?> addChild(Report<?> child) {
         child.setParent(this);
         this.children.add(child);
         return child;
     }
 
-    public void addChildren(List<Report<T>> children) {
+    public void addChildren(List<Report<?>> children) {
         children.forEach(each -> each.setParent(this));
         this.children.addAll(children);
     }
 
-    public List<Report<T>> getChildren() {
+    public List<Report<?>> getChildren() {
         return children;
     }
 
@@ -54,11 +50,11 @@ public class Report<T> {
         this.name = name;
     }
 
-    private void setParent(Report<T> parent) {
+    void setParent(Report<?> parent) {
         this.parent = parent;
     }
 
-    public Report<T> getParent() {
+    public Report<?> getParent() {
         return parent;
     }
 

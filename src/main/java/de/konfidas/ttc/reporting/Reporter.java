@@ -7,5 +7,5 @@ import de.konfidas.ttc.validation.ValidationResult;
 import java.util.Collection;
 
 public interface Reporter<T> {
-    Report<T> createReport(Collection<LogMessageArchive> logs, ValidationResult vResult);
+    T createReport(Collection<LogMessageArchive> logs, ValidationResult vResult);
 }
