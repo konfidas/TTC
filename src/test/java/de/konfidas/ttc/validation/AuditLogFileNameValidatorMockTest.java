@@ -108,7 +108,7 @@ public class AuditLogFileNameValidatorMockTest {
 
         Collection<ValidationException> r = validator.validate(tar);
 
-        assertTrue(r.size() == 7);
+        assertTrue(r.size() == 6);
     }
 
 

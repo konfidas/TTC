@@ -137,7 +137,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         messages.add(new LMM(BigInteger.valueOf(1572),
                 BigInteger.valueOf(713),
-                "Start",
+                "StartTransaction",
                 "03",
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109153045Z")),
@@ -154,7 +154,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         messages.add(new LMM(BigInteger.valueOf(1572),
                 BigInteger.valueOf(713),
-                "Update",
+                "UpdateTransaction",
                 "03",
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109153045Z")),
@@ -171,7 +171,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         messages.add(new LMM(BigInteger.valueOf(1572),
                 BigInteger.valueOf(713),
-                "Finish",
+                "FinishTransaction",
                 "03",
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109153045Z")),
@@ -188,7 +188,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         messages.add(new LMM(BigInteger.valueOf(1572),
                 BigInteger.valueOf(713),
-                "Update",
+                "UpdateTransaction",
                 "03",
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109153045Z")),
@@ -206,7 +206,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         messages.add(new LMM(BigInteger.valueOf(1572),
                 BigInteger.valueOf(713),
-                "Foo",
+                "FooTransaction",
                 "03",
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109153045Z")),
@@ -224,7 +224,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         messages.add(new LMM(BigInteger.valueOf(1572),
                 BigInteger.valueOf(713),
-                "Foo",
+                "FooTransaction",
                 "03",
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109153045Z")),
@@ -241,7 +241,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         messages.add(new LMM(BigInteger.valueOf(1572),
                 BigInteger.valueOf(713),
-                "Start",
+                "StartTransaction",
                 "04",
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109153045Z")),
@@ -259,7 +259,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         messages.add(new LMM(BigInteger.valueOf(1572),
                 BigInteger.valueOf(713),
-                "Start",
+                "StartTransaction",
                 "04",
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109153045Z")),
@@ -277,7 +277,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         messages.add(new LMM(BigInteger.valueOf(1572),
                 BigInteger.valueOf(713),
-                "Start",
+                "StartTransaction",
                 "03",
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109153045Z")),
@@ -295,7 +295,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         messages.add(new LMM(BigInteger.valueOf(1572),
                 BigInteger.valueOf(713),
-                "Start",
+                "StartTransaction",
                 "03",
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109153045Z")),
@@ -313,7 +313,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         messages.add(new LMM(BigInteger.valueOf(1572),
                 BigInteger.valueOf(713),
-                "Start",
+                "StartTransaction",
                 "03",
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109153045Z")),
@@ -331,7 +331,7 @@ public class LogMessageFileNameValidatorMockTest {
 
         messages.add(new LMM(BigInteger.valueOf(1572),
                 BigInteger.valueOf(713),
-                "Start",
+                "StartTransaction",
                 "03",
                 new byte[]{},
                 new UtcLogTime(new ASN1UTCTime("181109153045Z")),
