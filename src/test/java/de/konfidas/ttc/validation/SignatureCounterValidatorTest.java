@@ -57,7 +57,7 @@ public class SignatureCounterValidatorTest {
 
             LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(this.file);
 
-            Collection<ValidationException>  errors = validator.validate(tar);
+            Collection<ValidationException>  errors = validator.validate(tar).getValidationErrors();
 
             assert(errors.size() == expectedNumberOfErrors);
 

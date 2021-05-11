@@ -127,7 +127,7 @@ public class TimeStampValidatorMockedTest {
         TimeStampValidator validator = new TimeStampValidator();
         LogMessageArchive tar = new TestTar();
 
-        assertTrue(validator.validate(tar).isEmpty());
+        assertTrue(validator.validate(tar).getValidationErrors().isEmpty());
     }
 
     @Test
@@ -138,7 +138,7 @@ public class TimeStampValidatorMockedTest {
         this.messages.add(new LogMessageMock(new UnixLogTime(1), BigInteger.ONE));
         this.messages.add(new LogMessageMock(new UnixLogTime(2), BigInteger.TWO));
 
-        assertTrue(validator.validate(tar).isEmpty());
+        assertTrue(validator.validate(tar).getValidationErrors().isEmpty());
     }
 
     @Test
@@ -149,7 +149,7 @@ public class TimeStampValidatorMockedTest {
         this.messages.add(new LogMessageMock(new UnixLogTime(2), BigInteger.ONE));
         this.messages.add(new LogMessageMock(new UnixLogTime(1), BigInteger.TWO));
 
-        assertTrue(validator.validate(tar).size()==1);
+        assertTrue(validator.validate(tar).getValidationErrors().size()==1);
     }
 
 }

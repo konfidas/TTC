@@ -17,6 +17,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPublicKey;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -58,7 +59,7 @@ public class CertificateFileNameValidator implements Validator {
     }
 
     @Override
-    public Collection<ValidationException> validate(LogMessageArchive tar) {
+    public ValidationResult validate(LogMessageArchive tar) {
         LinkedList<ValidationException> errors = new LinkedList<>();
 
         for(Map.Entry<? extends String,? extends X509Certificate> entry : tar.getClientCertificates().entrySet()) {
@@ -68,6 +69,6 @@ public class CertificateFileNameValidator implements Validator {
                 errors.add(e);
             }
         }
-        return errors;
+        return new ValidationResultImpl().append(Collections.singleton(this), errors);
     }
 }

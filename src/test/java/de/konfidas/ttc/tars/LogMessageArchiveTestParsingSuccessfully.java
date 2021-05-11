@@ -70,7 +70,7 @@ public class LogMessageArchiveTestParsingSuccessfully {
                 .add(new CertificateFileNameValidator())
                 .add(new LogMessageSignatureValidator());
 
-        Collection<ValidationException> errors = v.validate(tar);
+        Collection<ValidationException> errors = v.validate(tar).getValidationErrors();
         assertTrue(errors.isEmpty());
     }
 }

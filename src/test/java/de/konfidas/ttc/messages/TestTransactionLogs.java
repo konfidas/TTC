@@ -317,6 +317,8 @@ public static String[][] provideParameters() {
         }
     }
 
+
+    // FIXME: this test fails for some reason in some cases!
     @ParameterizedTest
     @MethodSource("provideParameters")
     public void startTransactionLogMessageWithRandomProcessData(String builderClassString, String operationTypeString) throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
