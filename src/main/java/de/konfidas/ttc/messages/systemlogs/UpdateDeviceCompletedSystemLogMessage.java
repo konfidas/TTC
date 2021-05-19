@@ -22,95 +22,36 @@ import java.util.NoSuchElementException;
  * ╔═══════════════════════╤══════╤═══════════════════════════════════════════════════════════════╤════════════╗
  * ║ Data field            │ Tag  │ Data Type                                                     │ Mandatory? ║
  * ╠═══════════════════════╪══════╪═══════════════════════════════════════════════════════════════╪════════════╣
- * ║ userID                │ 0x81 │ PrintableString                                               │ m          ║
+ * ║ updateResult          │ 0x81 │ ENMERATED                                                     │ m          ║
  * ╟───────────────────────┼──────┼───────────────────────────────────────────────────────────────┼────────────╢
- * ║ oldVersion            │ 0x84 │ OCTECTSTRING                                                  │ m          ║
+ * ║ reasonForFailure      │ 0x81 │ PrintableString                                               │ c          ║
+ * ╟───────────────────────┼──────┼───────────────────────────────────────────────────────────────┼────────────╢
+ * ║ newVersion            │ 0x84 │ OCTECTSTRING                                                  │ m          ║
  * ╚═══════════════════════╧══════╧══════════════════════════════════╧═════════════════════════════════════════╝
  * </pre>
  */
-public class UpdateDeviceSystemLogMessage extends SystemLogMessage {
+public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
 
 
-    public DLTaggedObject getUserId() {
-        return userId;
-    }
-
-    public void setUserId(DLTaggedObject userId) {
-        this.userId = userId;
-    }
-
-    public DLTaggedObject getOldVersion() {
-        return oldVersion;
-    }
-
-    public void setOldVersion(DLTaggedObject oldVersion) {
-        this.oldVersion = oldVersion;
-    }
-
-    public String getUserIDAsString() {
-        return userIDAsString;
-    }
-
-    public void setUserIDAsString(String userIDAsString) {
-        this.userIDAsString = userIDAsString;
-    }
-
-    public String getOldVersionComponentName() {
-        return oldVersionComponentName;
-    }
-
-    public void setOldVersionComponentName(String oldVersionComponentName) {
-        this.oldVersionComponentName = oldVersionComponentName;
-    }
-
-    public String getOldVersionManufacturer() {
-        return oldVersionManufacturer;
-    }
-
-    public void setOldVersionManufacturer(String oldVersionManufacturer) {
-        this.oldVersionManufacturer = oldVersionManufacturer;
-    }
-
-    public String getOldVersionModel() {
-        return oldVersionModel;
-    }
-
-    public void setOldVersionModel(String oldVersionModel) {
-        this.oldVersionModel = oldVersionModel;
-    }
-
-    public String getOldVersionVersion() {
-        return oldVersionVersion;
-    }
-
-    public void setOldVersionVersion(String oldVersionVersion) {
-        this.oldVersionVersion = oldVersionVersion;
-    }
-
-    public String getOldVersionCertificationID() {
-        return oldVersionCertificationID;
-    }
-
-    public void setOldVersionCertificationID(String oldVersionCertificationID) {
-        this.oldVersionCertificationID = oldVersionCertificationID;
-    }
-
     DLTaggedObject userId;
+    DLTaggedObject reasonForFailure;
     DLTaggedObject oldVersion;
 
 
     String userIDAsString;
-    String oldVersionComponentName;
-    String oldVersionManufacturer;
-    String oldVersionModel;
-    String oldVersionVersion;
-    String oldVersionCertificationID;
+    BigInteger updateResultAsBigInteger;
+    String reasonForFailureAsString;
+    String newVersionComponentName;
+    String newVersionManufacturer;
+    String newVersionModel;
+    String newVersionVersion;
+    String newVersionCertificationID;
 
 
 
-    public UpdateDeviceSystemLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
+    public UpdateDeviceCompletedSystemLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
         super(content, filename);
     }
 
@@ -153,26 +94,26 @@ public class UpdateDeviceSystemLogMessage extends SystemLogMessage {
                 //component Name
                 if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException("componentInformationSet of updateTime ended early"); }
                 ASN1Primitive element = deviceInformationSetIterator.next();
-                this.oldVersionComponentName = ((ASN1String) element).getString();
+                this.newVersionComponentName = ((ASN1String) element).getString();
 
                 //manufacturer
                 if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException("componentInformationSet of updateTime ended early"); }
                 element = deviceInformationSetIterator.next();
-                this.oldVersionManufacturer = ((ASN1String) element).getString();
+                this.newVersionManufacturer = ((ASN1String) element).getString();
 
                 //model
                 if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException("componentInformationSet of updateTime ended early"); }
                 element = deviceInformationSetIterator.next();
-                this.oldVersionModel = ((ASN1String) element).getString();
+                this.newVersionModel = ((ASN1String) element).getString();
 
                 //version
                 if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException("componentInformationSet of updateTime ended early"); }
                 element = deviceInformationSetIterator.next();
-                this.oldVersionVersion = ((ASN1String) element).getString();                //version
+                this.newVersionVersion = ((ASN1String) element).getString();                //version
 
                 if (deviceInformationSetIterator.hasNext()) {
                 element = deviceInformationSetIterator.next();
-                this.oldVersionCertificationID = ((ASN1String) element).getString();
+                this.newVersionCertificationID = ((ASN1String) element).getString();
                 }
 
             }
