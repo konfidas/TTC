@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -62,15 +63,15 @@ public class LogMessageArchiveTestParsingSuccessfully {
         logger.info("testing tar file {}:", file.getName());
 
         LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
-        for (LogMessage message : tar.getLogMessages()) {
-            LogMessageReporter testReporter = new LogMessageReporter(message);
-            logger.info( ReportTextPrinter.printReportToText(testReporter,0));
-        }
+        LogMessageReporter testReporter = new LogMessageReporter();
+
+        logger.info(testReporter.createReport(Collections.singleton(tar), null).toString());
+
         Validator v = new AggregatedValidator()
                 .add(new CertificateFileNameValidator())
                 .add(new LogMessageSignatureValidator());
 
-        Collection<ValidationException> errors = v.validate(tar);
+        Collection<ValidationException> errors = v.validate(tar).getValidationErrors();
         assertTrue(errors.isEmpty());
     }
 }

@@ -61,7 +61,7 @@ public class LogMessageArchiveTestParsingFailing {
                     .add(new CertificateFileNameValidator())
                     .add(new LogMessageSignatureValidator());
 
-        assertFalse(v.validate(tar).isEmpty());
+        assertFalse(v.validate(tar).getValidationErrors().isEmpty());
 
     }
 }

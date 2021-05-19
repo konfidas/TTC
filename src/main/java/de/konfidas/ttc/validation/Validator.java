@@ -17,5 +17,5 @@ import java.util.Collection;
  *  complete log message history of a TSE.
  */
 public interface Validator {
-    public Collection<ValidationException> validate(LogMessageArchive tar);
+    ValidationResult validate(LogMessageArchive tar);
 }

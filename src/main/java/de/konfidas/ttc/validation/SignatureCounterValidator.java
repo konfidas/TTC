@@ -27,7 +27,7 @@ public class SignatureCounterValidator implements Validator{
     }
 
     @Override
-    public Collection<ValidationException> validate(LogMessageArchive tar) {
+    public ValidationResult validate(LogMessageArchive tar) {
         LinkedList<ValidationException> result = new LinkedList<>();
 
         Collection<? extends LogMessage> messages =tar.getSortedLogMessages();
@@ -57,7 +57,7 @@ public class SignatureCounterValidator implements Validator{
 
             previousMessage = msg;
         }
-        return result;
+        return new ValidationResultImpl().append(Collections.singleton(this), result);
     }
 
     static class SignatureCounterMissingException extends LogMessageValidationException {

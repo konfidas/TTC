@@ -83,7 +83,7 @@ public class TTC {
                 validator.add(new CertificateValidator(Collections.singleton(trustedCert)));
             }
 
-            Collection<ValidationException> errors = validator.validate(tar);
+            Collection<ValidationException> errors = validator.validate(tar).getValidationErrors();
             if(!errors.isEmpty()){
                 logger.debug("there were Errors while Validating:");
 
