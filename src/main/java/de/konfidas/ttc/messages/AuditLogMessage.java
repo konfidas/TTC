@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
 
-public class AuditLogMessage extends LogMessageImplementation {
+public class AuditLogMessage extends LogMessageImplementation implements AuditLog {
 
     public AuditLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
         super(content, filename);

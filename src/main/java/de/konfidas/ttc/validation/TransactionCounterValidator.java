@@ -17,7 +17,7 @@ public class TransactionCounterValidator implements Validator {
     final HashMap<BigInteger,OpenTransaction> openTransactions;
     BigInteger transactionCounter;
 
-    TransactionCounterValidator(){
+    public TransactionCounterValidator(){
         openTransactions = new HashMap<>();
         transactionCounter = BigInteger.ONE;
     }

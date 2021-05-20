@@ -4,8 +4,6 @@ import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.messages.logtime.UnixLogTime;
 import de.konfidas.ttc.tars.LogMessageArchive;
-import de.konfidas.ttc.utilities.oid;
-import org.bouncycastle.asn1.ASN1Primitive;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,11 +44,11 @@ public class TimeStampValidatorMockedTest {
             return messages;
         }
     }
-    static class LogMessageMock implements LogMessage {
+    static class LMM extends LogMessageMock{
         LogTime time;
         BigInteger signatureCounter;
 
-        LogMessageMock(LogTime time, BigInteger signatureCounter){
+        LMM(LogTime time, BigInteger signatureCounter){
             this.time = time;
             this.signatureCounter = signatureCounter;
         }
@@ -63,56 +61,6 @@ public class TimeStampValidatorMockedTest {
         @Override
         public BigInteger getSignatureCounter() {
             return signatureCounter;
-        }
-
-        @Override
-        public byte[] getSerialNumber() {
-            return new byte[0];
-        }
-
-        @Override
-        public String getFileName() {
-            return null;
-        }
-
-        @Override
-        public String getSignatureAlgorithm() {
-            return null;
-        }
-
-        @Override
-        public byte[] getDTBS() {
-            return new byte[0];
-        }
-
-        @Override
-        public byte[] getSignatureValue() {
-            return new byte[0];
-        }
-
-        @Override
-        public int getVersion() {
-            return 0;
-        }
-
-        @Override
-        public oid getCertifiedDataType() {
-            return null;
-        }
-
-        @Override
-        public Collection<ASN1Primitive> getSignatureAlgorithmParameters() {
-            return null;
-        }
-
-        @Override
-        public byte[] getSeAuditData() {
-            return new byte[0];
-        }
-
-        @Override
-        public byte[] getEncoded() {
-            return new byte[0];
         }
     }
 
@@ -135,8 +83,8 @@ public class TimeStampValidatorMockedTest {
         TimeStampValidator validator = new TimeStampValidator();
         LogMessageArchive tar = new TestTar();
 
-        this.messages.add(new LogMessageMock(new UnixLogTime(1), BigInteger.ONE));
-        this.messages.add(new LogMessageMock(new UnixLogTime(2), BigInteger.TWO));
+        this.messages.add(new LMM(new UnixLogTime(1), BigInteger.ONE));
+        this.messages.add(new LMM(new UnixLogTime(2), BigInteger.TWO));
 
         assertTrue(validator.validate(tar).isEmpty());
     }
@@ -146,8 +94,8 @@ public class TimeStampValidatorMockedTest {
         TimeStampValidator validator = new TimeStampValidator();
         LogMessageArchive tar = new TestTar();
 
-        this.messages.add(new LogMessageMock(new UnixLogTime(2), BigInteger.ONE));
-        this.messages.add(new LogMessageMock(new UnixLogTime(1), BigInteger.TWO));
+        this.messages.add(new LMM(new UnixLogTime(2), BigInteger.ONE));
+        this.messages.add(new LMM(new UnixLogTime(1), BigInteger.TWO));
 
         assertTrue(validator.validate(tar).size()==1);
     }

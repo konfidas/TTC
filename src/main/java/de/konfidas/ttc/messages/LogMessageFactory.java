@@ -16,7 +16,6 @@ public class LogMessageFactory {
         return createLogMessage(file.getName(), Files.readAllBytes(file.toPath()));
     }
 
-
     public static LogMessageImplementation createLogMessage(String fileName, byte[] content) throws BadFormatForLogMessageException {
 
         if (fileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+(Start|Update|Finish)_Client-.+log")) {

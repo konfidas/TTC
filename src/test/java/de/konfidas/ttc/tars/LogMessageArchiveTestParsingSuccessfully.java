@@ -4,12 +4,9 @@ import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.LogMessagePrinter;
+import de.konfidas.ttc.validation.*;
 import de.konfidas.ttc.reporting.LogMessageReporter;
 import de.konfidas.ttc.reporting.ReportTextPrinter;
-import de.konfidas.ttc.validation.AggregatedValidator;
-import de.konfidas.ttc.validation.CertificateFileNameValidator;
-import de.konfidas.ttc.validation.LogMessageSignatureValidator;
-import de.konfidas.ttc.validation.Validator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,9 +65,13 @@ public class LogMessageArchiveTestParsingSuccessfully {
         }
         Validator v = new AggregatedValidator()
                 .add(new CertificateFileNameValidator())
-                .add(new LogMessageSignatureValidator());
+                .add(new LogMessageSignatureValidator())
+                .add(new LogMessageFileNameValidator())
+                .add(new SignatureCounterValidator())
+                .add(new TimeStampValidator())
+                .add(new TransactionCounterValidator());
 
         Collection<ValidationException> errors = v.validate(tar);
-        assertTrue(errors.isEmpty());
+        assertTrue(errors.size() == 1);
     }
 }

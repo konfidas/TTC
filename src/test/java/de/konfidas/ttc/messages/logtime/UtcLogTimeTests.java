@@ -37,7 +37,7 @@ public class UtcLogTimeTests {
 
         UtcLogTime t1 = new UtcLogTime(new ASN1UTCTime("200421124355Z"));
         UtcLogTime t2 = new UtcLogTime(new ASN1UTCTime("200421124455Z"));
-        
+
         assertTrue(t1.wasNotAfter(t2));
         assertFalse(t2.wasNotAfter(t1));
     }

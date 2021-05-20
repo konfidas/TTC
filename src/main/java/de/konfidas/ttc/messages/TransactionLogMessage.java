@@ -15,7 +15,7 @@ import java.util.ListIterator;
 
 
 
-public class TransactionLogMessage extends LogMessageImplementation {
+public class TransactionLogMessage extends LogMessageImplementation implements TransactionLog{
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     String operationType;
     String clientID;
@@ -25,14 +25,16 @@ public class TransactionLogMessage extends LogMessageImplementation {
     BigInteger transactionNumber;
     byte[] additionalInternalData;
 
+    @Override
     public String getOperationType() {
         return operationType;
-    }
+    } // TODO: Enum instead of string?
 
     public void setOperationType(String operationType) {
         this.operationType = operationType;
     }
 
+    @Override
     public String getClientID() {
         return clientID;
     }
@@ -65,6 +67,7 @@ public class TransactionLogMessage extends LogMessageImplementation {
         this.additionalExternalData = additionalExternalData;
     }
 
+    @Override
     public BigInteger getTransactionNumber() {
         return transactionNumber;
     }
