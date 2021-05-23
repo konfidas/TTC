@@ -137,7 +137,7 @@ public class HtmlReporter implements Reporter<File> {
         bw.write("<ul>");
 
         for(LogMessageArchive l: logs){
-//            bw.write("<li>"+l.getName()"</li>"); // FIXME: currently there is no way to identify a tar!/?
+            bw.write("<li>"+l.getFileName()+"</li>");
         }
 
         bw.write("</ul></p>");

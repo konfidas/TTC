@@ -10,6 +10,7 @@ public interface LogMessageArchive {
     Map<? extends String, ? extends X509Certificate> getIntermediateCertificates();
     Map<? extends String, ? extends X509Certificate> getClientCertificates();
     Collection<? extends LogMessage> getLogMessages();
+    String getFileName();
 
     /**
      * A lazy getter, returning the Collection of LogMessages in a sorted manner. The messages are sorted

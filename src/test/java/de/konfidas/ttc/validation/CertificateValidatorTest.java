@@ -48,6 +48,11 @@ public class CertificateValidatorTest {
         public Collection<? extends LogMessage> getSortedLogMessages() {
             return null;
         }
+
+        @Override
+        public String getFileName() {
+            return "";
+        }
     }
 
     @BeforeClass
