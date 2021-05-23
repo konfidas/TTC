@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-public class HtmlReporter implements Reporter<Integer> { // I do not need the int here. Interface does not really fit me.
+public class HtmlReporter implements Reporter<File> {
     File file;
     boolean skipLegitLogMessages;
     HashSet<Class<? extends ValidationException>> issuesToIgnore;
@@ -48,7 +48,7 @@ public class HtmlReporter implements Reporter<Integer> { // I do not need the in
     }
 
     @Override
-    public Integer createReport(Collection<LogMessageArchive> logs, ValidationResult vResult) {
+    public File createReport(Collection<LogMessageArchive> logs, ValidationResult vResult) throws ReporterException {
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(file));){
             printHeader(bw);
 
@@ -62,11 +62,12 @@ public class HtmlReporter implements Reporter<Integer> { // I do not need the in
             printLogMessageDetails(bw, logs, vResult);
 
             printFooter(bw);
+            bw.flush();
+            return file;
         } catch (IOException e) {
-            e.printStackTrace();
-            return Integer.valueOf(-1);
+            throw new ReporterException("Fehler bei der Erstellung des HTML Reports",e);
         }
-        return Integer.valueOf(0);
+
     }
 
     void printNonLogMessageValidationExceptions(BufferedWriter bw, Collection<ValidationException> validationErrors) throws IOException {

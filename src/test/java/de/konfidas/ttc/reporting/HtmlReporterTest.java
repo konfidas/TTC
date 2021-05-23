@@ -22,7 +22,6 @@ import static org.junit.Assert.fail;
 @RunWith(Parameterized.class)
 public class HtmlReporterTest {
 
-
     final static File correctTarFiles = new File("testdata/positive/");
 
     final File file;
@@ -47,7 +46,7 @@ public class HtmlReporterTest {
     }
 
     @Test
-    public void createReport() throws IOException, BadFormatForTARException {
+    public void createReport() throws IOException, BadFormatForTARException, Reporter.ReporterException {
         LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
 
         File reportFile = new File("./Report_"+this.file.getName()+".html");
@@ -65,8 +64,8 @@ public class HtmlReporterTest {
         // enable the following line ot make the reporter ignore this Exception class, i.e. not reporting it:
         // reporter.ignoreIssue(SignatureCounterValidator.SignatureCounterMissingException.class);
 
-        reporter.createReport(Collections.singleton(tar), result);
-        System.out.println(reportFile.getAbsoluteFile());
+        File outputFile = reporter.createReport(Collections.singleton(tar), result);
+        System.out.println(outputFile.getAbsoluteFile());
     }
 
 }
