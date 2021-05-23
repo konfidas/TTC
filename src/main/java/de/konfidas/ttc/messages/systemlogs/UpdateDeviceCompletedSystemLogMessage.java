@@ -122,8 +122,6 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
 
 
 
-
-
         }
         catch (NoSuchElementException ex){
             throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Vorzeitiges Ende von systemOperationData", ex);
