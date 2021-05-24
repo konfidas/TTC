@@ -71,7 +71,8 @@ public class HtmlReporter implements Reporter<File> {
     }
 
     void printNonLogMessageValidationExceptions(BufferedWriter bw, Collection<ValidationException> validationErrors) throws IOException {
-        bw.write("<p> The following Issues, where found, but are not directly linked to Log Messages:");
+        bw.write("<h1 id=\"generalerrors\">General errors</h1>\n");
+        bw.write("<p> The following Issues, where found, but are not directly linked to Log Messages:</p>");
         bw.write("<ul>");
         for(ValidationException v : validationErrors){
             if(!(v instanceof LogMessageValidationException)){
@@ -81,7 +82,7 @@ public class HtmlReporter implements Reporter<File> {
                 }
             }
         }
-        bw.write("</ul></p>");
+        bw.write("</ul>");
 
     }
 
@@ -100,7 +101,8 @@ public class HtmlReporter implements Reporter<File> {
                 }
             }
         }
-        bw.write("<p> LogMessages:<br>");
+        bw.write("<h1 id=\"errors\">Errors</h1>\n");
+        bw.write("<p> LogMessages:<br></p>");
 
         if(skipLegitLogMessages){
             bw.write("(legit log messages were skipped in this report)<br>");
@@ -133,33 +135,40 @@ public class HtmlReporter implements Reporter<File> {
     }
 
     void printTars(BufferedWriter bw, Collection<LogMessageArchive> logs) throws IOException {
-        bw.write("<p> This report covers the following LogMessage Archives:");
+        bw.write("<h1 id=\"logmessages\">Log Messages</h1>\n");
+        bw.write("<p> This report covers the following LogMessage Archives:</p>");
         bw.write("<ul>");
 
         for(LogMessageArchive l: logs){
             bw.write("<li>"+l.getFileName()+"</li>");
         }
 
-        bw.write("</ul></p>");
+        bw.write("</ul>");
     }
 
 
     void printValidators(BufferedWriter bw, Collection<Validator> validators) throws IOException {
-        bw.write("<p> To generate this report, the following validators were used:");
+        bw.write("<h1 id=\"validators\">Validators</h1>\n");
+        bw.write("<p> To generate this report, the following validators were used:</p>");
         bw.write("<ul>");
 
         for(Validator v: validators){
             bw.write("<li>"+v.getClass()+"</li>");
         }
-        bw.write("</ul></p>");
+        bw.write("</ul>");
     }
 
 
     static void printHeader(BufferedWriter bw) throws IOException {
-        bw.write("<html><head><title>Report</title></head><body>");
+        bw.write("<html><head><title>Report</title>");
+        bw.write("<style> body { margin: 0; background-color: #f1f1f1; } ul.nav { list-style-type: none; margin: 0; padding: 0; width: 25%; background-color: #979695; position: fixed; height: 100%; overflow: auto; } ul.nav li a { display: block; color: #000; padding: 8px 0 8px 16px; text-decoration: none; } ul.nav li a.active { background-color: #f18643; color: white; } ul.nav li a:hover:not(.active) { background-color: #dcdcdc; color: white; } h1 { font-weight: bold; color: #080807; font-size: 32px; margin: 0; } </style>");
+        bw.write("</head><body>");
+        bw.write("<ul class=\"nav\"> <li><a class=\"active\" href=\"#logmessages\">Log Messages</a></li> <li><a href=\"#validators\">Applied Validators</a></li> <li><a href=\"#generalerrors\">General errors</a></li> <li><a href=\"#errors\">Errors on log messages</a></li> </ul>" +
+                ">");
+        bw.write("<div style=\"margin-left:25%;padding:1px;\">\n");
     }
 
     static void printFooter(BufferedWriter bw) throws IOException {
-        bw.write("</body></html>");
+        bw.write("</div></body></html>");
     }
 }

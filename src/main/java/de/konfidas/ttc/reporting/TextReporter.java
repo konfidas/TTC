@@ -59,7 +59,7 @@ public class TextReporter implements Reporter<String> {
 
             return sw.toString();
         } catch (IOException e) {
-            throw new ReporterException("Fehler bei der Erstellung des HTML Reports",e);
+            throw new ReporterException("Fehler bei der Erstellung des Reports",e);
         }
 
     }
@@ -106,7 +106,11 @@ public class TextReporter implements Reporter<String> {
                 if(!map.containsKey(lm)){
                     if(!skipLegitLogMessages) {
                         sw.write("    " + lm.getFileName() + " seems legit.");
-                        sw.write(System.lineSeparator());
+
+//                        ReportTextPrinter messagePrinter = new ReportTextPrinter();
+//TODO
+//                        sw.write(messagePrinter.printReportToText(L,0));
+//                        sw.write(System.lineSeparator());
                     }
                 }
                     else{
