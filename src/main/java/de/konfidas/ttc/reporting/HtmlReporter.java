@@ -3,14 +3,19 @@ package de.konfidas.ttc.reporting;
 import de.konfidas.ttc.exceptions.LogMessageValidationException;
 import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
+import de.konfidas.ttc.messages.TransactionLogMessage;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import de.konfidas.ttc.validation.ValidationResult;
 import de.konfidas.ttc.validation.Validator;
+import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.asn1.ASN1Primitive;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -101,13 +106,12 @@ public class HtmlReporter implements Reporter<File> {
                 }
             }
         }
-        bw.write("<h1 id=\"errors\">Errors</h1>\n");
-        bw.write("<p> LogMessages:<br></p>");
+        bw.write("<h1 id=\"errors\">Errors for log messages</h1>\n");
 
         if(skipLegitLogMessages){
             bw.write("(legit log messages were skipped in this report)<br>");
         }
-        bw.write("<ul>");
+//        bw.write("<ul>");
 
         for(LogMessageArchive tar : logs){
             for (LogMessage lm : tar.getSortedLogMessages()){
@@ -116,14 +120,20 @@ public class HtmlReporter implements Reporter<File> {
                         bw.write("<li>" + lm.getFileName() + " seems legit.</li>");
                     }
                 }else{
-                    bw.write("<li>");
                     bw.write("Found the following issues while validating "+lm.getFileName()+":");
                     bw.write("<ul>");
                     for(LogMessageValidationException e : map.get(lm)) {
                         bw.write("<li>" + e.toString() + "</li>");
                     }
                     bw.write("</ul>");
-                    bw.write("</li>");
+                    bw.write("<button type=\"button\" class=\"accordion\">Click here for the complete content of "+lm.getFileName()+"</button>");
+                    bw.write("<div class=\"panel\">");
+
+                    bw.write("<table>");
+                    printLogMessage(lm, bw);
+                    bw.write("</table>");
+                    bw.write(" </div>");
+
                 }
 
             }
@@ -160,8 +170,16 @@ public class HtmlReporter implements Reporter<File> {
 
 
     static void printHeader(BufferedWriter bw) throws IOException {
+        String fileName = "report.css";
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        File file = new File(classLoader.getResource(fileName).getFile());
+        String cssString = new String(Files.readAllBytes(file.toPath()));
+
+
         bw.write("<html><head><title>Report</title>");
-        bw.write("<style> body { margin: 0; background-color: #f1f1f1; } ul.nav { list-style-type: none; margin: 0; padding: 0; width: 25%; background-color: #979695; position: fixed; height: 100%; overflow: auto; } ul.nav li a { display: block; color: #000; padding: 8px 0 8px 16px; text-decoration: none; } ul.nav li a.active { background-color: #f18643; color: white; } ul.nav li a:hover:not(.active) { background-color: #dcdcdc; color: white; } h1 { font-weight: bold; color: #080807; font-size: 32px; margin: 0; } </style>");
+        bw.write("<style>");
+        bw.write(cssString);
+        bw.write("</style>");
         bw.write("</head><body>");
         bw.write("<ul class=\"nav\"> <li><a class=\"active\" href=\"#logmessages\">Log Messages</a></li> <li><a href=\"#validators\">Applied Validators</a></li> <li><a href=\"#generalerrors\">General errors</a></li> <li><a href=\"#errors\">Errors on log messages</a></li> </ul>" +
                 ">");
@@ -169,6 +187,94 @@ public class HtmlReporter implements Reporter<File> {
     }
 
     static void printFooter(BufferedWriter bw) throws IOException {
-        bw.write("</div></body></html>");
+        bw.write("</div>");
+        bw.write("<script>var acc = document.getElementsByClassName(\"accordion\"); var i; for (i = 0; i < acc.length; i++) { acc[i].addEventListener(\"click\", function() { this.classList.toggle(\"active\"); var panel = this.nextElementSibling; if (panel.style.maxHeight) { panel.style.maxHeight = null; } else { panel.style.maxHeight = panel.scrollHeight + \"px\"; } }); }</script>");
+        bw.write("</body></html>");
     }
+
+    static void printLogMessage(LogMessage msg, BufferedWriter bw) throws IOException {
+
+        bw.write("<tr><td>version:</td><td>"+ msg.getVersion()+"</td></tr>");
+        bw.write("<tr><td>certifiedDataType:</td><td>"+ msg.getCertifiedDataType().toString()+"</td></tr>");
+
+        if (msg instanceof TransactionLogMessage){
+            reportCertifiedDataOfTransactionLogMessage((TransactionLogMessage) msg, bw);
+        }
+        bw.write("serialNumber: "+Hex.encodeHexString(msg.getSerialNumber()));
+
+        bw.write("<tr><td>signatureCounter:</td><td>"+ msg.getSignatureCounter().toString()+"</td></tr>");
+        bw.write("<tr><td>LogTimeFormat:</td><td>"+ msg.getLogTime().getType().toString()+"</td></tr>");
+        bw.write("<tr><td>LogTime:</td><td>"+ msg.getLogTime().toString()+"</td></tr>");
+
+
+
+//        reportSignatureData();
+
+    }
+
+
+
+    static void reportCertifiedDataOfTransactionLogMessage(TransactionLogMessage msg, BufferedWriter bw) throws IOException {
+        bw.write("todo");
+//        ReportTree certifiedDataReportTree = new ReportTree("certifiedData", "");
+//        certifiedDataReportTree.addChild(new ReportTree("operationType", ((TransactionLogMessage) msg).getOperationType()));
+//        certifiedDataReportTree.addChild(new ReportTree("clientID", ((TransactionLogMessage) msg).getClientID()));
+//        certifiedDataReportTree.addChild(new ReportTree("processData", Hex.encodeHexString(((TransactionLogMessage) msg).getProcessData())));
+//        certifiedDataReportTree.addChild(new ReportTree("processType", ((TransactionLogMessage) msg).getProcessType()));
+//        if (((TransactionLogMessage) msg).getAdditionalExternalData() == null){
+//            certifiedDataReportTree.addChild(new ReportTree("additionalExternalData", "none"));
+//        }else {
+//            certifiedDataReportTree.addChild(new ReportTree("additionalExternalData", Hex.encodeHexString(((TransactionLogMessage) msg).getAdditionalExternalData())));
+//        }
+//        certifiedDataReportTree.addChild(new ReportTree("transactionNumber", ((TransactionLogMessage) msg).getTransactionNumber()));
+//
+//        if (msg.getAdditionalInternalData() == null) {
+//            certifiedDataReportTree.addChild(new ReportTree("additionalInternalData", "none"));
+//        }else {
+//            certifiedDataReportTree.addChild(new ReportTree("additionalInternalData", Hex.encodeHexString(((TransactionLogMessage) msg).getAdditionalInternalData())));
+//        }
+//        this.addChild(certifiedDataReportTree);
+    }
+//    -------
+//    void reportSignatureAlgorithm() {
+//        LogMessage msg = this.getData();
+//        ReportTree signatureAlgorithmReportTree = new ReportTree("signatureAlgorithm", "");
+//
+//        signatureAlgorithmReportTree.addChild(new ReportTree("signatureAlgorithm", msg.getSignatureAlgorithm()));
+//        for (ASN1Primitive signatureAlgorithmParameter : msg.getSignatureAlgorithmParameters()) {
+//            signatureAlgorithmReportTree.addChild(new ReportTree("signatureAlgorithmParameter", signatureAlgorithmParameter));
+//        }
+//        this.addChild(signatureAlgorithmReportTree);
+//    }
+//
+//    void reportSeAuditData() {
+//        LogMessage msg = this.getData();
+//        ReportTree seAuditDataReportTree;
+//        if (msg.getSeAuditData() != null) {
+//            seAuditDataReportTree = new ReportTree("seAuditData", "");
+//            seAuditDataReportTree.addChild(new ReportTree("seAuditData",Hex.encodeHexString(msg.getSeAuditData())));
+//        } else {
+//            seAuditDataReportTree = new ReportTree("seAuditData", "none");
+//        }
+//        this.addChild(seAuditDataReportTree);
+//    }
+//
+//    void reportSignatureData() {
+//        LogMessage msg = this.getData();
+//        ReportTree signatureDataReportTree = new ReportTree("signatureData","");
+//
+//        signatureDataReportTree.addChild(new ReportTree("signatureValue",Hex.encodeHexString(msg.getSignatureValue())));
+//        signatureDataReportTree.addChild(new ReportTree("dtbs",Hex.encodeHexString(msg.getDTBS())));
+//
+//        this.addChild(signatureDataReportTree);
+//    }
+//
+//    @Override
+//    public String toString(){
+//        return ReportTreeTextPrinter.printReportToText(this,1);
+//    }
+//};
+//
+//------
+
 }

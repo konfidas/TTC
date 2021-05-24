@@ -12,6 +12,7 @@ import org.junit.runners.Parameterized;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.Security;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,6 +49,7 @@ public class HtmlReporterTest {
     @Test
     public void createReport() throws IOException, BadFormatForTARException, Reporter.ReporterException {
         LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
+
 
         File reportFile = new File("./Report_"+this.file.getName()+".html");
 
