@@ -31,22 +31,31 @@ TTC liegt aktuell als Alpha-Version vor. Die geplanten Funktionen sind noch nich
 ## Lizenz 
 TTC steht unter der MIT Lizenz. 
 
-## Parameter 
+## Argumente 
 
-Erforderliche Parameter beim Aufruf 
+Erforderliche Argumente beim Aufruf 
 ```
- -i --inputTAR 	        Das zu prüfende TAR-Archiv
+Das zu prüfende TAR-Archiv. Es können auch mehrer TAR-Archive übergeben werden. Diese werden dann als ein Export behandelt. 
 
 ```
 
-Optionale Parameter:
+## Parameter:
 
 | Parameter               | Bedeutung                                                                                                                   |
 |-------------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| -t --trustAnker         | Zertifikat der Root-Datei als .cer Datei. Wenn diese Parameter nicht angegeben wird, MUSS der Parameter -o verwendet werden |
-| -v --verbose.           | Wenn dieser Parameter gesetzt wird, wird das Logging-Level erhöht.                                                          |
-| -o --overwriteCertCheck | Wenn dieser Parameter gesetzt wird, werden die Zertifikate in der TAR-Datei nicht auf die Root-CA zurückgeführt.            |
+| -t --trustAnker         | Zertifikat der Root-Datei als .cer Datei. Wenn diese Parameter nicht angegeben wird, MUSS der Parameter -n verwendet werden |
+| -d --debug. .           | Wenn dieser Parameter gesetzt wird, wird das Logging-Level erhöht.                                                          |
+| -n --noCertCheck.       | Wenn dieser Parameter gesetzt wird, werden die Zertifikate in der TAR-Datei nicht auf die Root-CA zurückgeführt.            |
+| -h --help.              | Drucke Informationen zum Programm"                                                                                          |
+| -e --errorsOnly.        | Wenn diese Option gesetzt wird, gibt TTC ausschließlich Informationen  über fehlerhafte Messages aus. Informationen über korrekte LogMessages werden unterdrückt.  |
+| -g --generateHtmlReport.    | Generiere einen HTML Output. Bei der Verwendung dieses Parameters muss ein Dateiname für den Report mit angegeben werden |
+
+| -v --validator.        | Benutze einen oder mehrere ausgewählte Validatoren. Mehrere Validatoren können durch Kommata getrennt angegeben werden. Die folgenden Validatoren stehen zur Verfügung: de.konfidas.ttc.validation.CertificateFileNameValidator, de.konfidas.ttc.validation.TimeStampValidator, de.konfidas.ttc.validation.SignatureCounterValidator, de.konfidas.ttc.validation.LogMessageSignatureValidator.                       |
 |                         |                                                                                                                             |
+
+
+
+
 
 ## Beispiele zur Verwendung
 
