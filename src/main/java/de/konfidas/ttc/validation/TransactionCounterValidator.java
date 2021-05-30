@@ -7,10 +7,7 @@ import de.konfidas.ttc.messages.TransactionLogMessage;
 import de.konfidas.ttc.tars.LogMessageArchive;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 // FIXME: this is incomplete and does not work fully.
 public class TransactionCounterValidator implements Validator {
@@ -22,7 +19,7 @@ public class TransactionCounterValidator implements Validator {
         transactionCounter = BigInteger.ONE;
     }
 
-    public Collection<ValidationException> validate(LogMessageArchive tar){
+    public ValidationResult validate(LogMessageArchive tar){
         ArrayList<ValidationException> result = new ArrayList<>();
 
         Collection<? extends LogMessage> msgs = tar.getSortedLogMessages();
@@ -33,7 +30,7 @@ public class TransactionCounterValidator implements Validator {
             }
         }
 
-        return result;
+        return new ValidationResultImpl().append(Collections.singleton(this), result);
     }
 
 

@@ -33,7 +33,7 @@ public class CertificateValidator implements Validator {
     }
 
     @Override
-    public Collection<ValidationException> validate(LogMessageArchive tar) {
+    public ValidationResult validate(LogMessageArchive tar) {
         LinkedList<ValidationException> errors = new LinkedList<>();
 
         for (X509Certificate cert : tar.getClientCertificates().values()) {
@@ -45,7 +45,7 @@ public class CertificateValidator implements Validator {
             }
         }
 
-        return errors;
+        return new ValidationResultImpl().append(Collections.singleton(this), errors);
     }
 
     public void checkCert(X509Certificate certToCheck, Set<TrustAnchor> trustedCerts, List<X509Certificate> intermediateCerts, Collection<CRL> crls) throws

@@ -5,6 +5,7 @@ import de.konfidas.ttc.tars.LogMessageArchive;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 public class AggregatedValidator implements Validator{
@@ -32,11 +33,10 @@ public class AggregatedValidator implements Validator{
     }
 
     @Override
-    public Collection<ValidationException> validate(LogMessageArchive tar) {
-        ArrayList<ValidationException> result = new ArrayList<>();
-
+    public ValidationResult validate(LogMessageArchive tar) {
+                ValidationResultImpl result = new ValidationResultImpl();
         for(Validator v : validators){
-            result.addAll(v.validate(tar));
+            result.append(v.validate(tar));
         }
 
         return result;
