@@ -57,9 +57,9 @@ Das zu prüfende TAR-Archiv. Es können auch mehrer TAR-Archive übergeben werde
 
 ## Beispiele zur Verwendung
 
-### Prüfe das tar-Archiv test.tar. Verwende die Datei trust.cer als Zertifikat der Root-CA
+### Prüfe das tar-Archiv test.tar. Verwende die Datei trust.cer als Zertifikat der Root-CA. Speichere das Ergebnis in einem HTML Report
 ```
-java -jar TTC.tar -i test.tar -t trust.cer
+java -jar TTC.tar test.tar -t trust.cer -g ./report.html
 ```
 
 ## Das JAR selbst bauen 
