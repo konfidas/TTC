@@ -50,8 +50,7 @@ Das zu prüfende TAR-Archiv. Es können auch mehrer TAR-Archive übergeben werde
 | -e --errorsOnly.        | Wenn diese Option gesetzt wird, gibt TTC ausschließlich Informationen  über fehlerhafte Messages aus. Informationen über korrekte LogMessages werden unterdrückt.  |
 | -g --generateHtmlReport.    | Generiere einen HTML Output. Bei der Verwendung dieses Parameters muss ein Dateiname für den Report mit angegeben werden |
 
-| -v --validator.        | Benutze einen oder mehrere ausgewählte Validatoren. Mehrere Validatoren können durch Kommata getrennt angegeben werden. Die folgenden Validatoren stehen zur Verfügung: de.konfidas.ttc.validation.CertificateFileNameValidator, de.konfidas.ttc.validation.TimeStampValidator, de.konfidas.ttc.validation.SignatureCounterValidator, de.konfidas.ttc.validation.LogMessageSignatureValidator.                       |
-|                         |                                                                                                                             |
+| -v --validator.        | Benutze einen oder mehrere ausgewählte Validatoren. Mehrere Validatoren können durch Kommata getrennt angegeben werden. Die folgenden Validatoren stehen zur Verfügung: de.konfidas.ttc.validation.CertificateFileNameValidator, de.konfidas.ttc.validation.TimeStampValidator, de.konfidas.ttc.validation.SignatureCounterValidator, de.konfidas.ttc.validation.LogMessageSignatureValidator.    |
 
 
 
