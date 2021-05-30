@@ -39,7 +39,7 @@ public class LogMessageArchiveTestParsingSuccessfully {
     @Parameterized.Parameters
     public static Collection<File> filesToTest(){
 
-        logger.info("checking for Tars in "+correctTarFiles.getName());
+        logger.debug("checking for Tars in "+correctTarFiles.getName());
         if(!correctTarFiles.isDirectory() || correctTarFiles.listFiles() == null){
             fail("not a directory.");
         }
@@ -53,14 +53,14 @@ public class LogMessageArchiveTestParsingSuccessfully {
 
     @Test
     public void parse() throws IOException, BadFormatForTARException {
-        logger.info("");
-        logger.info("============================================================================");
-        logger.info("testing tar file {}:", file.getName());
+        logger.debug("");
+        logger.debug("============================================================================");
+        logger.debug("testing tar file {}:", file.getName());
 
         LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
 //        LogMessageReporter testReporter = new LogMessageReporter();
 
-//        logger.info(testReporter.createReport(Collections.singleton(tar), null).toString());
+//        logger.debug(testReporter.createReport(Collections.singleton(tar), null).toString());
 
         Validator v = new AggregatedValidator()
                 .add(new CertificateFileNameValidator())

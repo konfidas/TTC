@@ -34,7 +34,7 @@ public class LogMessageArchiveTestInconsistentCertificate {
 
     @Parameterized.Parameters
     public static Collection<File> filesToTest() {
-        logger.info("checking for Tars in " + brokenTarFiles.getName());
+        logger.debug("checking for Tars in " + brokenTarFiles.getName());
         if (!brokenTarFiles.isDirectory() || brokenTarFiles.listFiles() == null) {
             return Collections.EMPTY_LIST;
         }
@@ -47,9 +47,9 @@ public class LogMessageArchiveTestInconsistentCertificate {
 
     @Test
     public void parse() throws IOException {
-        logger.info("");
-        logger.info("============================================================================");
-        logger.info("testing tar file {}:", file.getName());
+        logger.debug("");
+        logger.debug("============================================================================");
+        logger.debug("testing tar file {}:", file.getName());
 
         try {
             new LogMessageArchiveImplementation(this.file);

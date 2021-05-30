@@ -42,7 +42,7 @@ public static String[][] provideParameters() {
 
         String filename = builder.getFilename();
         TransactionLogMessage transactionLogMessage = new TransactionLogMessage(transactionLog, filename);
-        logger.info(LogMessagePrinter.printMessage(transactionLogMessage));
+        logger.debug(LogMessagePrinter.printMessage(transactionLogMessage));
 
     }
 

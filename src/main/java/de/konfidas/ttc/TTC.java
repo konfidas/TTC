@@ -1,9 +1,14 @@
 package de.konfidas.ttc;
 
+import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import de.konfidas.ttc.exceptions.CertificateLoadException;
 import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.LogMessagePrinter;
+import de.konfidas.ttc.reporting.HtmlReporter;
+import de.konfidas.ttc.reporting.Reporter;
+import de.konfidas.ttc.reporting.TextReporter;
+import de.konfidas.ttc.tars.LogMessageArchive;
 import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
 import de.konfidas.ttc.utilities.CertificateHelper;
 import de.konfidas.ttc.validation.*;
@@ -13,10 +18,13 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Security;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -24,36 +32,40 @@ import static ch.qos.logback.classic.Level.*;
 
 public class TTC {
 
-    final static ch.qos.logback.classic.Logger logger =  (ch.qos.logback.classic.Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    final static ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         Security.addProvider(new BouncyCastleProvider());
 
         Options options = new Options();
 
-        options.addOption("i", "inputTAR", true, "Das TAR Archiv, das geprüft werden soll.");
         options.addOption("t", "trustAnker", true, "Trust Anker in Form eines X.509 Zertifikats für die Root-CA");
-        options.addOption("o", "overwriteCertCheck", false, "Wenn diese Option gesetzt wird, werden die Zertifikate im TAR Archiv nicht gegen eine Root-CA geprüft");
-        options.addOption("v", "verbose", false, "Wenn diese Option gesetzt wird, gibt TTC detaillierte Informationen aus.");
+        options.addOption("n", "noCertCheck", false, "Wenn diese Option gesetzt wird, werden die Zertifikate im TAR Archiv nicht gegen eine Root-CA geprüft");
+        options.addOption("d", "debug", false, "Wenn diese Option gesetzt wird, gibt TTC detaillierte Informationen aus.");
+        options.addOption("e", "errorsOnly", false, "Wenn diese Option gesetzt wird, gibt TTC ausschließlich Informationen  über fehlerhafte Messages aus. Informationen über korrekte LogMessages werden unterdrückt.");
+        options.addOption("g", "generateHtmlReport", true, "Generiere einen HTML Output.");
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd;
 
         String trustCertPath;
         X509Certificate trustedCert = null;
+        Boolean skipLegitLogMessagesInReporting = false;
+
 
         /*********************************
          ** Argumente des Aufrufs prüfen *
          *********************************/
         try {
             cmd = parser.parse(options, args);
-            if (cmd.hasOption("v")){
+            if (cmd.hasOption("d")) {
                 logger.setLevel(DEBUG);
             }
-            if (!cmd.hasOption("i")) {
-                System.err.println("Fehler beim Parsen der Kommandozeile. Kein TAR-Archiv zur Prüfung angegeben");
+            if (cmd.hasOption("e")) {
+                skipLegitLogMessagesInReporting = true;
             }
-            if (!(cmd.hasOption("t")  ||cmd.hasOption("o"))) {
+
+            if (!(cmd.hasOption("t") || cmd.hasOption("n"))) {
                 System.err.println("Fehler beim Parsen der Kommandozeile. Es muss entweder ein TrustStore für Root-Zertifikate angegeben werden (Option t) oder auf die Prüfung von Zertifikaten verzichtet werden (Option -o)");
             }
 
@@ -61,16 +73,9 @@ public class TTC {
                 trustCertPath = cmd.getOptionValue("t");
                 try {
                     trustedCert = CertificateHelper.loadCertificate(Path.of(trustCertPath));
-                }catch (CertificateLoadException | IOException e) {
+                } catch (CertificateLoadException | IOException e) {
                     e.printStackTrace();
                 }
-            }
-
-            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(new File(cmd.getOptionValue("i")));
-            for (LogMessage message : tar.getLogMessages()) {
-
-
-                logger.debug(LogMessagePrinter.printMessage(message));
             }
 
             AggregatedValidator validator = new AggregatedValidator()
@@ -79,26 +84,57 @@ public class TTC {
                     .add(new SignatureCounterValidator())
                     .add(new LogMessageSignatureValidator());
 
-            if(cmd.hasOption("o")) {
+            if (cmd.hasOption("t")) {
                 validator.add(new CertificateValidator(Collections.singleton(trustedCert)));
             }
 
-            Collection<ValidationException> errors = validator.validate(tar).getValidationErrors();
-            if(!errors.isEmpty()){
-                logger.debug("there were Errors while Validating:");
+            Collection<LogMessageArchive> tarArchives = new ArrayList<>();
+            ValidationResult valResults = null;
+            ArrayList<File> inputFiles = new ArrayList<>();
 
-                for(ValidationException e : errors){
-                    if(e instanceof CertificateValidator.CertificateValidationException){
-                        CertificateValidator.CertificateValidationException c = (CertificateValidator.CertificateValidationException) e;
-                        logger.debug("failed to verify "+c.getCert()+" with error:");
-                        logger.debug(c.getCause().toString());
-                    }else{
-                        logger.debug("Error during validation "+ e.toString());
-                    }
+            //We are creating the files from the input strings first to make sure that they are existing
+            for (String inputFileName : cmd.getArgs()){
+                File inputFile = new File(inputFileName);
+                if (inputFile.exists()) inputFiles.add(inputFile);
+                else {
+                    logger.error("File: "+inputFileName +" is not existing");
+                    logger.error("Program will exit now.");
+                    System.exit(1);
                 }
             }
-        } catch (Exception e) {
-            logger.error("Fehler beim parsen der Kommandozeile. " + e.getLocalizedMessage());
+            for (File inputFile : inputFiles ) {
+                    LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(inputFile);
+                    tarArchives.add(tar);
+                    valResults = validator.validate(tar);
+            }
+
+            if (cmd.hasOption("g")){
+                String reportPath= cmd.getOptionValue("g");
+                String fileSuffixOfReportPath = reportPath.substring(reportPath.lastIndexOf(".")+1);
+                if ((!fileSuffixOfReportPath.equals("html")) && (!fileSuffixOfReportPath.equals("htm"))){
+                    logger.error("The value of option g has to end on .html or .htm.");
+                    System.exit(1);
+                }
+                HtmlReporter htmlReporter = new HtmlReporter();
+                File reportFile = new File(cmd.getOptionValue("g"));
+                Files.writeString(reportFile.toPath(), htmlReporter.createReport(tarArchives,valResults,skipLegitLogMessagesInReporting));
+
+            }
+            else {
+                TextReporter textReporter = new TextReporter();
+                System.out.println(textReporter.createReport(tarArchives, valResults, skipLegitLogMessagesInReporting));
+            }
+
         }
+        catch (BadFormatForTARException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Reporter.ReporterException e) {
+            e.printStackTrace();
+        }
+
     }
 }

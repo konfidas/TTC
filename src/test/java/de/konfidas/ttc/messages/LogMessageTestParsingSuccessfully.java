@@ -32,7 +32,7 @@ public class LogMessageTestParsingSuccessfully {
     @Parameterized.Parameters
     public static Collection<File> filesToTest(){
 
-        logger.info("checking for Logs in "+correctLogs.getName());
+        logger.debug("checking for Logs in "+correctLogs.getName());
         if(!correctLogs.isDirectory() || correctLogs.listFiles() == null){
             logger.error("not a directory.");
             return Collections.EMPTY_LIST;
@@ -48,9 +48,9 @@ public class LogMessageTestParsingSuccessfully {
 
     @Test
     public void parse() throws IOException, BadFormatForLogMessageException {
-        logger.info("");
-        logger.info("============================================================================");
-        logger.info("parsing log message {}:", file.getName());
+        logger.debug("");
+        logger.debug("============================================================================");
+        logger.debug("parsing log message {}:", file.getName());
 
         LogMessageFactory.createLogMessage(this.file);
 

@@ -48,7 +48,7 @@ public class TextReporterTest {
     public void createReport() throws IOException, BadFormatForTARException, Reporter.ReporterException {
         LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
 
-        File reportFile = new File("./Report_"+this.file.getName()+".html");
+//        File reportFile = new File("./Report_"+this.file.getName()+".html");
 
 
         Validator v = new AggregatedValidator()
@@ -58,13 +58,13 @@ public class TextReporterTest {
 
         ValidationResult result = v.validate(tar);
 
-        TextReporter reporter = new TextReporter(reportFile).skipLegitLogMessages();
+        TextReporter reporter = new TextReporter().skipLegitLogMessages();
 
 
         // enable the following line ot make the reporter ignore this Exception class, i.e. not reporting it:
         // reporter.ignoreIssue(SignatureCounterValidator.SignatureCounterMissingException.class);
 
-        System.out.println(reporter.createReport(Collections.singleton(tar), result));
+        System.out.println(reporter.createReport(Collections.singleton(tar), result, false));
     }
 
 }

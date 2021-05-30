@@ -47,9 +47,9 @@ public class TimeStampValidatorTest {
 
     @Test
     public void parse() {
-        logger.info("");
-        logger.info("============================================================================");
-        logger.info("testing tar file {}:", file.getName());
+        logger.debug("");
+        logger.debug("============================================================================");
+        logger.debug("testing tar file {}:", file.getName());
 
         try {
             TimeStampValidator validator = new TimeStampValidator();

@@ -66,7 +66,7 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
 
                 myTarFile.read(content, offset, content.length - offset);
 
-                logger.info("Verarbeite nun die Datei {}", individualFileName);
+                logger.debug("Verarbeite nun die Datei {}", individualFileName);
 
                 if (individualFileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+log") ) {
                     all_log_messages.add(LogMessageFactory.createLogMessage(individualFileName,content));

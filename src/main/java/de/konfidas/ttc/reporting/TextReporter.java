@@ -18,8 +18,7 @@ public class TextReporter implements Reporter<String> {
     boolean skipLegitLogMessages;
     HashSet<Class<? extends ValidationException>> issuesToIgnore;
 
-    public TextReporter(File file){
-        this.file= file;
+    public TextReporter(){
         this.issuesToIgnore = new HashSet<>();
         skipLegitLogMessages = false;
     }
@@ -45,7 +44,8 @@ public class TextReporter implements Reporter<String> {
     }
 
     @Override
-    public String createReport(Collection<LogMessageArchive> logs, ValidationResult vResult) throws ReporterException {
+    public String createReport(Collection<LogMessageArchive> logs, ValidationResult vResult, Boolean skipLegitLogMessages) throws ReporterException {
+        this.skipLegitLogMessages = skipLegitLogMessages;
         try(StringWriter sw = new StringWriter();){
 
             printTars(sw, logs);
@@ -106,11 +106,7 @@ public class TextReporter implements Reporter<String> {
                 if(!map.containsKey(lm)){
                     if(!skipLegitLogMessages) {
                         sw.write("    " + lm.getFileName() + " seems legit.");
-
-//                        ReportTextPrinter messagePrinter = new ReportTextPrinter();
-//TODO
-//                        sw.write(messagePrinter.printReportToText(L,0));
-//                        sw.write(System.lineSeparator());
+                        sw.write(System.lineSeparator());
                     }
                 }
                     else{
