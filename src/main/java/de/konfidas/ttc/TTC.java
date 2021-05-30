@@ -20,6 +20,8 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Security;
@@ -40,10 +42,12 @@ public class TTC {
         Options options = new Options();
 
         options.addOption("t", "trustAnker", true, "Trust Anker in Form eines X.509 Zertifikats für die Root-CA");
+        options.addOption("h", "help", false, "Drucke Informationen zum Programm");
         options.addOption("n", "noCertCheck", false, "Wenn diese Option gesetzt wird, werden die Zertifikate im TAR Archiv nicht gegen eine Root-CA geprüft");
         options.addOption("d", "debug", false, "Wenn diese Option gesetzt wird, gibt TTC detaillierte Informationen aus.");
         options.addOption("e", "errorsOnly", false, "Wenn diese Option gesetzt wird, gibt TTC ausschließlich Informationen  über fehlerhafte Messages aus. Informationen über korrekte LogMessages werden unterdrückt.");
         options.addOption("g", "generateHtmlReport", true, "Generiere einen HTML Output.");
+        options.addOption("v", "validator", true, "Benutze einen oder mehrere ausgewählte Validatoren. Mehrere Validatoren können durch Kommata getrennt angegeben werden. Die folgenden Validatoren stehen zur Verfügung: de.konfidas.ttc.validation.CertificateFileNameValidator, de.konfidas.ttc.validation.TimeStampValidator, de.konfidas.ttc.validation.SignatureCounterValidator, de.konfidas.ttc.validation.LogMessageSignatureValidator.");
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd;
@@ -51,6 +55,7 @@ public class TTC {
         String trustCertPath;
         X509Certificate trustedCert = null;
         Boolean skipLegitLogMessagesInReporting = false;
+        Collection<Validator> listOfValidators = new ArrayList<>();
 
 
         /*********************************
@@ -60,6 +65,12 @@ public class TTC {
             cmd = parser.parse(options, args);
             if (cmd.hasOption("d")) {
                 logger.setLevel(DEBUG);
+            }
+            if (cmd.hasOption("h")) {
+                HelpFormatter formatter = new HelpFormatter();
+                formatter.setWidth(120);
+                formatter.printHelp("ttc", options );
+                System.exit(0);
             }
             if (cmd.hasOption("e")) {
                 skipLegitLogMessagesInReporting = true;
@@ -78,11 +89,33 @@ public class TTC {
                 }
             }
 
-            AggregatedValidator validator = new AggregatedValidator()
-                    .add(new CertificateFileNameValidator())
-                    .add(new TimeStampValidator())
-                    .add(new SignatureCounterValidator())
-                    .add(new LogMessageSignatureValidator());
+            if (cmd.hasOption("v")) {
+                String stringOfValidators = cmd.getOptionValue("v");
+                String[] listOfValidatorsString = stringOfValidators.split(",");
+
+                try {
+                    for (String valString : listOfValidatorsString) {
+                        Class<?> clazz = Class.forName(valString);
+                        Constructor<?> ctor = clazz.getConstructor();
+                        Validator val = (Validator) ctor.newInstance();
+                        listOfValidators.add(val);
+                    }
+                } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
+                    logger.error("Fehler beim Initialisieren des aussgewählten Validators.");
+                    e.printStackTrace();
+                }
+
+            } else {
+                listOfValidators.add(new CertificateFileNameValidator());
+                listOfValidators.add(new TimeStampValidator());
+                listOfValidators.add(new SignatureCounterValidator());
+                listOfValidators.add(new LogMessageSignatureValidator());
+            }
+
+            AggregatedValidator validator = new AggregatedValidator();
+            for (Validator val : listOfValidators) {
+                validator.add(val);
+            }
 
             if (cmd.hasOption("t")) {
                 validator.add(new CertificateValidator(Collections.singleton(trustedCert)));
@@ -93,40 +126,38 @@ public class TTC {
             ArrayList<File> inputFiles = new ArrayList<>();
 
             //We are creating the files from the input strings first to make sure that they are existing
-            for (String inputFileName : cmd.getArgs()){
+            for (String inputFileName : cmd.getArgs()) {
                 File inputFile = new File(inputFileName);
                 if (inputFile.exists()) inputFiles.add(inputFile);
                 else {
-                    logger.error("File: "+inputFileName +" is not existing");
+                    logger.error("File: " + inputFileName + " is not existing");
                     logger.error("Program will exit now.");
                     System.exit(1);
                 }
             }
-            for (File inputFile : inputFiles ) {
-                    LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(inputFile);
-                    tarArchives.add(tar);
-                    valResults = validator.validate(tar);
+            for (File inputFile : inputFiles) {
+                LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(inputFile);
+                tarArchives.add(tar);
+                valResults = validator.validate(tar);
             }
 
-            if (cmd.hasOption("g")){
-                String reportPath= cmd.getOptionValue("g");
-                String fileSuffixOfReportPath = reportPath.substring(reportPath.lastIndexOf(".")+1);
-                if ((!fileSuffixOfReportPath.equals("html")) && (!fileSuffixOfReportPath.equals("htm"))){
+            if (cmd.hasOption("g")) {
+                String reportPath = cmd.getOptionValue("g");
+                String fileSuffixOfReportPath = reportPath.substring(reportPath.lastIndexOf(".") + 1);
+                if ((!fileSuffixOfReportPath.equals("html")) && (!fileSuffixOfReportPath.equals("htm"))) {
                     logger.error("The value of option g has to end on .html or .htm.");
                     System.exit(1);
                 }
                 HtmlReporter htmlReporter = new HtmlReporter();
                 File reportFile = new File(cmd.getOptionValue("g"));
-                Files.writeString(reportFile.toPath(), htmlReporter.createReport(tarArchives,valResults,skipLegitLogMessagesInReporting));
+                Files.writeString(reportFile.toPath(), htmlReporter.createReport(tarArchives, valResults, skipLegitLogMessagesInReporting));
 
-            }
-            else {
+            } else {
                 TextReporter textReporter = new TextReporter();
                 System.out.println(textReporter.createReport(tarArchives, valResults, skipLegitLogMessagesInReporting));
             }
 
-        }
-        catch (BadFormatForTARException e) {
+        } catch (BadFormatForTARException e) {
             e.printStackTrace();
         } catch (ParseException e) {
             e.printStackTrace();
