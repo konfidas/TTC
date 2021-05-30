@@ -36,7 +36,7 @@ public class LogMessageArchiveTestParsingFailing {
     @Parameterized.Parameters
     public static Collection<File> filesToTest(){
 
-        logger.info("checking for Tars in "+brokenTarFiles.getName());
+        logger.debug("checking for Tars in "+brokenTarFiles.getName());
         if(!brokenTarFiles.isDirectory() ||brokenTarFiles.listFiles() == null){
             logger.error("not a directory.");
             return Collections.EMPTY_LIST;
@@ -51,9 +51,9 @@ public class LogMessageArchiveTestParsingFailing {
 
     @Test
     public void parse() throws Exception{
-        logger.info("");
-        logger.info("============================================================================");
-        logger.info("testing tar file {}:", file.getName());
+        logger.debug("");
+        logger.debug("============================================================================");
+        logger.debug("testing tar file {}:", file.getName());
 
         LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(this.file);
 
@@ -61,7 +61,7 @@ public class LogMessageArchiveTestParsingFailing {
                     .add(new CertificateFileNameValidator())
                     .add(new LogMessageSignatureValidator());
 
-        assertFalse(v.validate(tar).isEmpty());
+        assertFalse(v.validate(tar).getValidationErrors().isEmpty());
 
     }
 }

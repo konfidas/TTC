@@ -44,6 +44,11 @@ public class SignatureCounterValidatorMockedTest {
         public Collection<? extends LogMessage> getSortedLogMessages() {
             return messages;
         }
+
+        @Override
+        public String getFileName() {
+            return "";
+        }
     }
     static class LogMessageMock implements LogMessage {
         BigInteger signatureCounter;
@@ -130,7 +135,7 @@ public class SignatureCounterValidatorMockedTest {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
-        assertTrue(validator.validate(tar).isEmpty());
+        assertTrue(validator.validate(tar).getValidationErrors().isEmpty());
     }
 
     @Test
@@ -141,7 +146,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.ONE));
         this.messages.add(new LogMessageMock(BigInteger.TWO));
 
-        assertTrue(validator.validate(tar).isEmpty());
+        assertTrue(validator.validate(tar).getValidationErrors().isEmpty());
     }
 
     @Test
@@ -152,7 +157,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.ONE));
         this.messages.add(new LogMessageMock(BigInteger.TWO));
 
-        assertTrue(validator.validate(tar).isEmpty());
+        assertTrue(validator.validate(tar).getValidationErrors().isEmpty());
     }
 
     @Test
@@ -163,7 +168,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.ONE));
         this.messages.add(new LogMessageMock(BigInteger.ONE));
 
-        assertTrue(validator.validate(tar).size()==1);
+        assertTrue(validator.validate(tar).getValidationErrors().size()==1);
     }
 
     @Test
@@ -173,7 +178,7 @@ public class SignatureCounterValidatorMockedTest {
 
         this.messages.add(new LogMessageMock(BigInteger.TWO));
 
-        assertTrue(validator.validate(tar).size()==1);
+        assertTrue(validator.validate(tar).getValidationErrors().size()==1);
     }
 
 
@@ -186,7 +191,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.ONE));
         this.messages.add(new LogMessageMock(BigInteger.valueOf(3)));
 
-        assertTrue(validator.validate(tar).size()==1);
+        assertTrue(validator.validate(tar).getValidationErrors().size()==1);
     }
 
 
@@ -200,7 +205,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x01}));
         this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x02}));
 
-        assertTrue(validator.validate(tar).isEmpty());
+        assertTrue(validator.validate(tar).getValidationErrors().isEmpty());
     }
 
     @Test
@@ -213,7 +218,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x01}));
         this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x01}));
 
-        assertTrue(validator.validate(tar).isEmpty());
+        assertTrue(validator.validate(tar).getValidationErrors().isEmpty());
     }
 
 
@@ -227,7 +232,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x02}));
         this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
 
-        assertTrue(validator.validate(tar).isEmpty());
+        assertTrue(validator.validate(tar).getValidationErrors().isEmpty());
     }
 
     @Test
@@ -240,7 +245,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x02}));
         this.messages.add(new LogMessageMock(BigInteger.valueOf(3), new byte[]{0x02}));
 
-        assertTrue(validator.validate(tar).size() == 1);
+        assertTrue(validator.validate(tar).getValidationErrors().size() == 1);
     }
 
     @Test
@@ -253,7 +258,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x02}));
         this.messages.add(new LogMessageMock(BigInteger.valueOf(3), new byte[]{0x02}));
 
-        assertTrue(validator.validate(tar).size() == 2);
+        assertTrue(validator.validate(tar).getValidationErrors().size() == 2);
     }
 
     @Test
@@ -264,7 +269,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x01}));
         this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
 
-        assertTrue(validator.validate(tar).size() == 2);
+        assertTrue(validator.validate(tar).getValidationErrors().size() == 2);
     }
 
     @Test
@@ -276,7 +281,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x01}));
         this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
 
-        assertTrue(validator.validate(tar).size() == 1);
+        assertTrue(validator.validate(tar).getValidationErrors().size() == 1);
     }
 
     @Test
@@ -290,7 +295,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
         this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
 
-        assertTrue(validator.validate(tar).size() == 1);
+        assertTrue(validator.validate(tar).getValidationErrors().size() == 1);
     }
 
 
@@ -307,7 +312,7 @@ public class SignatureCounterValidatorMockedTest {
         this.messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
 
 
-        assertTrue(validator.validate(tar).size() == 2);
+        assertTrue(validator.validate(tar).getValidationErrors().size() == 2);
     }
 
 }

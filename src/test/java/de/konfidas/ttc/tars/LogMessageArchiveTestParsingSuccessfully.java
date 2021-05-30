@@ -2,10 +2,6 @@ package de.konfidas.ttc.tars;
 
 import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import de.konfidas.ttc.exceptions.ValidationException;
-import de.konfidas.ttc.messages.LogMessage;
-import de.konfidas.ttc.messages.LogMessagePrinter;
-import de.konfidas.ttc.reporting.LogMessageReporter;
-import de.konfidas.ttc.reporting.ReportTextPrinter;
 import de.konfidas.ttc.validation.AggregatedValidator;
 import de.konfidas.ttc.validation.CertificateFileNameValidator;
 import de.konfidas.ttc.validation.LogMessageSignatureValidator;
@@ -43,7 +39,7 @@ public class LogMessageArchiveTestParsingSuccessfully {
     @Parameterized.Parameters
     public static Collection<File> filesToTest(){
 
-        logger.info("checking for Tars in "+correctTarFiles.getName());
+        logger.debug("checking for Tars in "+correctTarFiles.getName());
         if(!correctTarFiles.isDirectory() || correctTarFiles.listFiles() == null){
             fail("not a directory.");
         }
@@ -57,20 +53,20 @@ public class LogMessageArchiveTestParsingSuccessfully {
 
     @Test
     public void parse() throws IOException, BadFormatForTARException {
-        logger.info("");
-        logger.info("============================================================================");
-        logger.info("testing tar file {}:", file.getName());
+        logger.debug("");
+        logger.debug("============================================================================");
+        logger.debug("testing tar file {}:", file.getName());
 
         LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
-        for (LogMessage message : tar.getLogMessages()) {
-            LogMessageReporter testReporter = new LogMessageReporter(message);
-            logger.info( ReportTextPrinter.printReportToText(testReporter,0));
-        }
+//        LogMessageReporter testReporter = new LogMessageReporter();
+
+//        logger.debug(testReporter.createReport(Collections.singleton(tar), null).toString());
+
         Validator v = new AggregatedValidator()
                 .add(new CertificateFileNameValidator())
                 .add(new LogMessageSignatureValidator());
 
-        Collection<ValidationException> errors = v.validate(tar);
+        Collection<ValidationException> errors = v.validate(tar).getValidationErrors();
         assertTrue(errors.isEmpty());
     }
 }

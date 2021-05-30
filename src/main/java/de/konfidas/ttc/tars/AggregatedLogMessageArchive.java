@@ -7,7 +7,7 @@ import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AggregatedLogMessageArchive implements LogMessageArchive{
+public class AggregatedLogMessageArchive implements LogMessageArchive {
     final LinkedList<LogMessageArchive> archives = new LinkedList<>();
 
     ArrayList<LogMessage> sortedLogMessages;
@@ -17,7 +17,7 @@ public class AggregatedLogMessageArchive implements LogMessageArchive{
 
     @Override
     public Map<String, X509Certificate> getIntermediateCertificates() {
-        if(null == intermediateCertificates){
+        if (null == intermediateCertificates) {
             intermediateCertificates = new HashMap<>();
             archives.stream().map(c -> c.getIntermediateCertificates()).forEach(intermediateCertificates::putAll);
 
@@ -31,7 +31,7 @@ public class AggregatedLogMessageArchive implements LogMessageArchive{
 
     @Override
     public Map<String, X509Certificate> getClientCertificates() {
-        if(null == clientCertificates){
+        if (null == clientCertificates) {
             clientCertificates = new HashMap<>();
             archives.stream().map(c -> c.getClientCertificates()).forEach(clientCertificates::putAll);
 
@@ -46,18 +46,18 @@ public class AggregatedLogMessageArchive implements LogMessageArchive{
 
     @Override
     public Collection<LogMessage> getLogMessages() {
-        if(null == logMessages){
+        if (null == logMessages) {
             logMessages = archives.stream().map(c -> c.getLogMessages())
-                                            .flatMap(Collection::stream)
-                                            .unordered()
-                                            .distinct()
-                                            .collect(Collectors.toCollection(ArrayList::new));
+                    .flatMap(Collection::stream)
+                    .unordered()
+                    .distinct()
+                    .collect(Collectors.toCollection(ArrayList::new));
 
         }
         return logMessages;
     }
 
-    public AggregatedLogMessageArchive addArchive(LogMessageArchive a){
+    public AggregatedLogMessageArchive addArchive(LogMessageArchive a) {
         this.archives.add(a);
 
         // invalidate cache:
@@ -70,12 +70,21 @@ public class AggregatedLogMessageArchive implements LogMessageArchive{
     }
 
     @Override
-    public ArrayList<LogMessage> getSortedLogMessages(){
-        if(null == sortedLogMessages){
+    public ArrayList<LogMessage> getSortedLogMessages() {
+        if (null == sortedLogMessages) {
             sortedLogMessages = new ArrayList<>(getLogMessages());
             sortedLogMessages.sort(new LogMessageImplementation.SignatureCounterComparator());
         }
 
         return sortedLogMessages;
+    }
+
+    @Override
+    public String getFileName() {
+        StringBuilder sb = new StringBuilder();
+        for (LogMessageArchive a : archives) {
+            sb.append(a.getFileName() + ";");
+        }
+        return sb.toString();
     }
 }

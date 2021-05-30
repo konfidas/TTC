@@ -48,6 +48,11 @@ public class CertificateValidatorTest {
         public Collection<? extends LogMessage> getSortedLogMessages() {
             return null;
         }
+
+        @Override
+        public String getFileName() {
+            return "";
+        }
     }
 
     @BeforeClass
@@ -73,7 +78,7 @@ public class CertificateValidatorTest {
         CertificateValidator validator = new CertificateValidator(trusted);
         validator.setEnableRevocationChecking(false);
 
-        Collection<ValidationException> errors = validator.validate(tar);
+        Collection<ValidationException> errors = validator.validate(tar).getValidationErrors();
 
         for(ValidationException e : errors){
             e.printStackTrace();
@@ -93,7 +98,7 @@ public class CertificateValidatorTest {
         CertificateValidator validator = new CertificateValidator(trusted);
         validator.setEnableRevocationChecking(false);
 
-        Collection<ValidationException> errors = validator.validate(tar);
+        Collection<ValidationException> errors = validator.validate(tar).getValidationErrors();
 
         assertFalse(errors.isEmpty());
     }
@@ -110,7 +115,7 @@ public class CertificateValidatorTest {
         CertificateValidator validator = new CertificateValidator(trusted);
         validator.setEnableRevocationChecking(false);
 
-        Collection<ValidationException> errors = validator.validate(tar);
+        Collection<ValidationException> errors = validator.validate(tar).getValidationErrors();
 
         assertFalse(errors.isEmpty());
     }
@@ -126,7 +131,7 @@ public class CertificateValidatorTest {
         CertificateValidator validator = new CertificateValidator(trusted);
         //validator.setEnableRevocationChecking(false);
 
-        Collection<ValidationException> errors = validator.validate(tar);
+        Collection<ValidationException> errors = validator.validate(tar).getValidationErrors();
 
         assertFalse(errors.isEmpty());
     }

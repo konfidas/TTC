@@ -33,7 +33,7 @@ public class TestUnblockUser {
     @Parameterized.Parameters
     public static Collection filesToTest() {
 
-        logger.info("checking for SystemLogs in " + systemLogFiles.getName());
+        logger.debug("checking for SystemLogs in " + systemLogFiles.getName());
         if (!systemLogFiles.isDirectory()) {
             fail("not a directory.");
 
@@ -48,9 +48,9 @@ public class TestUnblockUser {
 
     @Test
     public void parse() throws Exception {
-        logger.info("");
-        logger.info("============================================================================");
-        logger.info("parsing unblockUserMessage {}:", file.getName());
+        logger.debug("");
+        logger.debug("============================================================================");
+        logger.debug("parsing unblockUserMessage {}:", file.getName());
 
         byte[] content =  FileUtils.readFileToByteArray(file);
 

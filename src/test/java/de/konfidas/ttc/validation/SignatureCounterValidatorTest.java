@@ -48,16 +48,16 @@ public class SignatureCounterValidatorTest {
 
     @Test
     public void parse() {
-        logger.info("");
-        logger.info("============================================================================");
-        logger.info("testing tar file {}:", file.getName());
+        logger.debug("");
+        logger.debug("============================================================================");
+        logger.debug("testing tar file {}:", file.getName());
 
         try {
             SignatureCounterValidator validator = new SignatureCounterValidator();
 
             LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(this.file);
 
-            Collection<ValidationException>  errors = validator.validate(tar);
+            Collection<ValidationException>  errors = validator.validate(tar).getValidationErrors();
 
             assert(errors.size() == expectedNumberOfErrors);
 

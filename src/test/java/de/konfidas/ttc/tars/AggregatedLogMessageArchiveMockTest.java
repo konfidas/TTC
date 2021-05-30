@@ -41,6 +41,11 @@ public class AggregatedLogMessageArchiveMockTest {
         public Collection<? extends LogMessage> getSortedLogMessages() {
             return null;
         }
+
+        @Override
+        public String getFileName() {
+            return "";
+        }
     }
 
     class LogMessageMock implements LogMessage{

@@ -10,13 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 public class LogMessageSignatureValidator implements Validator {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
     @Override
-    public Collection<ValidationException> validate(LogMessageArchive tar) {
+    public ValidationResult validate(LogMessageArchive tar) {
         LinkedList<ValidationException> errors = new LinkedList<>();
 
         LogMessageSignatureVerifier verifier = new LogMessageSignatureVerifier(tar.getClientCertificates());
@@ -29,7 +30,7 @@ public class LogMessageSignatureValidator implements Validator {
             }
         }
 
-        return errors;
+        return new ValidationResultImpl().append(Collections.singleton(this), errors);
     }
 
     public static class LogMessageSignatureValidationException extends LogMessageValidationException{
