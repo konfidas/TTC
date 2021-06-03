@@ -47,16 +47,16 @@ public class TimeStampValidatorTest {
 
     @Test
     public void parse() {
-        logger.info("");
-        logger.info("============================================================================");
-        logger.info("testing tar file {}:", file.getName());
+        logger.debug("");
+        logger.debug("============================================================================");
+        logger.debug("testing tar file {}:", file.getName());
 
         try {
             TimeStampValidator validator = new TimeStampValidator();
 
             LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(this.file);
 
-            Collection<ValidationException>  errors = validator.validate(tar);
+            Collection<ValidationException>  errors = validator.validate(tar).getValidationErrors();
 
             assert(errors.size() == expectedNumberOfErrors);
 

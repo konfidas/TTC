@@ -76,11 +76,11 @@ public class TestCaseBasisWithCA {
     @BeforeClass
     public static void setupCA()  {
 
-        logger.info("============================================================================");
-        logger.info("Erzeugung einer CA, Sub-CA und eines Client-Zertifikats");
-        logger.info("============================================================================");
+        logger.debug("============================================================================");
+        logger.debug("Erzeugung einer CA, Sub-CA und eines Client-Zertifikats");
+        logger.debug("============================================================================");
 
-        logger.info("Erzeugung und Export der CA");
+        logger.debug("Erzeugung und Export der CA");
         TestCAFactory cAFactory = new TestCAFactory();
         try {
             cAFactory.build();
@@ -93,10 +93,10 @@ public class TestCaseBasisWithCA {
         rootCACertificate = cAFactory.getRootCert();
         rootCAKeyPair = cAFactory.getRootKeyPair();
 
-        logger.info("Die CA wurde erstellt");
-        logger.info("============================================================================");
+        logger.debug("Die CA wurde erstellt");
+        logger.debug("============================================================================");
 
-        logger.info("Erzeugung und Export der Sub-CA");
+        logger.debug("Erzeugung und Export der Sub-CA");
         TestSubCAFactory subCAFactory = new TestSubCAFactory(cAFactory.getRootCert(), cAFactory.getRootKeyPair());
         try {
             subCAFactory.build();
@@ -109,13 +109,13 @@ public class TestCaseBasisWithCA {
         subCACertificate = subCAFactory.getSubCACert();
         subCAKeyPair = subCAFactory.getSubCAKeyPair();
 
-        logger.info("Die Sub-CA wurde erstellt");
-        logger.info("============================================================================");
+        logger.debug("Die Sub-CA wurde erstellt");
+        logger.debug("============================================================================");
 
 
 
-        logger.info("Erzeugung und Export eines Client-Zertifikats");
-        logger.info("============================================================================");
+        logger.debug("Erzeugung und Export eines Client-Zertifikats");
+        logger.debug("============================================================================");
         TestClientCertificateFactory clientCertFactory = new TestClientCertificateFactory(subCAFactory.getSubCACert(), subCAFactory.getSubCAKeyPair());
 
 
@@ -129,8 +129,8 @@ public class TestCaseBasisWithCA {
 
         clientCertificate = clientCertFactory.getClientCert();
         clientCertKeyPair = clientCertFactory.getClientKeyPair();
-        logger.info("Ein Client Zertifikat wurde erstellt");
-        logger.info("============================================================================");
+        logger.debug("Ein Client Zertifikat wurde erstellt");
+        logger.debug("============================================================================");
 
         setupComplete = true;
 
@@ -139,11 +139,11 @@ public class TestCaseBasisWithCA {
 //    @Test
 //    public static void setupCAAndExport()  {
 //
-//        logger.info("============================================================================");
-//        logger.info("Erzeugung einer CA, Sub-CA und eines Client-Zertifikats");
-//        logger.info("============================================================================");
+//        logger.debug("============================================================================");
+//        logger.debug("Erzeugung einer CA, Sub-CA und eines Client-Zertifikats");
+//        logger.debug("============================================================================");
 //
-//        logger.info("Erzeugung und Export der CA");
+//        logger.debug("Erzeugung und Export der CA");
 //        TestCAFactory cAFactory = new TestCAFactory();
 //        try {
 //            cAFactory.build();
@@ -159,10 +159,10 @@ public class TestCaseBasisWithCA {
 //            e.printStackTrace();
 //            fail();
 //        }
-//        logger.info("Die CA wurde erstellt und in {} und {} exportiert", exportPathCACertificate,exportPathCAKey);
-//        logger.info("============================================================================");
+//        logger.debug("Die CA wurde erstellt und in {} und {} exportiert", exportPathCACertificate,exportPathCAKey);
+//        logger.debug("============================================================================");
 //
-//        logger.info("Erzeugung und Export der Sub-CA");
+//        logger.debug("Erzeugung und Export der Sub-CA");
 //        TestSubCAFactory subCAFactory = new TestSubCAFactory(cAFactory.getRootCert(), cAFactory.getRootKeyPair());
 //        try {
 //            subCAFactory.build();
@@ -181,13 +181,13 @@ public class TestCaseBasisWithCA {
 //            fail();
 //        }
 //
-//        logger.info("Die Sub-CA wurde erstellt und in {} und {} exportiert", exportPathSubCACertificate, exportPathSubCAKey);
-//        logger.info("============================================================================");
+//        logger.debug("Die Sub-CA wurde erstellt und in {} und {} exportiert", exportPathSubCACertificate, exportPathSubCAKey);
+//        logger.debug("============================================================================");
 //
 //
 //
-//        logger.info("Erzeugung und Export eines Client-Zertifikats");
-//        logger.info("============================================================================");
+//        logger.debug("Erzeugung und Export eines Client-Zertifikats");
+//        logger.debug("============================================================================");
 //        TestClientCertificateFactory clientCertFactory = new TestClientCertificateFactory(subCAFactory.getSubCACert(), subCAFactory.getSubCAKeyPair());
 //
 //
@@ -207,8 +207,8 @@ public class TestCaseBasisWithCA {
 //            fail();
 //        }
 //
-//        logger.info("Ein Client Zertifikat wurde erstellt und in {} und {} exportiert", exportPathClientCertificate, exportPathClientKey);
-//        logger.info("============================================================================");
+//        logger.debug("Ein Client Zertifikat wurde erstellt und in {} und {} exportiert", exportPathClientCertificate, exportPathClientKey);
+//        logger.debug("============================================================================");
 //
 //
 //
@@ -221,12 +221,12 @@ public class TestCaseBasisWithCA {
 //        try {
 //            FileUtils.forceDelete(removeDir); //delete directory
 //        } catch (IOException e) {
-//            logger.info("Exportverzeichnis konnte nicht gelöscht werden");
+//            logger.debug("Exportverzeichnis konnte nicht gelöscht werden");
 //            fail();
 //        }
 //
-//        logger.info("Exportverzeichnis wird gelöscht");
-//        logger.info("============================================================================");
+//        logger.debug("Exportverzeichnis wird gelöscht");
+//        logger.debug("============================================================================");
 //    }
 
 //    @Test
@@ -248,11 +248,11 @@ public class TestCaseBasisWithCA {
 //        String exportPathSubCAKey =  Paths.get(exportDir, "subca-cert.pfx").toString();
 //        String exportPathClientKey =  Paths.get(exportDir, "client-cert.pfx").toString();
 //
-//        logger.info("============================================================================");
-//        logger.info("Erzeugung einer CA, Sub-CA und eines Client-Zertifikats");
-//        logger.info("============================================================================");
+//        logger.debug("============================================================================");
+//        logger.debug("Erzeugung einer CA, Sub-CA und eines Client-Zertifikats");
+//        logger.debug("============================================================================");
 //
-//        logger.info("Erzeugung und Export der CA");
+//        logger.debug("Erzeugung und Export der CA");
 //        TestCAFactory cAFactory = new TestCAFactory();
 //        try {
 //            cAFactory.build();
@@ -268,10 +268,10 @@ public class TestCaseBasisWithCA {
 //            e.printStackTrace();
 //            fail();
 //        }
-//        logger.info("Die CA wurde erstellt und in {} und {} exportiert", exportPathCACertificate,exportPathCAKey);
-//        logger.info("============================================================================");
+//        logger.debug("Die CA wurde erstellt und in {} und {} exportiert", exportPathCACertificate,exportPathCAKey);
+//        logger.debug("============================================================================");
 //
-//        logger.info("Erzeugung und Export der Sub-CA");
+//        logger.debug("Erzeugung und Export der Sub-CA");
 //        TestSubCAFactory subCAFactory = new TestSubCAFactory(cAFactory.getRootCert(), cAFactory.getRootKeyPair());
 //        try {
 //            subCAFactory.build();
@@ -290,13 +290,13 @@ public class TestCaseBasisWithCA {
 //            fail();
 //        }
 //
-//        logger.info("Die Sub-CA wurde erstellt und in {} und {} exportiert", exportPathSubCACertificate, exportPathSubCAKey);
-//        logger.info("============================================================================");
+//        logger.debug("Die Sub-CA wurde erstellt und in {} und {} exportiert", exportPathSubCACertificate, exportPathSubCAKey);
+//        logger.debug("============================================================================");
 //
 //
 //
-//        logger.info("Erzeugung und Export eines Client-Zertifikats");
-//        logger.info("============================================================================");
+//        logger.debug("Erzeugung und Export eines Client-Zertifikats");
+//        logger.debug("============================================================================");
 //        TestClientCertificateFactory clientCertFactory = new TestClientCertificateFactory(subCAFactory.getSubCACert(), subCAFactory.getSubCAKeyPair());
 //
 //
@@ -316,12 +316,12 @@ public class TestCaseBasisWithCA {
 //            fail();
 //        }
 //
-//        logger.info("Ein Client Zertifikat wurde erstellt und in {} und {} exportiert", exportPathClientCertificate, exportPathClientKey);
-//        logger.info("============================================================================");
+//        logger.debug("Ein Client Zertifikat wurde erstellt und in {} und {} exportiert", exportPathClientCertificate, exportPathClientKey);
+//        logger.debug("============================================================================");
 //
 //
-//        logger.info("Erstellen einer Audit Log Message", exportPathClientCertificate, exportPathClientKey);
-//        logger.info("============================================================================");
+//        logger.debug("Erstellen einer Audit Log Message", exportPathClientCertificate, exportPathClientKey);
+//        logger.debug("============================================================================");
 //
 //        TestAuditLogMessageFactory auditLogMessageFactory = new TestAuditLogMessageFactory();
 //
@@ -348,7 +348,7 @@ public class TestCaseBasisWithCA {
 //            fail();
 //        }
 //
-//        logger.info("Die AuditLogMessage wurde erstellt und wird jetzt zum testen verwendet");
+//        logger.debug("Die AuditLogMessage wurde erstellt und wird jetzt zum testen verwendet");
 //
 //        try {
 //            AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);

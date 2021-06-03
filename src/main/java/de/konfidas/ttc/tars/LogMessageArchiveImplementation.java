@@ -29,13 +29,17 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
     final HashMap<String, X509Certificate> allClientCertificates = new HashMap<>();
     final HashMap<String, X509Certificate> allIntermediateCertificates = new HashMap<>();
     Boolean infoCSVPresent = false;
+    String filename;
 
     public LogMessageArchiveImplementation() throws IOException, BadFormatForTARException {
         this(null);
+
     }
 
     public LogMessageArchiveImplementation(File tarFile) throws IOException, BadFormatForTARException {
+
         if( null != tarFile){
+            this.filename= tarFile.getName();
             this.parse(tarFile);
         }
     }
@@ -62,7 +66,7 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
 
                 myTarFile.read(content, offset, content.length - offset);
 
-                logger.info("Verarbeite nun die Datei {}", individualFileName);
+                logger.debug("Verarbeite nun die Datei {}", individualFileName);
 
                 if (individualFileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+log") ) {
                     all_log_messages.add(LogMessageFactory.createLogMessage(individualFileName,content));
@@ -119,6 +123,11 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
 
     public ArrayList<LogMessage> getLogMessages(){
         return this.all_log_messages;
+    }
+
+    @Override
+    public String getFileName() {
+        return filename;
     }
 
     ArrayList<LogMessage> sortedLogMessages;

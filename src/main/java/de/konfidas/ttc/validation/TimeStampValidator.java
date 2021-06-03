@@ -9,10 +9,7 @@ import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import org.apache.commons.codec.binary.Hex;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 public class TimeStampValidator implements Validator{
     final HashMap<String, LogTime> lastLogTime;
@@ -22,7 +19,7 @@ public class TimeStampValidator implements Validator{
     }
 
     @Override
-    public Collection<ValidationException> validate(LogMessageArchive tar) {
+    public ValidationResult validate(LogMessageArchive tar) {
         LinkedList<ValidationException> result = new LinkedList<>();
 
         Collection<? extends LogMessage> messages = tar.getSortedLogMessages();
@@ -52,7 +49,7 @@ public class TimeStampValidator implements Validator{
 
 
         }
-        return result;
+        return new ValidationResultImpl().append(Collections.singleton(this), result);
     }
 
     static class LogTimeMissMatchException extends LogMessageValidationException {
