@@ -50,7 +50,7 @@ public class LogMessageSignatureVerifier {
 
             byte[] signatureValue = msg.getSignatureValue();
             st.verify(signatureValue);
-            logger.debug("Die Signatur der logMessage {} wurde erfolgreich geprüft",msg);
+            logger.debug("The signature of logMessage {} has been validated successfully.",msg);
         } catch (NoSuchProviderException e) {
             throw new LogMessageVerificationException("Bouncy Castle wurde als Provider nicht gefunden", e);
         } catch (NoSuchAlgorithmException e) {

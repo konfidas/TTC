@@ -77,7 +77,7 @@ public class TestCaseBasisWithCA {
     public static void setupCA()  {
 
         logger.debug("============================================================================");
-        logger.debug("Erzeugung einer CA, Sub-CA und eines Client-Zertifikats");
+        logger.debug("Setup of CA, Sub-CA and a Client-Certificate");
         logger.debug("============================================================================");
 
         logger.debug("Erzeugung und Export der CA");
@@ -93,10 +93,10 @@ public class TestCaseBasisWithCA {
         rootCACertificate = cAFactory.getRootCert();
         rootCAKeyPair = cAFactory.getRootKeyPair();
 
-        logger.debug("Die CA wurde erstellt");
+        logger.debug("CA has been created");
         logger.debug("============================================================================");
 
-        logger.debug("Erzeugung und Export der Sub-CA");
+        logger.debug("Creation and Export of Sub-CA");
         TestSubCAFactory subCAFactory = new TestSubCAFactory(cAFactory.getRootCert(), cAFactory.getRootKeyPair());
         try {
             subCAFactory.build();
@@ -109,12 +109,12 @@ public class TestCaseBasisWithCA {
         subCACertificate = subCAFactory.getSubCACert();
         subCAKeyPair = subCAFactory.getSubCAKeyPair();
 
-        logger.debug("Die Sub-CA wurde erstellt");
+        logger.debug("Sub-CA has been created");
         logger.debug("============================================================================");
 
 
 
-        logger.debug("Erzeugung und Export eines Client-Zertifikats");
+        logger.debug("Creation and export of a Client-Certificate");
         logger.debug("============================================================================");
         TestClientCertificateFactory clientCertFactory = new TestClientCertificateFactory(subCAFactory.getSubCACert(), subCAFactory.getSubCAKeyPair());
 
@@ -129,7 +129,7 @@ public class TestCaseBasisWithCA {
 
         clientCertificate = clientCertFactory.getClientCert();
         clientCertKeyPair = clientCertFactory.getClientKeyPair();
-        logger.debug("Ein Client Zertifikat wurde erstellt");
+        logger.debug("Client-Certificate has been created");
         logger.debug("============================================================================");
 
         setupComplete = true;

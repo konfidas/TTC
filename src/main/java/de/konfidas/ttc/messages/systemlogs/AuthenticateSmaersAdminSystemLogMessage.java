@@ -139,7 +139,7 @@ public class AuthenticateSmaersAdminSystemLogMessage extends SystemLogMessage {
 
             //role einlesen
             nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 2) {logger.debug(" Das Feld unblockResiult wurde nicht gefunden");}
+            if (nextElement.getTagNo() != 2) {logger.debug("The field unblockResiult has not been found.");}
             else {
                 this.role = (DLTaggedObject) systemOperationDataIterator.next();
                 this.roleAsBigInteger = DLTaggedObjectConverter.dLTaggedObjectFromEnumerationToBigInteger(this.role);
@@ -154,7 +154,7 @@ public class AuthenticateSmaersAdminSystemLogMessage extends SystemLogMessage {
 
             //remainingRetries einlesen
             nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 4) {logger.debug(" Das Feld remainingRetries wurde nicht gefunden");}
+            if (nextElement.getTagNo() != 4) {logger.debug("The field remainingRetries has not been found.");}
             else {
                 this.remainingRetries = (DLTaggedObject) systemOperationDataIterator.next();
                 this.remainingRetriesAsBigInteger = DLTaggedObjectConverter.dLTaggedObjectFromEnumerationToBigInteger(this.remainingRetries);

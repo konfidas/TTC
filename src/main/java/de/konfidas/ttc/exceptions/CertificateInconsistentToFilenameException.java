@@ -15,7 +15,7 @@ public class CertificateInconsistentToFilenameException extends ValidationExcept
 
     public static class FilenameToSubjectMismatchException extends CertificateInconsistentToFilenameException {
         public FilenameToSubjectMismatchException(String expected, String found) {
-            super("FileName to Subject mismatch: got "+found+", but expected "+expected, null);
+            super(String.format("Filename to Subject mismatch: got {} but expected {}", found ,expected), null);
         }
     }
 

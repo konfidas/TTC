@@ -32,7 +32,7 @@ public class LogMessageTestParsingSuccessfully {
     @Parameterized.Parameters
     public static Collection<File> filesToTest(){
 
-        logger.debug("checking for Logs in "+correctLogs.getName());
+        logger.debug("Checking for Logs in "+correctLogs.getName());
         if(!correctLogs.isDirectory() || correctLogs.listFiles() == null){
             logger.error("not a directory.");
             return Collections.EMPTY_LIST;

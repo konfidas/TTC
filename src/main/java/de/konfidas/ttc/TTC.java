@@ -26,22 +26,22 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Security;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 import static ch.qos.logback.classic.Level.*;
 
 public class TTC {
 
     final static ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    static Locale locale = new Locale("de", "DE");
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);
 
     public static void main(String[] args) {
         Security.addProvider(new BouncyCastleProvider());
 
         Options options = new Options();
 
-        options.addOption("t", "trustAnker", true, "Trust Anker in Form eines X.509 Zertifikats für die Root-CA");
+        options.addOption("t", "trustAnker", true, properties.getString("de.konfidas.ttt.help_rootCA"));
         options.addOption("h", "help", false, "Drucke Informationen zum Programm");
         options.addOption("n", "noCertCheck", false, "Wenn diese Option gesetzt wird, werden die Zertifikate im TAR Archiv nicht gegen eine Root-CA geprüft");
         options.addOption("d", "debug", false, "Wenn diese Option gesetzt wird, gibt TTC detaillierte Informationen aus.");

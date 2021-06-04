@@ -66,7 +66,7 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
 
                 myTarFile.read(content, offset, content.length - offset);
 
-                logger.debug("Verarbeite nun die Datei {}", individualFileName);
+                logger.debug("Will now process {}", individualFileName);
 
                 if (individualFileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+log") ) {
                     all_log_messages.add(LogMessageFactory.createLogMessage(individualFileName,content));
@@ -76,18 +76,18 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
                  ** info.csv *
                  *************/
                 else if (individualFileName.matches("^info.csv")) {
-                    logger.debug("info.csv gefunden. Starte Verarbeitung.");
+                    logger.debug("found info.csv. Start processing now.");
                     infoCSVPresent = true;
                     String info_string = new String(content, StandardCharsets.UTF_8);
-                    logger.debug("Description laut info.csv: {}", StringUtils.substringsBetween(info_string, "description:\",\"", "\"," )[0]);
-                    logger.debug("Manufacturer laut info.csv: {}", StringUtils.substringsBetween(info_string, "manufacturer:\",\"", "\"," )[0]);
-                    logger.debug("Version laut info.csv: {}", StringUtils.substringsBetween(info_string, "version:\",\"", "\"" )[0]);
+                    logger.debug("Description in info.csv: {}", StringUtils.substringsBetween(info_string, "description:\",\"", "\"," )[0]);
+                    logger.debug("Manufacturer in info.csv: {}", StringUtils.substringsBetween(info_string, "manufacturer:\",\"", "\"," )[0]);
+                    logger.debug("Version in info.csv: {}", StringUtils.substringsBetween(info_string, "version:\",\"", "\"" )[0]);
                 }
                 /*********************
                  ** CVC Certificate *
                  ********************/
                 else if (individualFileName.contains("CVC")) {
-                    logger.debug("{} seems to be a CVC. Will process it now.", individualFileName);
+                    logger.debug("{} seems to be a CVC certificate. Will process it now.", individualFileName);
                     //FIXME: Not supported
 
                 }
@@ -95,7 +95,7 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
                  ** X.509 Certificate *
                  **********************/
                 else if (individualFileName.contains("X509")) {
-                    logger.debug("{} schein ein X.509 Zertifikat zu sein. Starte Verarbeitung.", individualFileName);
+                    logger.debug("{} seems to be an X.509 certificate. Will process it now.", individualFileName);
                     try {
                         X509Certificate cer = CertificateHelper.loadCertificate(content);
                         // Prüfe die Eigenschaften des Zertifikats gegen den Dateinamen
@@ -106,10 +106,10 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
                             allIntermediateCertificates.put(individualFileName.split("_")[0].toUpperCase(), cer);
                         }
                     } catch (CertificateLoadException e) {
-                        logger.error("Fehler beim Laden des Zertifikats {}", individualFileName);
+                        logger.error("Error loading certificate {}", individualFileName);
                     }
                 } else {
-                    logger.error("{} sollte nicht in der TAR Datei vorhanden sein. Es wird ignoriert.", individualFileName);
+                    logger.error("{} should not be in the TAR file. Will be ignored.", individualFileName);
                 }
             }
         }
@@ -118,7 +118,7 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
             System.exit(1);
         }
 
-        if (!infoCSVPresent){throw new BadFormatForTARException("Die info.csv Datei wurde nicht gefunden",null);}
+        if (!infoCSVPresent){throw new BadFormatForTARException("info.csv has not been found",null);}
     }
 
     public ArrayList<LogMessage> getLogMessages(){
