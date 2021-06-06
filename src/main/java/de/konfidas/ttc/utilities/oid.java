@@ -7,9 +7,9 @@ import java.util.Arrays;
 
 public enum oid {
 
-    id_SE_API_transaction_log( Hex.decode("06 09 04 00 7F 00 07 03 07 01 01".replace("\\\\s+","")), "0.4.0.127.0.7.3.7.1.1", "id-SE-API-transaction-log"),
-    id_SE_API_system_log     ( Hex.decode("06 09 04 00 7F 00 07 03 07 01 02".replace("\\\\s+","")), "0.4.0.127.0.7.3.7.1.2", "id-SE-API-system-log"),
-    id_SE_API_SE_audit_log   ( Hex.decode("06 09 04 00 7F 00 07 03 07 01 03".replace("\\\\s+","")), "0.4.0.127.0.7.3.7.1.3", "id-SE-API-SE-audit-log");
+    id_SE_API_transaction_log( Hex.decode("06 09 04 00 7F 00 07 03 07 01 01".replace("\\\\s+","")), "0.4.0.127.0.7.3.7.1.1", "id-SE-API-transaction-log"),//NON-NLS
+    id_SE_API_system_log     ( Hex.decode("06 09 04 00 7F 00 07 03 07 01 02".replace("\\\\s+","")), "0.4.0.127.0.7.3.7.1.2", "id-SE-API-system-log"),//NON-NLS
+    id_SE_API_SE_audit_log   ( Hex.decode("06 09 04 00 7F 00 07 03 07 01 03".replace("\\\\s+","")), "0.4.0.127.0.7.3.7.1.3", "id-SE-API-SE-audit-log");//NON-NLS
 
     final byte[] encoded;
     final String readable;

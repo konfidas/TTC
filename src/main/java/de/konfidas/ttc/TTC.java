@@ -33,21 +33,21 @@ import static ch.qos.logback.classic.Level.*;
 public class TTC {
 
     final static ch.qos.logback.classic.Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-    static Locale locale = new Locale("de", "DE");
-    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);
+    static Locale locale = new Locale("de", "DE"); //NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
     public static void main(String[] args) {
         Security.addProvider(new BouncyCastleProvider());
 
         Options options = new Options();
 
-        options.addOption("t", "trustAnker", true, properties.getString("de.konfidas.ttt.help_rootCA"));
-        options.addOption("h", "help", false, "Drucke Informationen zum Programm");
-        options.addOption("n", "noCertCheck", false, "Wenn diese Option gesetzt wird, werden die Zertifikate im TAR Archiv nicht gegen eine Root-CA geprüft");
-        options.addOption("d", "debug", false, "Wenn diese Option gesetzt wird, gibt TTC detaillierte Informationen aus.");
-        options.addOption("e", "errorsOnly", false, "Wenn diese Option gesetzt wird, gibt TTC ausschließlich Informationen  über fehlerhafte Messages aus. Informationen über korrekte LogMessages werden unterdrückt.");
-        options.addOption("g", "generateHtmlReport", true, "Generiere einen HTML Output.");
-        options.addOption("v", "validator", true, "Benutze einen oder mehrere ausgewählte Validatoren. Mehrere Validatoren können durch Kommata getrennt angegeben werden. Die folgenden Validatoren stehen zur Verfügung: de.konfidas.ttc.validation.CertificateFileNameValidator, de.konfidas.ttc.validation.TimeStampValidator, de.konfidas.ttc.validation.SignatureCounterValidator, de.konfidas.ttc.validation.LogMessageSignatureValidator.");
+        options.addOption("t", "trustAnker", true, properties.getString("de.konfidas.ttt.help_rootCA"));//NON-NLS
+        options.addOption("h", "help", false, properties.getString("de.konfidas.ttc.help_printHelp"));//NON-NLS
+        options.addOption("n", "noCertCheck", false, properties.getString("de.konfidas.ttc.help_omitRootCaCheck"));//NON-NLS
+        options.addOption("d", "debug", false, properties.getString("de.konfidas.ttc.help_setDebugging"));//NON-NLS
+        options.addOption("e", "errorsOnly", false, properties.getString("de.konfidas.ttc.help_errorsOnly"));//NON-NLS
+        options.addOption("g", "generateHtmlReport", true, properties.getString("de.konfidas.ttc.help_htmlOut"));//NON-NLS
+        options.addOption("v", "validator", true, properties.getString("de.konfidas.ttc.help_selectValidators"));//NON-NLS
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd;
@@ -63,25 +63,25 @@ public class TTC {
          *********************************/
         try {
             cmd = parser.parse(options, args);
-            if (cmd.hasOption("d")) {
+            if (cmd.hasOption("d")) {//NON-NLS
                 logger.setLevel(DEBUG);
             }
-            if (cmd.hasOption("h")) {
+            if (cmd.hasOption("h")) {//NON-NLS
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.setWidth(120);
-                formatter.printHelp("ttc", options );
+                formatter.printHelp("ttc", options );//NON-NLS
                 System.exit(0);
             }
-            if (cmd.hasOption("e")) {
+            if (cmd.hasOption("e")) {//NON-NLS
                 skipLegitLogMessagesInReporting = true;
             }
 
-            if (!(cmd.hasOption("t") || cmd.hasOption("n"))) {
-                System.err.println("Fehler beim Parsen der Kommandozeile. Es muss entweder ein TrustStore für Root-Zertifikate angegeben werden (Option t) oder auf die Prüfung von Zertifikaten verzichtet werden (Option -o)");
+            if (!(cmd.hasOption("t") || cmd.hasOption("n"))) {//NON-NLS
+                System.err.println(properties.getString("de.konfidas.ttc.errorParsingCommandEitherRootMustBePresentOrOptionChosen"));
             }
 
-            if (cmd.hasOption("t")) {
-                trustCertPath = cmd.getOptionValue("t");
+            if (cmd.hasOption("t")) {//NON-NLS
+                trustCertPath = cmd.getOptionValue("t");//NON-NLS
                 try {
                     trustedCert = CertificateHelper.loadCertificate(Path.of(trustCertPath));
                 } catch (CertificateLoadException | IOException e) {
@@ -89,9 +89,9 @@ public class TTC {
                 }
             }
 
-            if (cmd.hasOption("v")) {
-                String stringOfValidators = cmd.getOptionValue("v");
-                String[] listOfValidatorsString = stringOfValidators.split(",");
+            if (cmd.hasOption("v")) {//NON-NLS
+                String stringOfValidators = cmd.getOptionValue("v");//NON-NLS
+                String[] listOfValidatorsString = stringOfValidators.split(",");//NON-NLS
 
                 try {
                     for (String valString : listOfValidatorsString) {
@@ -101,7 +101,7 @@ public class TTC {
                         listOfValidators.add(val);
                     }
                 } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
-                    logger.error("Fehler beim Initialisieren des aussgewählten Validators.");
+                    logger.error(properties.getString("de.konfidas.ttc.errorInitializeValidator"));//NON-NLS
                     e.printStackTrace();
                 }
 
@@ -117,7 +117,7 @@ public class TTC {
                 validator.add(val);
             }
 
-            if (cmd.hasOption("t")) {
+            if (cmd.hasOption("t")) {//NON-NLS
                 validator.add(new CertificateValidator(Collections.singleton(trustedCert)));
             }
 
@@ -130,8 +130,8 @@ public class TTC {
                 File inputFile = new File(inputFileName);
                 if (inputFile.exists()) inputFiles.add(inputFile);
                 else {
-                    logger.error("File: " + inputFileName + " is not existing");
-                    logger.error("Program will exit now.");
+                    logger.error(String.format(properties.getString("de.konfidas.ttc.FileNotExisting"), inputFile));
+                    logger.error(properties.getString("de.konfidas.tts.programWillExit"));
                     System.exit(1);
                 }
             }
@@ -141,11 +141,11 @@ public class TTC {
                 valResults = validator.validate(tar);
             }
 
-            if (cmd.hasOption("g")) {
-                String reportPath = cmd.getOptionValue("g");
-                String fileSuffixOfReportPath = reportPath.substring(reportPath.lastIndexOf(".") + 1);
-                if ((!fileSuffixOfReportPath.equals("html")) && (!fileSuffixOfReportPath.equals("htm"))) {
-                    logger.error("The value of option g has to end on .html or .htm.");
+            if (cmd.hasOption("g")) {//NON-NLS
+                String reportPath = cmd.getOptionValue("g");//NON-NLS
+                String fileSuffixOfReportPath = reportPath.substring(reportPath.lastIndexOf(".") + 1);//NON-NLS
+                if ((!fileSuffixOfReportPath.equals("html")) && (!fileSuffixOfReportPath.equals("htm"))) {//NON-NLS
+                    logger.error(properties.getString("de.konfidas.ttc.optionGWrongEnding"));//NON-NLS
                     System.exit(1);
                 }
                 HtmlReporter htmlReporter = new HtmlReporter();

@@ -16,19 +16,19 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPublicKey;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 public class CertificateFileNameValidator implements Validator {
+
+    static Locale locale = new Locale("de", "DE");//NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
     public static void validateCertificateAgainstFilename(X509Certificate cert, String filename) throws CertificateInconsistentToFilenameException {
         X500Name certSubject;
         try {
             certSubject = new JcaX509CertificateHolder(cert).getSubject();
         } catch (CertificateEncodingException e) {
-            throw new CertificateInconsistentToFilenameException(String.format("Fehler bei der Konsistenzprüfung des Zertifikats %s", filename),e);
+            throw new CertificateInconsistentToFilenameException(String.format(properties.getString("de.konfidas.ttc.validation.consistencyErrorForCert"), filename),e);
         }
 
         RDN cn = certSubject.getRDNs(BCStyle.CN)[0];
@@ -45,7 +45,7 @@ public class CertificateFileNameValidator implements Validator {
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            throw new CertificateInconsistentToFilenameException(String.format("Fehler bei der Konsistenzprüfung des Zertifikats %s", filename),e);
+            throw new CertificateInconsistentToFilenameException(String.format(properties.getString("de.konfidas.ttc.validation.consistencyErrorForCert"),filename),e);
         }
 
         byte[] encodedCertPublicKey = CertificateHelper.publicKeyToUncompressedPoint((ECPublicKey) cert.getPublicKey());

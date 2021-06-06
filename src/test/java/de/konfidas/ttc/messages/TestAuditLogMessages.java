@@ -123,7 +123,7 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
             fail();
         } catch (LogMessageImplementation.LogMessageParsingException | IOException e){
             // Hier müssen wir aber sicherstellen, dass der Test aus dem richtigen Grund fehlschlägt
-            if (!e.getMessage().contains("CertifiedData element found in an audit log message")){
+            if (!e.getMessage().contains("CertifiedData")){
                 fail();
             }
         }

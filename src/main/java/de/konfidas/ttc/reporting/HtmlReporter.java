@@ -13,13 +13,13 @@ import org.bouncycastle.asn1.ASN1Primitive;
 import java.io.*;
 import java.nio.Buffer;
 import java.nio.file.Files;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class HtmlReporter implements Reporter<String> {
+
+    static Locale locale = new Locale("de", "DE"); //NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale); //NON-NLS
     File file;
     boolean skipLegitLogMessages;
     HashSet<Class<? extends ValidationException>> issuesToIgnore;
@@ -67,29 +67,29 @@ public class HtmlReporter implements Reporter<String> {
             printFooter(sw);
             return sw.toString();
         } catch (IOException e) {
-            throw new ReporterException("Fehler bei der Erstellung des HTML Reports",e);
+            throw new ReporterException(properties.getString("de.konfidas.ttc.reporting.errorCreatingHTMLReport"),e);
         }
 
     }
 
     void printNonLogMessageValidationExceptions(StringWriter sw, Collection<ValidationException> validationErrors) throws IOException {
-        sw.write("<h1 id=\"generalerrors\">General errors</h1>\n");
+        sw.write(properties.getString("de.konfidas.ttc.reporting.HtmlHeadlineGeneralErrors"));
         long numberOfGeneralValidationExceptions = validationErrors.stream().filter(c -> !(c instanceof LogMessageValidationException)).count();
         if (numberOfGeneralValidationExceptions>0)
-            sw.write("<p> The following Issues, where found, but are not directly linked to Log Messages:</p>");
+            sw.write(properties.getString("de.konfidas.ttc.reporting.htmlReportIntroductionToIssues"));
         else
-            sw.write("<p>None</p>");
+            sw.write(properties.getString("de.konfidas.ttc.reporting.htmlReportNone"));
 
-        sw.write("<ul>");
+        sw.write("<ul>");//NON-NLS
         for(ValidationException v : validationErrors){
             if(!(v instanceof LogMessageValidationException)){
 
                 if(!issuesToIgnore.contains(v.getClass())) {
-                    sw.write("<li>" + v.toString() + "</li>");
+                    sw.write("<li>" + v.toString() + "</li>");//NON-NLS
                 }
             }
         }
-        sw.write("</ul>");
+        sw.write("</ul>");//NON-NLS
 
     }
 
@@ -108,10 +108,10 @@ public class HtmlReporter implements Reporter<String> {
                 }
             }
         }
-        sw.write("<h1 id=\"errors\">Errors for log messages</h1>\n");
+        sw.write(properties.getString("de.konfidas.ttc.reporting.htmlHeadlineForLogMessageErrors"));
 
         if(skipLegitLogMessages){
-            sw.write("(legit log messages were skipped in this report)<br>");
+            sw.write(properties.getString("de.konfidas.ttc.reporting.htmlReportLegitMessagesWereSkipped"));
         }
 
         for(LogMessageArchive tar : logs){
@@ -128,12 +128,12 @@ public class HtmlReporter implements Reporter<String> {
                     }
                     sw.write("</ul>");
                     sw.write("<button type=\"button\" class=\"accordion\">Click here for the complete content of "+lm.getFileName()+"</button>");
-                    sw.write("<div class=\"panel\">");
+                    sw.write("<div class=\"panel\">");//NON-NLS
 
-                    sw.write("<table>");
+                    sw.write("<table>");//NON-NLS
                     printLogMessage(lm, sw);
-                    sw.write("</table>");
-                    sw.write(" </div>");
+                    sw.write("</table>");//NON-NLS
+                    sw.write(" </div>");//NON-NLS
 
                 }
 
@@ -154,19 +154,19 @@ public class HtmlReporter implements Reporter<String> {
             sw.write("<li>"+l.getFileName()+"</li>");
         }
 
-        sw.write("</ul>");
+        sw.write("</ul>");//NON-NLS
     }
 
 
     void printValidators(StringWriter sw, Collection<Validator> validators) throws IOException {
         sw.write("<h1 id=\"validators\">Validators</h1>\n");
         sw.write("<p> To generate this report, the following validators were used:</p>");
-        sw.write("<ul>");
+        sw.write("<ul>");//NON-NLS
 
         for(Validator v: validators){
-            sw.write("<li>"+v.getClass()+"</li>");
+            sw.write("<li>"+v.getClass()+"</li>");//NON-NLS
         }
-        sw.write("</ul>");
+        sw.write("</ul>");//NON-NLS
     }
 
 
@@ -177,14 +177,14 @@ public class HtmlReporter implements Reporter<String> {
         String cssString = new String(Files.readAllBytes(file.toPath()));
 
 
-        sw.write("<html><head><title>Report</title>");
-        sw.write("<style>");
+        sw.write("<html><head><title>Report</title>");//NON-NLS
+        sw.write("<style>");//NON-NLS
         sw.write(cssString);
-        sw.write("</style>");
-        sw.write("</head><body>");
+        sw.write("</style>");//NON-NLS
+        sw.write("</head><body>");//NON-NLS
         sw.write("<ul class=\"nav\"> <li><a class=\"active\" href=\"#logmessages\">Log Messages</a></li> <li><a href=\"#validators\">Applied Validators</a></li> <li><a href=\"#generalerrors\">General errors</a></li> <li><a href=\"#errors\">Errors on log messages</a></li> </ul>" +
                 ">");
-        sw.write("<div style=\"margin-left:25%;padding:1px;\">\n");
+        sw.write("<div style=\"margin-left:25%;padding:1px;\">\n");//NON-NLS
     }
 
     static void printFooter(StringWriter sw) throws IOException {
@@ -195,17 +195,17 @@ public class HtmlReporter implements Reporter<String> {
 
     static void printLogMessage(LogMessage msg, StringWriter sw) throws IOException {
 
-        sw.write("<tr><td>version:</td><td>"+ msg.getVersion()+"</td></tr>");
-        sw.write("<tr><td>certifiedDataType:</td><td>"+ msg.getCertifiedDataType().toString()+"</td></tr>");
+        sw.write("<tr><td>version:</td><td>"+ msg.getVersion()+"</td></tr>");//NON-NLS
+        sw.write("<tr><td>certifiedDataType:</td><td>"+ msg.getCertifiedDataType().toString()+"</td></tr>");//NON-NLS
 
         if (msg instanceof TransactionLogMessage){
             reportCertifiedDataOfTransactionLogMessage((TransactionLogMessage) msg, sw);
         }
-        sw.write("serialNumber: "+Hex.encodeHexString(msg.getSerialNumber()));
+        sw.write("serialNumber: "+Hex.encodeHexString(msg.getSerialNumber()));//NON-NLS
 
-        sw.write("<tr><td>signatureCounter:</td><td>"+ msg.getSignatureCounter().toString()+"</td></tr>");
-        sw.write("<tr><td>LogTimeFormat:</td><td>"+ msg.getLogTime().getType().toString()+"</td></tr>");
-        sw.write("<tr><td>LogTime:</td><td>"+ msg.getLogTime().toString()+"</td></tr>");
+        sw.write("<tr><td>signatureCounter:</td><td>"+ msg.getSignatureCounter().toString()+"</td></tr>");//NON-NLS
+        sw.write("<tr><td>LogTimeFormat:</td><td>"+ msg.getLogTime().getType().toString()+"</td></tr>");//NON-NLS
+        sw.write("<tr><td>LogTime:</td><td>"+ msg.getLogTime().toString()+"</td></tr>");//NON-NLS
 
 
     }

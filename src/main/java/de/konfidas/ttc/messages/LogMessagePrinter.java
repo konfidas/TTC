@@ -3,10 +3,16 @@ package de.konfidas.ttc.messages;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.asn1.ASN1Primitive;
 
-public class LogMessagePrinter {
+import java.util.Locale;
+import java.util.ResourceBundle;
 
-    static public String printMessage(LogMessage msg) {
-        StringBuilder return_value = new StringBuilder(String.format("The following log message has been extracted from file %s", msg.getFileName()));
+public class LogMessagePrinter {
+    static Locale locale = new Locale("de", "DE");
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);
+
+    static public String printMessage(LogMessage msg){
+
+        StringBuilder return_value = new StringBuilder(String.format(properties.getString("de.konfidas.ttc.messages.printLogMessageStart"), msg.getFileName()));
         return_value.append(System.lineSeparator());
         return_value.append(String.format("version: %d", msg.getVersion()));
         return_value.append( System.lineSeparator());
