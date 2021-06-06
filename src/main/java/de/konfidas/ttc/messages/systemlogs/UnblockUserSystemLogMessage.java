@@ -3,7 +3,6 @@ package de.konfidas.ttc.messages.systemlogs;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.messages.SystemLogMessage;
 
-import de.konfidas.ttc.utilities.ByteArrayOutputStream;
 import org.bouncycastle.asn1.*;
 import de.konfidas.ttc.utilities.DLTaggedObjectConverter;
 

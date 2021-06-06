@@ -6,11 +6,9 @@ import de.konfidas.ttc.messages.logtime.GeneralizedLogTime;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.messages.logtime.UnixLogTime;
 import de.konfidas.ttc.messages.logtime.UtcLogTime;
-import de.konfidas.ttc.utilities.DLTaggedObjectConverter;
 import org.bouncycastle.asn1.*;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
@@ -94,13 +92,13 @@ public class UpdateTimeSystemLogMessage extends SystemLogMessage {
 
             this.timeBeforeUpdate = (DLTaggedObject) systemOperationDataIterator.next();
             switch (typeOfTimeFromFilename){
-                case "Gen":
+                case "Gen"://NON-NLS
                     this.timeBeforeUpdateAsLogTime = new GeneralizedLogTime((ASN1GeneralizedTime) this.timeBeforeUpdate.getObject());
                     break;
-                case "Utc":
+                case "Utc"://NON-NLS
                     this.timeBeforeUpdateAsLogTime = new UtcLogTime((ASN1UTCTime) this.timeBeforeUpdate.getObject());
                     break;
-                case "Uni":
+                case "Uni"://NON-NLS
                     this.timeBeforeUpdateAsLogTime = new UnixLogTime((ASN1Integer) this.timeBeforeUpdate.getObject());
                     break;
 
@@ -112,13 +110,13 @@ public class UpdateTimeSystemLogMessage extends SystemLogMessage {
 
             this.timeAfterUpdate = (DLTaggedObject) systemOperationDataIterator.next();
             switch (typeOfTimeFromFilename){
-                case "Gen":
+                case "Gen"://NON-NLS
                     this.timeAfterUpdateAsLogTime = new GeneralizedLogTime((ASN1GeneralizedTime) this.timeAfterUpdate.getObject());
                     break;
-                case "Utc":
+                case "Utc"://NON-NLS
                     this.timeAfterUpdateAsLogTime = new UtcLogTime((ASN1UTCTime) this.timeAfterUpdate.getObject());
                     break;
-                case "Uni":
+                case "Uni"://NON-NLS
                     this.timeAfterUpdateAsLogTime = new UnixLogTime((ASN1Integer) this.timeAfterUpdate.getObject());
                     break;
 

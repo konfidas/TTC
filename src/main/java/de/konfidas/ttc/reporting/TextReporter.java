@@ -8,13 +8,12 @@ import de.konfidas.ttc.validation.ValidationResult;
 import de.konfidas.ttc.validation.Validator;
 
 import java.io.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 public class TextReporter implements Reporter<String> {
-    File file;
+    static Locale locale = new Locale("de", "DE"); //NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
+
     boolean skipLegitLogMessages;
     HashSet<Class<? extends ValidationException>> issuesToIgnore;
 
@@ -59,13 +58,13 @@ public class TextReporter implements Reporter<String> {
 
             return sw.toString();
         } catch (IOException e) {
-            throw new ReporterException("Fehler bei der Erstellung des Reports",e);
+            throw new ReporterException(properties.getString("de.konfidas.ttc.reporting.errorCreatingReport"),e);
         }
 
     }
 
     void printNonLogMessageValidationExceptions(StringWriter sw, Collection<ValidationException> validationErrors) throws IOException {
-        sw.write("The following Issues, where found, but are not directly linked to Log Messages:");
+        sw.write(properties.getString("de.konfidas.ttc.reporting.introductionGeneralErrors"));
         sw.write(System.lineSeparator());
         for(ValidationException v : validationErrors){
             if(!(v instanceof LogMessageValidationException)){
@@ -93,11 +92,11 @@ public class TextReporter implements Reporter<String> {
                 }
             }
         }
-        sw.write("The following errors have been found for specific log messages:");
+        sw.write(properties.getString("de.konfidas.ttc.reporting.introductionSpecificErrors"));
         sw.write(System.lineSeparator());
 
         if(skipLegitLogMessages){
-            sw.write("(legit log messages were skipped in this report)");
+            sw.write(properties.getString("de.konfidas.ttc.reporting.legitMessagesSkipped"));
             sw.write(System.lineSeparator());
         }
 
@@ -105,7 +104,7 @@ public class TextReporter implements Reporter<String> {
             for (LogMessage lm : tar.getSortedLogMessages()){
                 if(!map.containsKey(lm)){
                     if(!skipLegitLogMessages) {
-                        sw.write("    " + lm.getFileName() + " seems legit.");
+                        sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.testReporterLegitMessage"), lm.getFileName()));
                         sw.write(System.lineSeparator());
                     }
                 }
@@ -113,7 +112,7 @@ public class TextReporter implements Reporter<String> {
                     sw.write("    "+lm.getFileName()+":");
                     sw.write(System.lineSeparator());
                     for(LogMessageValidationException e : map.get(lm)) {
-                        sw.write("        " + e.toString());
+                        sw.write("        " + e.toString());//NON-NLS
                         sw.write(System.lineSeparator());
                     }
                 }

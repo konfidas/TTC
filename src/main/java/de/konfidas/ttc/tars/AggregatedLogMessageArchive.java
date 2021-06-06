@@ -83,7 +83,8 @@ public class AggregatedLogMessageArchive implements LogMessageArchive {
     public String getFileName() {
         StringBuilder sb = new StringBuilder();
         for (LogMessageArchive a : archives) {
-            sb.append(a.getFileName() + ";");
+            sb.append(a.getFileName());
+            sb.append(";");
         }
         return sb.toString();
     }

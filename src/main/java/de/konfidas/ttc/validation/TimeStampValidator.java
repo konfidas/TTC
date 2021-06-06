@@ -2,7 +2,6 @@ package de.konfidas.ttc.validation;
 
 import de.konfidas.ttc.exceptions.LogMessageValidationException;
 import de.konfidas.ttc.exceptions.ValidationException;
-import de.konfidas.ttc.messages.LogMessageImplementation;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.SystemLogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;

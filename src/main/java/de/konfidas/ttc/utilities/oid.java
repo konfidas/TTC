@@ -3,9 +3,12 @@ package de.konfidas.ttc.utilities;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import org.bouncycastle.util.encoders.Hex;
 
+import java.text.MessageFormat;
 import java.util.Arrays;
 
+
 public enum oid {
+
 
     id_SE_API_transaction_log( Hex.decode("06 09 04 00 7F 00 07 03 07 01 01".replace("\\\\s+","")), "0.4.0.127.0.7.3.7.1.1", "id-SE-API-transaction-log"),//NON-NLS
     id_SE_API_system_log     ( Hex.decode("06 09 04 00 7F 00 07 03 07 01 02".replace("\\\\s+","")), "0.4.0.127.0.7.3.7.1.2", "id-SE-API-system-log"),//NON-NLS
@@ -34,12 +37,13 @@ public enum oid {
     }
 
     public static oid fromBytes(byte[] encoded) throws UnknownOidException {
+
         for(de.konfidas.ttc.utilities.oid oid : oid.values()){
             if (Arrays.equals(oid.getEncoded(), encoded)){
                 return oid;
             }
         }
-        throw new UnknownOidException("unknown Oid:"+Hex.toHexString(encoded));
+        throw new UnknownOidException(MessageFormat.format("Unknown OID:", Hex.toHexString(encoded)));
     }
 
     public static class UnknownOidException extends BadFormatForLogMessageException {

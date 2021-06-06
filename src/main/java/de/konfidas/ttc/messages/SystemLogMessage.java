@@ -11,11 +11,16 @@ import org.bouncycastle.asn1.DLTaggedObject;
 import java.io.IOException;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public abstract class SystemLogMessage extends LogMessageImplementation {
     ASN1Primitive operationType;
     DLTaggedObject systemOperationData;
     ASN1Primitive additionalInternalData;
+
+    static Locale locale = new Locale("de", "DE"); //NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
 
     public SystemLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
@@ -27,7 +32,7 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
 
         super.parseCertifiedDataType(dtbsStream,logMessageAsASN1List,logMessageIterator);
         if(this.certifiedDataType != oid.id_SE_API_system_log){
-            throw new LogMessageImplementation.CertifiedDataTypeParsingException("Invalid Certified Data Type, expected id_SE_API_system_log but found "+this.certifiedDataType.getName(), null);
+            throw new LogMessageImplementation.CertifiedDataTypeParsingException(String.format("Invalid Certified Data Type, expected id_SE_API_system_log but found {}",this.certifiedDataType.getName()), null);
         }
     }
 
@@ -58,7 +63,7 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
 
 
     void parseOperationType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
-        if (!logMessageIterator.hasNext()) { throw new OperationTypeParsingException("operationsType element not found"); }
+        if (!logMessageIterator.hasNext()) { throw new OperationTypeParsingException(properties.getString("de.konfidas.ttc.messages.operationsTypeElementNotFound")); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof DLTaggedObject)) {
             throw new OperationTypeParsingException("operationsType has to be DLTaggedObject, but is " + nextElement.getClass());

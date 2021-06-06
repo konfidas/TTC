@@ -2,9 +2,6 @@ package de.konfidas.ttc;
 
 import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import de.konfidas.ttc.exceptions.CertificateLoadException;
-import de.konfidas.ttc.exceptions.ValidationException;
-import de.konfidas.ttc.messages.LogMessage;
-import de.konfidas.ttc.messages.LogMessagePrinter;
 import de.konfidas.ttc.reporting.HtmlReporter;
 import de.konfidas.ttc.reporting.Reporter;
 import de.konfidas.ttc.reporting.TextReporter;
@@ -18,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -149,7 +145,7 @@ public class TTC {
                     System.exit(1);
                 }
                 HtmlReporter htmlReporter = new HtmlReporter();
-                File reportFile = new File(cmd.getOptionValue("g"));
+                File reportFile = new File(cmd.getOptionValue("g"));//NON-NLS
                 Files.writeString(reportFile.toPath(), htmlReporter.createReport(tarArchives, valResults, skipLegitLogMessagesInReporting));
 
             } else {

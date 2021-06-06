@@ -8,19 +8,14 @@ import de.konfidas.ttc.tars.LogMessageArchive;
 import de.konfidas.ttc.validation.ValidationResult;
 import de.konfidas.ttc.validation.Validator;
 import org.apache.commons.codec.binary.Hex;
-import org.bouncycastle.asn1.ASN1Primitive;
-
 import java.io.*;
-import java.nio.Buffer;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class HtmlReporter implements Reporter<String> {
 
     static Locale locale = new Locale("de", "DE"); //NON-NLS
     static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale); //NON-NLS
-    File file;
     boolean skipLegitLogMessages;
     HashSet<Class<? extends ValidationException>> issuesToIgnore;
 
@@ -52,7 +47,7 @@ public class HtmlReporter implements Reporter<String> {
     @Override
     public String createReport(Collection<LogMessageArchive> logs, ValidationResult vResult, Boolean skipLegitLogMessages) throws ReporterException {
         this.skipLegitLogMessages = skipLegitLogMessages;
-        try(StringWriter sw = new StringWriter();){
+        try(StringWriter sw = new StringWriter()){
             printHeader(sw);
 
             printTars(sw, logs);
@@ -118,16 +113,16 @@ public class HtmlReporter implements Reporter<String> {
             for (LogMessage lm : tar.getSortedLogMessages()){
                 if(!map.containsKey(lm)){
                     if(!skipLegitLogMessages) {
-                        sw.write("<li>" + lm.getFileName() + " seems legit.</li>");
+                        sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.logMessageIsValid"), lm.getFileName()));
                     }
                 }else{
-                    sw.write("Found the following issues while validating "+lm.getFileName()+":");
-                    sw.write("<ul>");
+                    sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.introductionErrorsHTMLReport"),lm.getFileName()+":"));
+                    sw.write("<ul>");//NON-NLS
                     for(LogMessageValidationException e : map.get(lm)) {
-                        sw.write("<li>" + e.toString() + "</li>");
+                        sw.write("<li>" + e.toString() + "</li>");//NON-NLS
                     }
-                    sw.write("</ul>");
-                    sw.write("<button type=\"button\" class=\"accordion\">Click here for the complete content of "+lm.getFileName()+"</button>");
+                    sw.write("</ul>");//NON-NLS
+                    sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.clickForCompleteContentOfLogMessage"),lm.getFileName()));
                     sw.write("<div class=\"panel\">");//NON-NLS
 
                     sw.write("<table>");//NON-NLS
@@ -142,16 +137,16 @@ public class HtmlReporter implements Reporter<String> {
     }
 
     void printErrorNum(StringWriter sw, Collection<ValidationException> validationErrors) throws IOException {
-        sw.write("<p> While validating, "+validationErrors.size()+" errors were found. </p>");
+        sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.introductionNumberOfErrors"),validationErrors.size()));
     }
 
     void printTars(StringWriter sw, Collection<LogMessageArchive> logs) throws IOException {
-        sw.write("<h1 id=\"logmessages\">Log Messages</h1>\n");
-        sw.write("<p> This report covers the following LogMessage Archives:</p>");
-        sw.write("<ul>");
+        sw.write("<h1 id=\"logmessages\">Log Messages</h1>\n");//NON-NLS
+        sw.write(properties.getString("de.konfidas.ttc.reporting.introductionLogMessages"));
+        sw.write("<ul>");//NON-NLS
 
         for(LogMessageArchive l: logs){
-            sw.write("<li>"+l.getFileName()+"</li>");
+            sw.write("<li>"+l.getFileName()+"</li>");//NON-NLS
         }
 
         sw.write("</ul>");//NON-NLS
@@ -159,8 +154,8 @@ public class HtmlReporter implements Reporter<String> {
 
 
     void printValidators(StringWriter sw, Collection<Validator> validators) throws IOException {
-        sw.write("<h1 id=\"validators\">Validators</h1>\n");
-        sw.write("<p> To generate this report, the following validators were used:</p>");
+        sw.write(properties.getString("de.konfidas.ttc.reporting.headlineValidators"));
+        sw.write(properties.getString("e.konfidas.ttc.reporting.introductionValidators"));
         sw.write("<ul>");//NON-NLS
 
         for(Validator v: validators){
@@ -188,9 +183,9 @@ public class HtmlReporter implements Reporter<String> {
     }
 
     static void printFooter(StringWriter sw) throws IOException {
-        sw.write("</div>");
-        sw.write("<script>var acc = document.getElementsByClassName(\"accordion\"); var i; for (i = 0; i < acc.length; i++) { acc[i].addEventListener(\"click\", function() { this.classList.toggle(\"active\"); var panel = this.nextElementSibling; if (panel.style.maxHeight) { panel.style.maxHeight = null; } else { panel.style.maxHeight = panel.scrollHeight + \"px\"; } }); }</script>");
-        sw.write("</body></html>");
+        sw.write("</div>");//NON-NLS
+        sw.write("<script>var acc = document.getElementsByClassName(\"accordion\"); var i; for (i = 0; i < acc.length; i++) { acc[i].addEventListener(\"click\", function() { this.classList.toggle(\"active\"); var panel = this.nextElementSibling; if (panel.style.maxHeight) { panel.style.maxHeight = null; } else { panel.style.maxHeight = panel.scrollHeight + \"px\"; } }); }</script>");//NON-NLS
+        sw.write("</body></html>");//NON-NLS
     }
 
     static void printLogMessage(LogMessage msg, StringWriter sw) throws IOException {
