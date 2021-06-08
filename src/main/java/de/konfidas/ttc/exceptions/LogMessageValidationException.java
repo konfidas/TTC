@@ -9,8 +9,8 @@ import java.util.ResourceBundle;
 public abstract class LogMessageValidationException extends ValidationException{
     final LogMessage msg;
 
-    static Locale locale = new Locale("de", "DE");
-    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);
+    static Locale locale = new Locale("de", "DE");//NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
     public LogMessageValidationException(LogMessage msg){
         this(msg,null);

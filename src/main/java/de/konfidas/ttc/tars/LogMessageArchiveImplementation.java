@@ -98,7 +98,7 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
                 /**********************
                  ** X.509 Certificate *
                  **********************/
-                else if (individualFileName.contains("X509")) {
+                else if (individualFileName.contains("X509")) {//NON-NLS
                     logger.debug("{} seems to be an X.509 certificate. Will process it now.", individualFileName);//NON-NLS
                     try {
                         X509Certificate cer = CertificateHelper.loadCertificate(content);
@@ -115,7 +115,7 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
                     }
                 } else {
                     //TODO:throw error
-                    logger.error("{} should not be in the TAR file. Will be ignored.", individualFileName);
+                    logger.error("{} should not be in the TAR file. Will be ignored.", individualFileName);//NON-NLS
                 }
             }
         }

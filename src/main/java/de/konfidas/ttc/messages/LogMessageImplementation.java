@@ -62,6 +62,9 @@ import org.slf4j.LoggerFactory;
 public abstract class LogMessageImplementation implements LogMessage {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
+    static Locale locale = new Locale("de", "DE"); //NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
+
     final static String[] allowedCertifiedDataType = {"0.4.0.127.0.7.3.7.1.1", "0.4.0.127.0.7.3.7.1.2", "0.4.0.127.0.7.3.7.1.3"};
     final static String[] allowedAlgorithms = {"0.4.0.127.0.7.1.1.4.1.2", "0.4.0.127.0.7.1.1.4.1.3", "0.4.0.127.0.7.1.1.4.1.4", "0.4.0.127.0.7.1.1.4.1.5", "0.4.0.127.0.7.1.1.4.1.8", "0.4.0.127.0.7.1.1.4.1.9", "0.4.0.127.0.7.1.1.4.1.10", "0.4.0.127.0.7.1.1.4.1.11", "0.4.0.127.0.7.1.1.4.4.1", "0.4.0.127.0.7.1.1.4.4.2", "0.4.0.127.0.7.1.1.4.4.3", "0.4.0.127.0.7.1.1.4.4.4", "0.4.0.127.0.7.1.1.4.4.5", "0.4.0.127.0.7.1.1.4.4.6", "0.4.0.127.0.7.1.1.4.4.7", "0.4.0.127.0.7.1.1.4.4.8"};
 
@@ -172,7 +175,7 @@ public abstract class LogMessageImplementation implements LogMessage {
             //Extended length encoding (limitiert auf max 4 bytes für die Länge)
             int elementNumberOfLengthBytes = (elementContent[1] & 0b01111111);
             if (elementNumberOfLengthBytes > 4) {
-                throw new ExtendLengthValueExceedsInteger("Der Wert der extended length überschreitet einen Integer", null);
+                throw new ExtendLengthValueExceedsInteger(properties.getString("de.konfidas.ttc.messages.extendedLengthLongerThanInt"), null);
             }
 
             byte[] lengthBytesFromElement = Arrays.copyOfRange(elementContent, 2, 2+elementNumberOfLengthBytes); //we need to have 4 bytes for an integer
@@ -229,46 +232,46 @@ public abstract class LogMessageImplementation implements LogMessage {
                 this.dtbs = dtbsStream.toByteArray();
             }
         } catch (IOException | NoSuchElementException | ParseException e) {
-            throw new LogMessageParsingException("failed to parse log message", e);
+            throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.failedToParseMessage"), e);
         }
     }
 
     private void parseVersionNumber(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("Version element not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.versionElementNotFound")); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1Integer)) {
-            throw new LogMessageParsingException("version has to be ASN1Integer, but is " + nextElement.getClass());
+            throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.versionFieldOfWrongType"), nextElement.getClass()));
         }
 
         ASN1Primitive element = logMessageIterator.next();
         this.version = ((ASN1Integer) element).intValueExact();
         if (this.version != 2) {
-            throw new LogMessageParsingException("Die Versionsnummer ist nicht 2");
+            throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.wrongVersionNumber"));
         }
         dtbsStream.write(this.getEncodedValue(element));
     }
 
     void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("certifidDataype element not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.certifiedDataTypeNotFound")); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1ObjectIdentifier)) {
-            throw new LogMessageParsingException("certifidData#Type has to be ASN1ObjectIdentifier, but is " + nextElement.getClass());
+            throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.certifiedDataTypeOfWrongType"), nextElement.getClass()));
         }
 
         ASN1Primitive element = logMessageIterator.next();
 
         try { this.certifiedDataType = oid.fromBytes(element.getEncoded()); } catch (oid.UnknownOidException e) {
-            throw new CertifiedDataTypeParsingException("OID for certifiedData unknown", e);
+            throw new CertifiedDataTypeParsingException(properties.getString("de.konfidas.ttc.messages.oidForCertifiedDataUnknown"), e);
         }
         dtbsStream.write(this.getEncodedValue(element));
 
     }
 
     private void parseSerialNumber(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("serialNumber element not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.serialNumberNotFound")); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1OctetString)) {
-            throw new LogMessageParsingException("serialNumber has to be ASN1OctetString, but is " + nextElement.getClass());
+            throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.serialNumberOfWrongType"), nextElement.getClass()));
         }
 
         ASN1Primitive element = logMessageIterator.next();
@@ -280,11 +283,11 @@ public abstract class LogMessageImplementation implements LogMessage {
 
     private void parseSignatureAlgorithm(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
         if (!logMessageIterator.hasNext()) {
-            throw new LogMessageParsingException("aignatureAlgorithm element not found");
+            throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.signatureAlgorithmNotFound"));
         }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1Sequence)) {
-            throw new LogMessageParsingException("aignatureAlgorithm has to be ASN1Sequence, but is " + nextElement.getClass());
+            throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.signatureAlgorithmOfWrongType"), nextElement.getClass()));
         }
 
         ASN1Primitive element = logMessageIterator.next();
@@ -299,7 +302,7 @@ public abstract class LogMessageImplementation implements LogMessage {
             dtbsStream.write(this.getEncodedValue(element));
 
             if (!Arrays.asList(allowedAlgorithms).contains(this.signatureAlgorithm)) {
-                throw new LogMessageParsingException(String.format("Die OID für signatureAlgorithm lautet %s. Dies ist keine erlaubte OID", this.signatureAlgorithm));
+                throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.invalidOIDForSignatureAlgorithm"), this.signatureAlgorithm));
             }
 
 
@@ -310,7 +313,7 @@ public abstract class LogMessageImplementation implements LogMessage {
             }
 
         } else {
-            throw new LogMessageParsingException("Die Sequenz für den signatureAlgortihm wurde nicht gefunden.");
+            throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.signatureAlgorithmSequenceNotFound"));
         }
 
     }
@@ -319,9 +322,9 @@ public abstract class LogMessageImplementation implements LogMessage {
 
 
     private void parseSignatureCounter(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("signatureCounter element not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.sigantureCounterNotFound")); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof ASN1Integer)) { throw new LogMessageParsingException("signatureCounter has to be ASN1Integer, but is " + nextElement.getClass()); }
+        if (!(nextElement instanceof ASN1Integer)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.sigantureCounterOfWrongType2"), nextElement.getClass())); }
 
         ASN1Primitive element = logMessageIterator.next();
         this.signatureCounter = ((ASN1Integer) element).getValue();
@@ -331,9 +334,9 @@ public abstract class LogMessageImplementation implements LogMessage {
 
 
     private void parseTime(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException, LogMessageParsingException, ParseException {
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("logTime element not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.logTimeNotFound")); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof ASN1Integer)&& !(nextElement instanceof ASN1UTCTime) && !(nextElement instanceof ASN1GeneralizedTime)) { throw new LogMessageParsingException("logTime is of invalid type. It is " + nextElement.getClass()); }
+        if (!(nextElement instanceof ASN1Integer)&& !(nextElement instanceof ASN1UTCTime) && !(nextElement instanceof ASN1GeneralizedTime)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.logTimeInvalidType"), nextElement.getClass())); }
 
         ASN1Primitive element = logMessageIterator.next();
 
@@ -350,9 +353,9 @@ public abstract class LogMessageImplementation implements LogMessage {
     }
 
     private void parseSignature(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("signature element not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.signatureNotFound")); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof ASN1OctetString)) { throw new LogMessageParsingException("signature has to be ASN1OctetString, but is " + nextElement.getClass()); }
+        if (!(nextElement instanceof ASN1OctetString)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.signatureWrongType"), nextElement.getClass())); }
 
         ASN1Primitive element = logMessageIterator.next();
         this.signatureValue = ((ASN1OctetString) element).getOctets();
@@ -366,11 +369,11 @@ public abstract class LogMessageImplementation implements LogMessage {
 
     public class LogMessageParsingException extends BadFormatForLogMessageException {
         public LogMessageParsingException(String message) {
-            super("Parsing Message " + filename + " failed: " + message, null);
+            super(String.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), filename,message, null));
         }
 
         public LogMessageParsingException(String message, Exception reason) {
-            super("Parsing Message " + filename + " failed: " + message, reason);
+            super(String.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), filename,message, reason));
         }
     }
 

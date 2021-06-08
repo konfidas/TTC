@@ -177,8 +177,8 @@ public class HtmlReporter implements Reporter<String> {
         sw.write(cssString);
         sw.write("</style>");//NON-NLS
         sw.write("</head><body>");//NON-NLS
-        sw.write("<ul class=\"nav\"> <li><a class=\"active\" href=\"#logmessages\">Log Messages</a></li> <li><a href=\"#validators\">Applied Validators</a></li> <li><a href=\"#generalerrors\">General errors</a></li> <li><a href=\"#errors\">Errors on log messages</a></li> </ul>" +
-                ">");
+        sw.write(properties.getString("de.konfidas.ttc.reporting.htmlMenu");
+//                + ">");
         sw.write("<div style=\"margin-left:25%;padding:1px;\">\n");//NON-NLS
     }
 
