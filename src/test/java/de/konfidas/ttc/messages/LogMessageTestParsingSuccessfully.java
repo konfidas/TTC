@@ -3,7 +3,9 @@ package de.konfidas.ttc.messages;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
@@ -46,6 +48,7 @@ public class LogMessageTestParsingSuccessfully {
         this.file = file;
     }
 
+    @Ignore
     @Test
     public void parse() throws IOException, BadFormatForLogMessageException {
         logger.debug("");

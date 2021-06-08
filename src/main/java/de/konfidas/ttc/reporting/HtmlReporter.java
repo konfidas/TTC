@@ -177,7 +177,7 @@ public class HtmlReporter implements Reporter<String> {
         sw.write(cssString);
         sw.write("</style>");//NON-NLS
         sw.write("</head><body>");//NON-NLS
-        sw.write(properties.getString("de.konfidas.ttc.reporting.htmlMenu");
+        sw.write(properties.getString("de.konfidas.ttc.reporting.htmlMenu"));
 //                + ">");
         sw.write("<div style=\"margin-left:25%;padding:1px;\">\n");//NON-NLS
     }
@@ -207,7 +207,7 @@ public class HtmlReporter implements Reporter<String> {
 
 
     static void reportCertifiedDataOfTransactionLogMessage(TransactionLogMessage msg, StringWriter sw) throws IOException {
-        sw.write("todo");
+        sw.write("todo");//NON-NLS
 //        ReportTree certifiedDataReportTree = new ReportTree("certifiedData", "");
 //        certifiedDataReportTree.addChild(new ReportTree("operationType", ((TransactionLogMessage) msg).getOperationType()));
 //        certifiedDataReportTree.addChild(new ReportTree("clientID", ((TransactionLogMessage) msg).getClientID()));

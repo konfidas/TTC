@@ -122,12 +122,12 @@ public class TextReporter implements Reporter<String> {
     }
 
     void printErrorNum(StringWriter sw, Collection<ValidationException> validationErrors) throws IOException {
-        sw.write("While validating, "+validationErrors.size()+" errors were found.");
+        sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.numberOfErrorsFound"),validationErrors.size()));
         sw.write(System.lineSeparator());
     }
 
     void printTars(StringWriter sw, Collection<LogMessageArchive> logs) throws IOException {
-        sw.write("This report covers the following LogMessage Archives:");
+        sw.write(properties.getString("de.konfidas.ttc.reporting.reportCoversTheFollowingArchives"));
         sw.write(System.lineSeparator());
 
         for(LogMessageArchive l: logs){
@@ -139,7 +139,7 @@ public class TextReporter implements Reporter<String> {
 
 
     void printValidators(StringWriter sw, Collection<Validator> validators) throws IOException {
-        sw.write("To generate this report, the following validators were used:");
+        sw.write(properties.getString("de.konfidas.ttc.reporting.reportUsedValidators"));
         sw.write(System.lineSeparator());
 
         for(Validator v: validators){

@@ -10,10 +10,7 @@ import org.bouncycastle.asn1.*;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 
 /**
@@ -30,6 +27,9 @@ import java.util.NoSuchElementException;
  * </pre>
  */
 public class UpdateTimeSystemLogMessage extends SystemLogMessage {
+
+    static Locale locale = new Locale("de", "DE");//NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
     public DLTaggedObject getTimeBeforeUpdate() {
         return timeBeforeUpdate;
@@ -80,7 +80,7 @@ public class UpdateTimeSystemLogMessage extends SystemLogMessage {
         String typeOfTimeFromFilename = this.getFileName().substring(0, Math.min(3, this.getFileName().length()));
 
         ASN1Primitive systemOperationData = stream.readObject();
-        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent");
+        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent2"));
 
         List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
         ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
@@ -88,7 +88,7 @@ public class UpdateTimeSystemLogMessage extends SystemLogMessage {
         try {
             //timeBeforeUpdate einlesen
             DLTaggedObject nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 1) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld timeBeforeUpdate wurde nicht gefunden");
+            if (nextElement.getTagNo() != 1) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.timeBeforeUpdateNotFoud"));
 
             this.timeBeforeUpdate = (DLTaggedObject) systemOperationDataIterator.next();
             switch (typeOfTimeFromFilename){
@@ -106,7 +106,7 @@ public class UpdateTimeSystemLogMessage extends SystemLogMessage {
 
             //timeAfterUpdate einlesen
             nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 2) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld timeAfterUpdate wurde nicht gefunden");
+            if (nextElement.getTagNo() != 2) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.timeAfterUpdateNotFound"));
 
             this.timeAfterUpdate = (DLTaggedObject) systemOperationDataIterator.next();
             switch (typeOfTimeFromFilename){
@@ -122,10 +122,10 @@ public class UpdateTimeSystemLogMessage extends SystemLogMessage {
 
         }}
         catch (NoSuchElementException ex ){
-            throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Vorzeitiges Ende von systemOperationData", ex);
+            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData2"), ex);
         }
         catch (ParseException ex){
-            throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent.", ex);
+            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent3"), ex);
         }
 
     }

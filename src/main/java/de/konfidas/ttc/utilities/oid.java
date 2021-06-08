@@ -43,7 +43,7 @@ public enum oid {
                 return oid;
             }
         }
-        throw new UnknownOidException(MessageFormat.format("Unknown OID:", Hex.toHexString(encoded)));
+        throw new UnknownOidException(MessageFormat.format("Unknown OID:", Hex.toHexString(encoded)));//NON-NLS
     }
 
     public static class UnknownOidException extends BadFormatForLogMessageException {

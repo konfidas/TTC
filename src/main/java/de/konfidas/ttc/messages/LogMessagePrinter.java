@@ -50,7 +50,7 @@ public class LogMessagePrinter {
         return_value.append(System.lineSeparator());
         return_value.append(String.format("[certifiedData]processData: %s",Hex.encodeHexString(((TransactionLogMessage)msg).processData)));//NON-NLS
         return_value.append(System.lineSeparator());
-        return_value.append(String.format("[certifiedData]processType: %s", ((TransactionLogMessage) msg).processType));
+        return_value.append(String.format("[certifiedData]processType: %s", ((TransactionLogMessage) msg).processType));//NON-NLS
         return_value.append(System.lineSeparator());
         return_value.append((((TransactionLogMessage)msg).additionalExternalData == null) ? "[certifiedData]No additionalExternalData" : String.format("[certifiedData]additionalExternaData: %s",Hex.encodeHexString(((TransactionLogMessage)msg).additionalExternalData)));//NON-NLS
         return_value.append(System.lineSeparator());
