@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.*;
 import java.nio.file.Files;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
 
@@ -64,6 +65,7 @@ public abstract class LogMessageImplementation implements LogMessage {
 
     static Locale locale = new Locale("de", "DE"); //NON-NLS
     static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
+
 
     final static String[] allowedCertifiedDataType = {"0.4.0.127.0.7.3.7.1.1", "0.4.0.127.0.7.3.7.1.2", "0.4.0.127.0.7.3.7.1.3"};
     final static String[] allowedAlgorithms = {"0.4.0.127.0.7.1.1.4.1.2", "0.4.0.127.0.7.1.1.4.1.3", "0.4.0.127.0.7.1.1.4.1.4", "0.4.0.127.0.7.1.1.4.1.5", "0.4.0.127.0.7.1.1.4.1.8", "0.4.0.127.0.7.1.1.4.1.9", "0.4.0.127.0.7.1.1.4.1.10", "0.4.0.127.0.7.1.1.4.1.11", "0.4.0.127.0.7.1.1.4.4.1", "0.4.0.127.0.7.1.1.4.4.2", "0.4.0.127.0.7.1.1.4.4.3", "0.4.0.127.0.7.1.1.4.4.4", "0.4.0.127.0.7.1.1.4.4.5", "0.4.0.127.0.7.1.1.4.4.6", "0.4.0.127.0.7.1.1.4.4.7", "0.4.0.127.0.7.1.1.4.4.8"};
@@ -369,11 +371,11 @@ public abstract class LogMessageImplementation implements LogMessage {
 
     public class LogMessageParsingException extends BadFormatForLogMessageException {
         public LogMessageParsingException(String message) {
-            super(String.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), filename,message, null));
+            super(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), filename,message, null));
         }
 
         public LogMessageParsingException(String message, Exception reason) {
-            super(String.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), filename,message, reason));
+            super(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), filename,message, reason));
         }
     }
 

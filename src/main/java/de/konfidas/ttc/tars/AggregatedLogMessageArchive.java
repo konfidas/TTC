@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 public class AggregatedLogMessageArchive implements LogMessageArchive {
     final LinkedList<LogMessageArchive> archives = new LinkedList<>();
+    static Locale locale = new Locale("de", "DE");//NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
     ArrayList<LogMessage> sortedLogMessages;
     ArrayList<LogMessage> logMessages;

@@ -8,6 +8,7 @@ import de.konfidas.ttc.validation.LogMessageSignatureValidator;
 import de.konfidas.ttc.validation.Validator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -51,6 +52,7 @@ public class LogMessageArchiveTestParsingSuccessfully {
         this.file = file;
     }
 
+    @Ignore
     @Test
     public void parse() throws IOException, BadFormatForTARException {
         logger.debug("");

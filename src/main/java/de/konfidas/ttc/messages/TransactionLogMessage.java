@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
@@ -90,7 +91,7 @@ public class TransactionLogMessage extends LogMessageImplementation {
 //        void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, Enumeration<ASN1Primitive> asn1Primitives) throws IOException, LogMessage.CertifiedDataTypeParsingException, ExtendLengthValueExceedsInteger {
         super.parseCertifiedDataType(dtbsStream,logMessageAsASN1List,logMessageIterator);
         if(this.certifiedDataType != oid.id_SE_API_transaction_log){
-            throw new LogMessageImplementation.CertifiedDataTypeParsingException("Invalid Certified Data Type, expected id_SE_API_transaction_log but found "+this.certifiedDataType.getName(), null);
+            throw new LogMessageImplementation.CertifiedDataTypeParsingException(String.format(properties.getString("de.konfidas.ttc.messages.certifiedDataTypeWrongType"),this.certifiedDataType.getName()), null);
         }
     }
 
@@ -108,13 +109,13 @@ public class TransactionLogMessage extends LogMessageImplementation {
     }
 
     void parseOperationType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("operationType in certifiedData  not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.certifiedDataNotFound")); }
 
         ASN1Primitive nextElement =  logMessageAsASN1List.get(logMessageIterator.nextIndex());
 
-        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException("operationType in certifiedData has to be DLApplicationSpecific, but is " + nextElement.getClass()); }
+        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.operationTypeInCertifiedDataWrongType"),  nextElement.getClass())); }
 
-        if (((DLTaggedObject) nextElement).getTagNo()!=0){ throw new LogMessageParsingException("operationType in certifiedData has to have a tag of 0 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
+        if (((DLTaggedObject) nextElement).getTagNo()!=0){ throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.operationTypeInCertifiedDataWrongTag"), ((DLTaggedObject) nextElement).getTagNo())); }
 
         DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
         DERPrintableString innerElement = DERPrintableString.getInstance(element,false);
@@ -124,12 +125,12 @@ public class TransactionLogMessage extends LogMessageImplementation {
     }
 
     void parseClientID(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("clientID in certifiedData  not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.clientIDInCertifiedDataNotFound")); }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException("clientID in certifiedData has to be DLTaggedObject, but is " + nextElement.getClass()); }
+        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.clientIDInCertifiedDataWrongTag"), nextElement.getClass())); }
 
-        if (((DLTaggedObject) nextElement).getTagNo() != 1){ throw new LogMessageParsingException("clientID in certifiedData has to have a tag of 1 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
+        if (((DLTaggedObject) nextElement).getTagNo() != 1){ throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.clientIDInCertifiedDataWrongTag2"), + ((DLTaggedObject) nextElement).getTagNo())); }
 
         DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
 
@@ -140,13 +141,13 @@ public class TransactionLogMessage extends LogMessageImplementation {
     }
 
     void parseProcessData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("processData in certifiedData  not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.processDataInCertifiedDataNotFound")); }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if ((!(nextElement instanceof DLTaggedObject)&&!(nextElement instanceof BERTaggedObject ))) { throw new LogMessageParsingException("processData in certifiedData has to be DLTaggedObject or BERTaggedObject, but is " + nextElement.getClass()); }
+        if ((!(nextElement instanceof DLTaggedObject)&&!(nextElement instanceof BERTaggedObject ))) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.processDataInCertifiedDataWrongTag"),  nextElement.getClass())); }
 
 
-        if (((ASN1TaggedObject) nextElement).getTagNo() != 2){ throw new LogMessageParsingException("processData in certifiedData has to have a tag of 2 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
+        if (((ASN1TaggedObject) nextElement).getTagNo() != 2){ throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.processDataInCertifiedDataWrongTag2"), ((DLTaggedObject) nextElement).getTagNo())); }
 
         ASN1TaggedObject element = (ASN1TaggedObject)logMessageIterator.next();
         ASN1OctetString innerElement = ASN1OctetString.getInstance(element,false);
@@ -157,12 +158,12 @@ public class TransactionLogMessage extends LogMessageImplementation {
     }
 
     void parseProcessType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("processType in certifiedData  not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.processTypeInCertifiedDataNotFound")); }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException("processType in certifiedData has to be DLTaggedObject or BERTaggedObject, but is " + nextElement.getClass()); }
+        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.processTyoeInCertifiedDataWrongType"), nextElement.getClass())); }
 
-        if (((DLTaggedObject) nextElement).getTagNo() != 3){ throw new LogMessageParsingException("processType in certifiedData has to have a tag of 3 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
+        if (((DLTaggedObject) nextElement).getTagNo() != 3){ throw new LogMessageParsingException(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.processTypeInCertifiedDataWrongTag"), ((DLTaggedObject) nextElement).getTagNo())); }
 
         DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
         DERPrintableString innerElement = DERPrintableString.getInstance(element, false);
@@ -175,19 +176,19 @@ public class TransactionLogMessage extends LogMessageImplementation {
     void parseAdditionalExternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
 
         if (!logMessageIterator.hasNext()) {
-            logger.debug("additionalExternalData in certifiedData not found for message: "+this.getFileName());
+            logger.debug(String.format("additionalExternalData in certifiedData not found for message: {}.",this.getFileName())); //NON-NLS
             return;
             }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof DLTaggedObject)) {
-            logger.debug("additionalExternalData in certifiedData has to be DLTaggedObject, but is " + nextElement.getClass());
+            logger.debug("additionalExternalData in certifiedData has to be DLTaggedObject, but is " + nextElement.getClass()); //NON-NLS
             return;
 
         }
 
         if (((DLTaggedObject) nextElement).getTagNo() != 4){
-            logger.debug("additionalExternalData in certifiedData has to have a tag of 4 (int), but is " + ((DLTaggedObject) nextElement).getTagNo());
+            logger.debug("additionalExternalData in certifiedData has to have a tag of 4 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); //NON-NLS
             return;
         }
 
@@ -203,12 +204,12 @@ public class TransactionLogMessage extends LogMessageImplementation {
     }
 
     void parseTransactionNumber(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("transactionNumber in certifiedData  not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.transactionNumberInCertifiedDataNotFound")); }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException("transactionNumber in certifiedData has to be DLTaggedObject, but is " + nextElement.getClass()); }
+        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.transactionNumberInCertifiedDataWrongTag"), nextElement.getClass())); }
 
-        if (((DLTaggedObject) nextElement).getTagNo() != 5){ throw new LogMessageParsingException("transactionNumber in certifiedData has to have a tag of 5 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); }
+        if (((DLTaggedObject) nextElement).getTagNo() != 5){ throw new LogMessageParsingException(String.format(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.transactionNumberInCertifiedDataWrongType2"), ((DLTaggedObject) nextElement).getTagNo()))); }
 
         DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
         ASN1Integer innerElement = ASN1Integer.getInstance(element,false);
@@ -253,10 +254,10 @@ return;
     @Override
     void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException {
 
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException("seAuditData element not found"); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.seAuditDataNotFound2")); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if(nextElement instanceof  ASN1OctetString){
-            throw new LogMessageParsingException("seAuditData element found in a transaction log message.");
+            throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.seAuditDataElementNotFound"));
         }
 
     }

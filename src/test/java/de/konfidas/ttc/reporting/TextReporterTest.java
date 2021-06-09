@@ -5,6 +5,7 @@ import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
 import de.konfidas.ttc.validation.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -44,6 +45,7 @@ public class TextReporterTest {
         this.file = file;
     }
 
+    @Ignore
     @Test
     public void createReport() throws IOException, BadFormatForTARException, Reporter.ReporterException {
         LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
