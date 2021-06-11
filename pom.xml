@@ -97,7 +97,6 @@
                         <addClasspath>true</addClasspath>
                         <classpathPrefix>lib/</classpathPrefix>
                         <mainClass>de.konfidas.ttc.TTC</mainClass>
-
                     </manifest>
 <!--                    <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>-->
 

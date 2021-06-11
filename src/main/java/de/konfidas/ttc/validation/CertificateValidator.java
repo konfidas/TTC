@@ -12,6 +12,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CertificateValidator implements Validator {
+
+    static Locale locale = new Locale("de", "DE");//NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
+
+
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     final Set<TrustAnchor> trustedCerts;
     final  Collection<CRL> crls;
@@ -38,7 +43,7 @@ public class CertificateValidator implements Validator {
 
         for (X509Certificate cert : tar.getClientCertificates().values()) {
             try {
-                logger.debug("Prüfe das Zertifikat mit Seriennummer {} auf Korrektheit und prüfe die zugehörige Zertifikatskette.", cert.getSerialNumber());
+                logger.debug(properties.getString("de.konfidas.ttc.validation.checkingCert"), cert.getSerialNumber());
                 checkCert(cert, trustedCerts, new ArrayList<>(tar.getIntermediateCertificates().values()), crls);
             }catch (Exception e) {
                 errors.add(new CertificateValidationException(cert, e));
@@ -51,16 +56,16 @@ public class CertificateValidator implements Validator {
     public void checkCert(X509Certificate certToCheck, Set<TrustAnchor> trustedCerts, List<X509Certificate> intermediateCerts, Collection<CRL> crls) throws
             NoSuchAlgorithmException, InvalidAlgorithmParameterException, NoSuchProviderException, CertPathValidatorException, CertificateException {
 
-        CertificateFactory cf = CertificateFactory.getInstance("X.509", BouncyCastleProvider.PROVIDER_NAME);
+        CertificateFactory cf = CertificateFactory.getInstance("X.509", BouncyCastleProvider.PROVIDER_NAME);//NON-NLS
 
         ArrayList<X509Certificate> certs = new ArrayList<>();
         certs.add(certToCheck);
         certs.addAll(intermediateCerts);
 
         CertPath path = cf.generateCertPath(certs);
-        CertPathValidator validator = CertPathValidator.getInstance("PKIX");
+        CertPathValidator validator = CertPathValidator.getInstance("PKIX");//NON-NLS
 
-        CertStore crlStore = CertStore.getInstance("Collection", new CollectionCertStoreParameters(crls));
+        CertStore crlStore = CertStore.getInstance("Collection", new CollectionCertStoreParameters(crls));//NON-NLS
 
         PKIXParameters params = new PKIXParameters(trustedCerts);
         //CertStore store = CertStore.getInstance("Collection",new CollectionCertStoreParameters(), BouncyCastleProvider.PROVIDER_NAME);
@@ -77,7 +82,7 @@ public class CertificateValidator implements Validator {
     public static class CertificateValidationException extends ValidationException{
         final X509Certificate cert;
         CertificateValidationException(X509Certificate cert, Throwable e) {
-            super("Validation of certificate "+ cert.getSerialNumber() +" failed.", e);
+            super(String.format(properties.getString("de.konfidas.ttc.validation.validationOfCertificateFailed"), cert.getSerialNumber()), e);
             this.cert = cert;
         }
         public X509Certificate getCert(){return cert;}

@@ -7,15 +7,10 @@ import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DLTaggedObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 
 /**
@@ -32,6 +27,10 @@ import java.util.NoSuchElementException;
  * </pre>
  */
 public class LogoutSystemLogMessage extends SystemLogMessage {
+
+    static Locale locale = new Locale("de", "DE"); //NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
+
     public DLTaggedObject getUserId() {
         return userId;
     }
@@ -82,7 +81,7 @@ public class LogoutSystemLogMessage extends SystemLogMessage {
         protected void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException {
 
         ASN1Primitive systemOperationData = stream.readObject();
-        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent");
+        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"));
 
         List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
         ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
@@ -90,14 +89,14 @@ public class LogoutSystemLogMessage extends SystemLogMessage {
         try {
             //userID einlesen
             DLTaggedObject nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 1) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld userID wurde nicht gefunden");
+            if (nextElement.getTagNo() != 1) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorUserIDNotFound"));
 
             this.userId = (DLTaggedObject) systemOperationDataIterator.next();
             this.userIDAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.userId);
 
             //logoutCause einlesen
             nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 2)throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld logoutCause wurde nicht gefunden");
+            if (nextElement.getTagNo() != 2)throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.logoutCauseNotFound"));
 
                 this.logoutCause = (DLTaggedObject) systemOperationDataIterator.next();
                 this.logoutCauseAsBigInteger = DLTaggedObjectConverter.dLTaggedObjectFromEnumerationToBigInteger(this.logoutCause);
@@ -106,7 +105,7 @@ public class LogoutSystemLogMessage extends SystemLogMessage {
 
         }
         catch (NoSuchElementException ex){
-            throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Vorzeitiges Ende von systemOperationData", ex);
+            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.earlyEndOfSystemOperationData"), ex);
         }
     }
 

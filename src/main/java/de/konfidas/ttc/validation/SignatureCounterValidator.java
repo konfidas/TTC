@@ -2,7 +2,6 @@ package de.konfidas.ttc.validation;
 
 import de.konfidas.ttc.exceptions.LogMessageValidationException;
 import de.konfidas.ttc.exceptions.ValidationException;
-import de.konfidas.ttc.messages.LogMessageImplementation;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import org.apache.commons.codec.binary.Hex;
@@ -13,6 +12,9 @@ import java.util.*;
 
 public class SignatureCounterValidator implements Validator{
     final HashMap<String, BigInteger> nextSignatureCounters;
+
+    static Locale locale = new Locale("de", "DE"); //NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
     // we operate on sorted log messages, so if we are in the case, that multiple log messages have the
     // same signature counters, we process them one after another. To create meaningful exceptions, we track
@@ -74,7 +76,7 @@ public class SignatureCounterValidator implements Validator{
 
         @Override
         public String toString(){
-            return "For TSE "+serial+" signature counter "+expected+ " is missing. Next found signature counter was "+foundNext+".";
+            return String.format(properties.getString("de.konfidas.ttc.validation.errorSignatureCounterIsMissing"),serial,expected,foundNext);
         }
     }
 

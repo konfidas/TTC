@@ -17,10 +17,15 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.ECPublicKey;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class CertificateHelper {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
+
+    static Locale locale = new Locale("de", "DE");//NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
     // found at https://stackoverflow.com/questions/28172710/java-compact-representation-of-ecc-publickey
     public static byte[] publicKeyToUncompressedPoint(final ECPublicKey publicKey) {
@@ -39,7 +44,7 @@ public class CertificateHelper {
         } else if (x.length == keySizeBytes + 1 && x[0] == 0) {
             System.arraycopy(x, 1, uncompressedPoint, offset, keySizeBytes);
         } else {
-            throw new IllegalStateException("x value is too large");
+            throw new IllegalStateException(properties.getString("de.konfidas.ttc.utilities.valueTooLarge"));
         }
         offset += keySizeBytes;
 
@@ -50,7 +55,7 @@ public class CertificateHelper {
         } else if (y.length == keySizeBytes + 1 && y[0] == 0) {
             System.arraycopy(y, 1, uncompressedPoint, offset, keySizeBytes);
         } else {
-            throw new IllegalStateException("y value is too large");
+            throw new IllegalStateException(properties.getString("de.konfidas.ttc.utilities.valueTooLarge"));
         }
 
         return uncompressedPoint;
@@ -75,7 +80,7 @@ public class CertificateHelper {
     public static X509Certificate loadCertificate(byte[] certContent) throws CertificateLoadException {
         X509Certificate cer;
         try {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509", BouncyCastleProvider.PROVIDER_NAME);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509", BouncyCastleProvider.PROVIDER_NAME);//NON-NLS
             InputStream in = new ByteArrayInputStream(certContent);
             cer = (X509Certificate) cf.generateCertificate(in);
 
@@ -86,18 +91,18 @@ public class CertificateHelper {
 
         }
         catch (CertificateExpiredException e) {
-            logger.error("Das Zertifikat ist abgelaufen.");
-            throw new CertificateLoadException("Certificate is expired",e);
+            logger.debug(properties.getString("de.konfidas.ttc.utilities.certificateHasExpired"));
+            throw new CertificateLoadException(properties.getString("de.konfidas.ttc.utilities.certificateHasExpired"),e);
         }
         catch (CertificateNotYetValidException e) {
-            logger.error("Das Zertifikat ist noch nicht gültig.");
-            throw new CertificateLoadException("Certificate is not yet valid",e);
+            logger.debug(properties.getString("de.konfidas.ttc.utilities.certificateNotYetValid"));
+            throw new CertificateLoadException(properties.getString("de.konfidas.ttc.utilities.certificateNotYetValid"),e);
         }
         catch (java.security.cert.CertificateException e) {
             throw new CertificateLoadException("",e);
         }
         catch (NoSuchProviderException e) {
-            throw new CertificateLoadException("BouncyCastleProvider is missing",e);
+            throw new CertificateLoadException(properties.getString("de.konfidas.ttc.utilities.bouncyCastleIsMissing"),e);
         }
         return cer;
     }

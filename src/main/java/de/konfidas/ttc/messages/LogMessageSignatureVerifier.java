@@ -13,10 +13,12 @@ import java.security.*;
 import java.security.cert.X509Certificate;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 public class LogMessageSignatureVerifier {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-
+    static Locale locale = new Locale("de", "DE");//NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
     final Map<? extends String, ? extends X509Certificate> certs;
 
     public LogMessageSignatureVerifier(Map<? extends String, ? extends X509Certificate> certs){
@@ -25,17 +27,17 @@ public class LogMessageSignatureVerifier {
 
     public void verify(LogMessage msg) throws LogMessageVerificationException {
         if (certs == null || certs.isEmpty()) {
-            throw new CertificateNotFoundException("No certificate found");
+            throw new CertificateNotFoundException(properties.getString("de.konfidas.ttc.messages.noCertificateFound"));
         }
         if (msg == null) {
-            throw new LogMessageVerificationException("No message found", null);
+            throw new LogMessageVerificationException(properties.getString("de.konfidas.ttc.messages.noMessageFound"), null);
         }
 
         byte[] serial = msg.getSerialNumber();
         X509Certificate cert = certs.get(Hex.encodeHexString(msg.getSerialNumber()).toUpperCase(Locale.ROOT));
 
         if(cert == null){
-            throw new CertificateNotFoundException("failed to identify certificate for serial number "+ Hex.encodeHexString(serial));
+            throw new CertificateNotFoundException(String.format(properties.getString("de.konfidas.ttc.messages.failedToIdentifyCertForSerial"), Hex.encodeHexString(serial)));
         }
 
         try {
@@ -50,15 +52,15 @@ public class LogMessageSignatureVerifier {
 
             byte[] signatureValue = msg.getSignatureValue();
             st.verify(signatureValue);
-            logger.debug("Die Signatur der logMessage {} wurde erfolgreich geprüft",msg);
+            logger.debug("The signature of logMessage {} has been validated successfully.",msg);//NON-NLS
         } catch (NoSuchProviderException e) {
-            throw new LogMessageVerificationException("Bouncy Castle wurde als Provider nicht gefunden", e);
+            throw new LogMessageVerificationException(properties.getString("de.konfidas.ttc.messages.bouncyCastleNotFound"), e);
         } catch (NoSuchAlgorithmException e) {
-            throw new LogMessageVerificationException("Der Algorithmus wird nicht unterstützt", e);
+            throw new LogMessageVerificationException(properties.getString("de.konfidas.ttc.messages.algortihmNotSupported"), e);
         } catch (SignatureException e) {
-            throw new LogMessageVerificationException("Die Signatur konnte nicht verifiziert werden.", e);
+            throw new LogMessageVerificationException(properties.getString("de.konfidas.ttc.messages.signatureCouldNotBeVerified"), e);
         } catch (InvalidKeyException e) {
-            throw new LogMessageVerificationException("Der Schlüssel zur Prüfung der Signatur konnte nicht eingelesen werden.", e);
+            throw new LogMessageVerificationException(properties.getString("de.konfidas.ttc.messages.keyForSignatureValidationCouldNotBeRead"), e);
         }
     }
 

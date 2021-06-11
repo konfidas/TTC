@@ -9,10 +9,7 @@ import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DLTaggedObject;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 
 /**
@@ -27,6 +24,8 @@ import java.util.NoSuchElementException;
  * </pre>
  */
 public class RegisterClientLogMessage extends SystemLogMessage {
+    static Locale locale = new Locale("de", "DE"); //NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
     public DLTaggedObject getClientID() {
         return clientID;
     }
@@ -56,7 +55,7 @@ public class RegisterClientLogMessage extends SystemLogMessage {
 
         ASN1Primitive systemOperationData = stream.readObject();
         if (!(systemOperationData instanceof ASN1Sequence))
-            throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent");
+            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"));
 
         List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
         ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
@@ -65,12 +64,12 @@ public class RegisterClientLogMessage extends SystemLogMessage {
             //clientID einlesen
             DLTaggedObject nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
             if (nextElement.getTagNo() != 1)
-                throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld userID wurde nicht gefunden");
+                throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorUserIDNotFound"));
 
             this.clientID = (DLTaggedObject) systemOperationDataIterator.next();
             this.clientIDAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.clientID);
         } catch (NoSuchElementException ex) {
-            throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Vorzeitiges Ende von systemOperationData", ex);
+            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData"), ex);
         }
 
     }

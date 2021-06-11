@@ -34,7 +34,7 @@ public class LogMessageTestParsingFailing {
     @Parameterized.Parameters
     public static Collection<File> filesToTest(){
 
-        logger.debug("checking for Logs in "+brokenLogs.getName());
+        logger.debug("Checking for Logs in "+brokenLogs.getName());
         if(!brokenLogs.isDirectory() || brokenLogs.listFiles() == null){
             logger.error("not a directory.");
             return Collections.EMPTY_LIST;
@@ -51,7 +51,7 @@ public class LogMessageTestParsingFailing {
     public void parse() throws IOException {
         logger.debug("");
         logger.debug("============================================================================");
-        logger.debug("parsing log message {}:", file.getName());
+        logger.debug("Parsing log message {}:", file.getName());
 
         try {
             LogMessageFactory.createLogMessage(this.file);

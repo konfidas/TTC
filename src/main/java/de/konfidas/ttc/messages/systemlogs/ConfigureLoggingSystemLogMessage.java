@@ -8,11 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 
 /**
@@ -33,6 +29,9 @@ import java.util.NoSuchElementException;
 public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
+
+    static Locale locale = new Locale("de", "DE");//NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
 
     DLTaggedObject componentName;
@@ -56,7 +55,7 @@ public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
         protected void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException {
 
         ASN1Primitive systemOperationData = stream.readObject();
-        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent");
+        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"));
 
         List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
         ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
@@ -64,14 +63,14 @@ public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
         try {
             //componentName einlesen
             DLTaggedObject nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 1) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld componentName wurde nicht gefunden");
+            if (nextElement.getTagNo() != 1) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorComonentNameNotFound"));
 
             this.componentName = (DLTaggedObject) systemOperationDataIterator.next();
             this.componentNameAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.componentName);
 
             //result
              nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 3) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld result wurde nicht gefunden");
+            if (nextElement.getTagNo() != 3) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorResultNotFound"));
 
             this.result = (DLTaggedObject) systemOperationDataIterator.next();
             this.resultAsBoolean = DLTaggedObjectConverter.dLTaggedObjectToBoolean(this.result);
@@ -79,7 +78,7 @@ public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
 
             //parameters
             nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 3) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld parameters wurde nicht gefunden");
+            if (nextElement.getTagNo() != 3) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParametersNotFound"));
 
             this.parameters = (DLTaggedObject) systemOperationDataIterator.next();
 
@@ -98,7 +97,7 @@ public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
 
                 for (ASN1Primitive loggingParameter :this.loggingParameter) {
                     if (!(loggingParameter instanceof ASN1Sequence)) {
-                        throw new SystemLogParsingException("Fehler beim Parsen des loggingParameter. Der Eintrag sollte vom Typ ASNSequence sein.");
+                        throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorLoggingParameterNotOfTypeASN1Sequence"));
 
                     } else{
                         List<ASN1Primitive> parametersContentAsASN1List = Collections.list(((ASN1Sequence) loggingParameter).getObjects());
@@ -110,14 +109,14 @@ public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
 
 
             }
-            else throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld parameters startet nicht mit einer Sequenz");
+            else throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParamtersDoesNotStartWithSequence"));
 
 
 
 
         }
         catch (NoSuchElementException ex){
-            throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Vorzeitiges Ende von systemOperationData", ex);
+            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData"), ex);
         }
     }
 

@@ -4,6 +4,7 @@ package de.konfidas.ttc.tars;
 import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -45,6 +46,7 @@ public class LogMessageArchiveTestInconsistentCertificate {
         this.file = file;
     }
 
+    @Ignore
     @Test
     public void parse() throws IOException {
         logger.debug("");
