@@ -116,7 +116,7 @@ public class HtmlReporter implements Reporter<String> {
                         sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.logMessageIsValid"), lm.getFileName()));
                     }
                 }else{
-                    sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.introductionErrorsHTMLReport"),lm.getFileName()+":"));
+                    sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.introductionErrorsHTMLReport"), lm.getFileName()));
                     sw.write("<ul>");//NON-NLS
                     for(LogMessageValidationException e : map.get(lm)) {
                         sw.write("<li>" + e.toString() + "</li>");//NON-NLS
@@ -142,7 +142,7 @@ public class HtmlReporter implements Reporter<String> {
 
     void printTars(StringWriter sw, Collection<LogMessageArchive> logs) throws IOException {
         sw.write("<h1 id=\"logmessages\">Log Messages</h1>\n");//NON-NLS
-        sw.write(properties.getString("de.konfidas.ttc.reporting.introductionLogMessages"));
+        sw.write(properties.getString("de.konfidas.ttc.reporting.reportCoversTheFollowingArchives"));
         sw.write("<ul>");//NON-NLS
 
         for(LogMessageArchive l: logs){
@@ -155,7 +155,7 @@ public class HtmlReporter implements Reporter<String> {
 
     void printValidators(StringWriter sw, Collection<Validator> validators) throws IOException {
         sw.write(properties.getString("de.konfidas.ttc.reporting.headlineValidators"));
-        sw.write(properties.getString("e.konfidas.ttc.reporting.introductionValidators"));
+        sw.write(properties.getString("de.konfidas.ttc.reporting.reportUsedValidators "));
         sw.write("<ul>");//NON-NLS
 
         for(Validator v: validators){

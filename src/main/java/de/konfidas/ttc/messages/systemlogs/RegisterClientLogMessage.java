@@ -69,7 +69,7 @@ public class RegisterClientLogMessage extends SystemLogMessage {
             this.clientID = (DLTaggedObject) systemOperationDataIterator.next();
             this.clientIDAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.clientID);
         } catch (NoSuchElementException ex) {
-            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSstemOperationData"), ex);
+            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData"), ex);
         }
 
     }

@@ -80,7 +80,7 @@ public class UpdateTimeSystemLogMessage extends SystemLogMessage {
         String typeOfTimeFromFilename = this.getFileName().substring(0, Math.min(3, this.getFileName().length()));
 
         ASN1Primitive systemOperationData = stream.readObject();
-        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent2"));
+        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"));
 
         List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
         ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
@@ -122,10 +122,10 @@ public class UpdateTimeSystemLogMessage extends SystemLogMessage {
 
         }}
         catch (NoSuchElementException ex ){
-            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData2"), ex);
+            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData"), ex);
         }
         catch (ParseException ex){
-            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent3"), ex);
+            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"), ex);
         }
 
     }

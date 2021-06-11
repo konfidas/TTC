@@ -254,7 +254,7 @@ return;
     @Override
     void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException {
 
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.seAuditDataNotFound2")); }
+        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.seAuditDataNotFound")); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if(nextElement instanceof  ASN1OctetString){
             throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.seAuditDataElementNotFound"));

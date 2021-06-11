@@ -326,7 +326,7 @@ public abstract class LogMessageImplementation implements LogMessage {
     private void parseSignatureCounter(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.sigantureCounterNotFound")); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof ASN1Integer)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.sigantureCounterOfWrongType2"), nextElement.getClass())); }
+        if (!(nextElement instanceof ASN1Integer)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.sigantureCounterOfWrongType"), nextElement.getClass())); }
 
         ASN1Primitive element = logMessageIterator.next();
         this.signatureCounter = ((ASN1Integer) element).getValue();

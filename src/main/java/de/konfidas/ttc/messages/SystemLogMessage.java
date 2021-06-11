@@ -130,7 +130,7 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.message.seAuditDataNotFound")); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if(nextElement instanceof  ASN1OctetString){
-            throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.message.seAuditDataFoundButNotExprected"));
+            throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.message.seAuditDataNotFound "));
         }
 
     }
