@@ -9,11 +9,7 @@ import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.DLTaggedObject;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 
 /**
@@ -29,6 +25,8 @@ import java.util.NoSuchElementException;
  */
 public class InitializeSystemLogMessage extends SystemLogMessage {
 
+    static Locale locale = new Locale("de", "DE"); //NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
     DLTaggedObject description;
 
@@ -42,7 +40,7 @@ public class InitializeSystemLogMessage extends SystemLogMessage {
     @Override
     protected void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException {
         ASN1Primitive systemOperationData = stream.readObject();
-        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent");
+        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"));
 
         List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
         ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
@@ -50,14 +48,14 @@ public class InitializeSystemLogMessage extends SystemLogMessage {
         try {
             //description einlesen
             DLTaggedObject nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 1) throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Das Pflichtfeld description wurde nicht gefunden");
+            if (nextElement.getTagNo() != 1) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorDescriptionNotFound"));
 
             this.description = (DLTaggedObject) systemOperationDataIterator.next();
             this.descriptionAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.description);
 
         }
         catch (NoSuchElementException ex){
-            throw new SystemLogParsingException("Fehler beim Parsen des systemOperationDataContent. Vorzeitiges Ende von systemOperationData", ex);
+            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData"), ex);
         }
 
     }

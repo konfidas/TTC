@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 public class AggregatedLogMessageArchive implements LogMessageArchive {
     final LinkedList<LogMessageArchive> archives = new LinkedList<>();
+    static Locale locale = new Locale("de", "DE");//NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
     ArrayList<LogMessage> sortedLogMessages;
     ArrayList<LogMessage> logMessages;
@@ -83,7 +85,8 @@ public class AggregatedLogMessageArchive implements LogMessageArchive {
     public String getFileName() {
         StringBuilder sb = new StringBuilder();
         for (LogMessageArchive a : archives) {
-            sb.append(a.getFileName() + ";");
+            sb.append(a.getFileName());
+            sb.append(";");
         }
         return sb.toString();
     }

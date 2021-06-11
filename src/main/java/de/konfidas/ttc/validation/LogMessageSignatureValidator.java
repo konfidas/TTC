@@ -9,7 +9,6 @@ import de.konfidas.ttc.tars.LogMessageArchive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 
@@ -23,7 +22,7 @@ public class LogMessageSignatureValidator implements Validator {
         LogMessageSignatureVerifier verifier = new LogMessageSignatureVerifier(tar.getClientCertificates());
         for (LogMessage msg : tar.getLogMessages()) {
             try {
-                logger.debug("Checking signature of LogMessage {}", msg.getFileName());
+                logger.debug("Checking signature of LogMessage {}", msg.getFileName());//NON-NLS
                 verifier.verify(msg);
             } catch (LogMessageVerificationException e) {
                 errors.add(new LogMessageSignatureValidationException(msg,e));
