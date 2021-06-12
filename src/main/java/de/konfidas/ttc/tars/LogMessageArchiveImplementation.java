@@ -18,10 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 public class LogMessageArchiveImplementation implements LogMessageArchive {
@@ -32,15 +29,17 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
     final ArrayList<LogMessage> all_log_messages = new ArrayList<>();
     final HashMap<String, X509Certificate> allClientCertificates = new HashMap<>();
     final HashMap<String, X509Certificate> allIntermediateCertificates = new HashMap<>();
+    final ArrayList<Exception> allErrors = new ArrayList<>(); //This list will hold all the errors that occur during parsing.
     Boolean infoCSVPresent = false;
     String filename;
 
-    public LogMessageArchiveImplementation() throws IOException, BadFormatForTARException {
+
+    public LogMessageArchiveImplementation() {
         this(null);
 
     }
 
-    public LogMessageArchiveImplementation(File tarFile) throws IOException, BadFormatForTARException {
+    public LogMessageArchiveImplementation(File tarFile) {
 
         if( null != tarFile){
             this.filename= tarFile.getName();
@@ -51,10 +50,10 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
     public HashMap<String, X509Certificate> getIntermediateCertificates(){return allIntermediateCertificates;}
     public HashMap<String, X509Certificate> getClientCertificates(){return allClientCertificates;}
 
-    public void parse(File tarFile) throws IOException, BadFormatForTARException{
-        /********************************************************************
-         ** Wir lesen nun einmal durch das TAR Archiv (ohne es zu entpacken)*
-         ********************************************************************/
+    public void parse(File tarFile){
+        /**********************************************************
+         ** We will parse the TAR file without unpacking it       *
+         **********************************************************/
         try(TarArchiveInputStream myTarFile = new TarArchiveInputStream(new FileInputStream(tarFile))) {
             TarArchiveEntry entry;
             String individualFileName;
@@ -73,7 +72,12 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
                 logger.debug("Will now process {}", individualFileName); //NON-NLS
 
                 if (individualFileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+log") ) {//NON-NLS
+                    try{
                     all_log_messages.add(LogMessageFactory.createLogMessage(individualFileName,content));
+                    }
+                    catch (BadFormatForLogMessageException e){
+                        this.allErrors.add(e);
+                    }
                 }
 
                 /**************
@@ -91,8 +95,8 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
                  ** CVC Certificate *
                  ********************/
                 else if (individualFileName.contains("CVC")) {
-                    logger.debug("{} seems to be a CVC certificate. Will process it now.", individualFileName);//NON-NLS
-                    //FIXME: Not supported
+                    logger.debug("{} seems to be a CVC certificate. This is currently not supported by TTC.", individualFileName);//NON-NLS
+                    allErrors.add(new GeneralTARFileError(String.format(properties.getString("de.konfidas.ttc.tars.cvcNotSuported"),individualFileName)));
 
                 }
                 /**********************
@@ -110,21 +114,23 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
                             allIntermediateCertificates.put(individualFileName.split("_")[0].toUpperCase(), cer);
                         }
                     } catch (CertificateLoadException e) {
-                        //TODO: Throw error
-                        logger.error("Error loading certificate {}", individualFileName);//NON-NLS
+                        logger.debug("Error loading certificate {}", individualFileName);//NON-NLS
+                        allErrors.add(new GeneralTARFileError(String.format(properties.getString("de.konfidas.ttc.tars.errorLoadingCertificateWhenParsingTAR"),individualFileName),e));
                     }
                 } else {
-                    //TODO:throw error
-                    logger.error("{} should not be in the TAR file. Will be ignored.", individualFileName);//NON-NLS
+                    logger.debug("{} should not be in the TAR file. Will be ignored.", individualFileName);//NON-NLS
+                    allErrors.add(new GeneralTARFileError(String.format(properties.getString("de.konfidas.ttc.tars.fileShouldNotBeInTAR"),individualFileName)));
+
                 }
             }
         }
-        catch (FileNotFoundException | BadFormatForLogMessageException e) {
-            e.printStackTrace();
-            System.exit(1);
+        catch ( IOException  e) {
+            allErrors.add(e);
         }
 
-        if (!infoCSVPresent){throw new BadFormatForTARException(properties.getString("de.konfidas.ttc.tars.infoCSVNotFound"),null);}
+        if (!infoCSVPresent){
+            allErrors.add( new BadFormatForTARException(properties.getString("de.konfidas.ttc.tars.infoCSVNotFound"),null));
+        }
     }
 
     public ArrayList<LogMessage> getLogMessages(){

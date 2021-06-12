@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -74,6 +75,7 @@ public class LogMessageFactory {
             return new AuditLogMessage(content, fileName);
         }
 
-        throw new BadFormatForLogMessageException(String.format(properties.getString("de.konfidas.ttc.messages.fileNameUnknownTypeOfLogMessages"),fileName));
+        logger.debug("{} is of unknown type", fileName);//NON-NLS
+        throw new BadFormatForLogMessageException(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.fileNameUnknownTypeOfLogMessages"),fileName));
     }
 }

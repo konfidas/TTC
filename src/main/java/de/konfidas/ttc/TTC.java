@@ -55,7 +55,7 @@ public class TTC {
 
 
         /*********************************
-         ** Argumente des Aufrufs prüfen *
+         ** Compile together the validators*
          *********************************/
         try {
             cmd = parser.parse(options, args);
@@ -84,6 +84,7 @@ public class TTC {
                     e.printStackTrace();
                 }
             }
+
 
             if (cmd.hasOption("v")) {//NON-NLS
                 String stringOfValidators = cmd.getOptionValue("v");//NON-NLS
@@ -116,6 +117,10 @@ public class TTC {
             if (cmd.hasOption("t")) {//NON-NLS
                 validator.add(new CertificateValidator(Collections.singleton(trustedCert)));
             }
+
+            /*********************************
+             ** Building the Archives        *
+             *********************************/
 
             Collection<LogMessageArchive> tarArchives = new ArrayList<>();
             ValidationResult valResults = null;
@@ -153,9 +158,7 @@ public class TTC {
                 System.out.println(textReporter.createReport(tarArchives, valResults, skipLegitLogMessagesInReporting));
             }
 
-        } catch (BadFormatForTARException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+        }  catch (ParseException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();

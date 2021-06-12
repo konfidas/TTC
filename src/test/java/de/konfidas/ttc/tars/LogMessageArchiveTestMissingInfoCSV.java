@@ -16,6 +16,7 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.fail;
 
@@ -53,13 +54,9 @@ public class LogMessageArchiveTestMissingInfoCSV {
         logger.debug("============================================================================");
         logger.debug("testing tar file {}:", file.getName());
 
-        try {
-            new LogMessageArchiveImplementation(this.file);
-            fail("Log Message parsing successful, but expected to fail");
-        }
-        catch (BadFormatForTARException e) {
-            // expected behaviour
-        }
+            LogMessageArchiveImplementation lmi = new LogMessageArchiveImplementation(this.file);
+            if (lmi.allErrors.stream().filter(error -> error instanceof BadFormatForTARException).count() == 0)
+            fail("Log Message parsing successful, but expected to contain an error ");
 
     }
 }

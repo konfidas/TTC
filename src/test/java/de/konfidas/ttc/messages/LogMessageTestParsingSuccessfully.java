@@ -48,8 +48,8 @@ public class LogMessageTestParsingSuccessfully {
         this.file = file;
     }
 
-    @Ignore
     @Test
+    @Ignore
     public void parse() throws IOException, BadFormatForLogMessageException {
         logger.debug("");
         logger.debug("============================================================================");
