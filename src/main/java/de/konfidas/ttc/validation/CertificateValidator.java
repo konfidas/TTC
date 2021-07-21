@@ -27,8 +27,9 @@ public class CertificateValidator implements Validator {
         this(trustedCerts,new LinkedList<>());
     }
 
-    public void setEnableRevocationChecking(boolean enableRevocationChecking){
+    public CertificateValidator setEnableRevocationChecking(boolean enableRevocationChecking){
         this.enableRevocationChecking = enableRevocationChecking;
+        return this;
     }
 
     public CertificateValidator(Collection<X509Certificate> trustedCerts,  Collection<CRL> crls){
@@ -63,7 +64,7 @@ public class CertificateValidator implements Validator {
         certs.addAll(intermediateCerts);
 
         CertPath path = cf.generateCertPath(certs);
-        CertPathValidator validator = CertPathValidator.getInstance("PKIX");//NON-NLS
+        CertPathValidator validator = CertPathValidator.getInstance("PKIX", BouncyCastleProvider.PROVIDER_NAME);//NON-NLS
 
         CertStore crlStore = CertStore.getInstance("Collection", new CollectionCertStoreParameters(crls));//NON-NLS
 
