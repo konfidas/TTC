@@ -13,9 +13,9 @@ import static junit.framework.TestCase.fail;
 
 public class TestLogMessageVerifier extends TestCaseBasisWithCA {
     @Test
-    public void versionElementIsMissingInDTBS() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException {
+    public void versionElementIsMissingInDTBS() throws LogMessageBuilder.TestLogMessageCreationError, BadFormatForLogMessageException, LogMessageVerificationException {
 
-        try{
+
             AuditLogMessageBuilder auditLogMessageBuilder = new AuditLogMessageBuilder();
 
             auditLogMessageBuilder.prepare();
@@ -42,11 +42,8 @@ public class TestLogMessageVerifier extends TestCaseBasisWithCA {
             LogMessageSignatureVerifier verifier = new LogMessageSignatureVerifier(certiicates);
             verifier.verify(auditLogMessage);
 
-        }
-        catch (LogMessageImplementation.LogMessageParsingException| LogMessageVerificationException e){
-            //expected
-            return;
-        }
+
+
         fail();
     }
 

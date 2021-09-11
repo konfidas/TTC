@@ -16,7 +16,7 @@ public class AuditLogMessage extends LogMessageImplementation {
     static Locale locale = new Locale("de", "DE"); //NON-NLS
     static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);  //NON-NLS
 
-    public AuditLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
+    public AuditLogMessage(byte[] content, String filename) {
         super(content, filename);
     }
 

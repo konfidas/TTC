@@ -89,11 +89,11 @@ public abstract class LogMessageImplementation implements LogMessage {
     List<Exception> allErrors = Collections.emptyList();
 
 
-    public LogMessageImplementation(File file) {
-        this(Files.readAllBytes(file.toPath()), file.getName());
-    }
+//    public LogMessageImplementation(File file) throws IOException, BadFormatForLogMessageException {
+//        this(Files.readAllBytes(file.toPath()), file.getName());
+//    }
 
-    public LogMessageImplementation(byte[] content, String filename) throws BadFormatForLogMessageException {
+    public LogMessageImplementation(byte[] content, String filename) {
         this.filename = filename;
         parse(content);
     }
@@ -200,7 +200,7 @@ public abstract class LogMessageImplementation implements LogMessage {
         return elementContent[0];
     }
 
-    void parse(byte[] content) throws LogMessageParsingException {
+    void parse(byte[] content) {
         this.encoded = content;
 
         try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
@@ -235,8 +235,8 @@ public abstract class LogMessageImplementation implements LogMessage {
                 //Speichern des DTBS aus dem BufferedWriter
                 this.dtbs = dtbsStream.toByteArray();
             }
-        } catch (IOException | NoSuchElementException | ParseException e) {
-            throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.failedToParseMessage"), e);
+        } catch (IOException | NoSuchElementException | ParseException| LogMessageParsingException e) {
+          this.allErrors.add( new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.failedToParseMessage"), e));
         }
     }
 

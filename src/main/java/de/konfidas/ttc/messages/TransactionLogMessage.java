@@ -82,7 +82,7 @@ public class TransactionLogMessage extends LogMessageImplementation {
         this.additionalInternalData = additionalInternalData;
     }
 
-    public TransactionLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
+    public TransactionLogMessage(byte[] content, String filename) {
         super(content, filename);
     }
 

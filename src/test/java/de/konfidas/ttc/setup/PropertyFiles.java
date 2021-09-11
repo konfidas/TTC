@@ -37,7 +37,7 @@ public  class PropertyFiles {
     }
 
     @Test
-    public   void testContentOfPropertyFilesIsExistingEN() throws IOException{
+    public  void testContentOfPropertyFilesIsExistingEN() throws IOException{
         // List Of Properties can be created by
         // grep -RE "properties.getString.*" . | grep -oE "de\.konfidas.*\"" | cut -d '=' -f 2 | sed 's/\"$//' > listOfProperties.txt
 

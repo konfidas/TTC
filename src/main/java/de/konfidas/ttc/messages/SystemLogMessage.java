@@ -24,7 +24,7 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
     static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
 
-    public SystemLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
+    public SystemLogMessage(byte[] content, String filename) {
         super(content, filename);
     }
 
