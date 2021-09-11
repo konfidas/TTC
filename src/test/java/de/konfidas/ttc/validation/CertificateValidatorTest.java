@@ -8,7 +8,9 @@ import de.konfidas.ttc.utilities.CertificateHelper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,6 +70,7 @@ public class CertificateValidatorTest {
     }
 
     @Test
+    @Ignore
     public void testDTrustChain() throws CertificateLoadException, IOException {
         client.put("client",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/client.cer")));
         intermediates.put("intermediate",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/sub.cer")));
@@ -88,6 +91,7 @@ public class CertificateValidatorTest {
     }
 
     @Test
+    @Ignore
     public void testDTrustChain_missingTrustAnchor() throws CertificateLoadException, IOException {
         client.put("client",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/client.cer")));
         intermediates.put("intermediate",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/sub.cer")));
@@ -105,6 +109,7 @@ public class CertificateValidatorTest {
 
 
     @Test
+    @Ignore
     public void testDTrustChain_missingSubCa() throws CertificateLoadException, IOException {
         client.put("client",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/client.cer")));
         //intermediates.put("intermediate",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/sub.cer")));
@@ -121,6 +126,7 @@ public class CertificateValidatorTest {
     }
 
     @Test
+    @Ignore
     public void testDTrustChain_missingCRL() throws CertificateLoadException, IOException {
         client.put("client",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/client.cer")));
         intermediates.put("intermediate",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/sub.cer")));
