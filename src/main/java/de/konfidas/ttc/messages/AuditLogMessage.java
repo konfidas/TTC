@@ -21,10 +21,11 @@ public class AuditLogMessage extends LogMessageImplementation {
     }
 
     @Override
-    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException, LogMessageImplementation.LogMessageParsingException {
+    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException {
         super.parseCertifiedDataType(dtbsStream,logMessageAsASN1List,logMessageIterator);
         if(this.certifiedDataType != oid.id_SE_API_SE_audit_log){
-            throw new LogMessageImplementation.CertifiedDataTypeParsingException(String.format(properties.getString("de.konfidas.ttc.messages.invalidCertifiedDataType"),this.certifiedDataType.getName()), null);
+            this.allErrors.add(new LogMessageImplementation.CertifiedDataTypeParsingError(String.format(properties.getString("de.konfidas.ttc.messages.invalidCertifiedDataType"),this.certifiedDataType.getName()), null));
+//            throw new LogMessageImplementation.CertifiedDataTypeParsingException(String.format(properties.getString("de.konfidas.ttc.messages.invalidCertifiedDataType"),this.certifiedDataType.getName()), null);
         }
     }
 
@@ -34,7 +35,8 @@ public class AuditLogMessage extends LogMessageImplementation {
             if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.certifiedDataElementNotFound")); }
             ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
             if (getEncodedTag(nextElement) >= 127 ) {
-                throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.certifiedDataElementNotFound"));
+                this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.certifiedDataElementNotFound")));
+//                throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.certifiedDataElementNotFound"));
             }
         }
 
@@ -44,7 +46,9 @@ public class AuditLogMessage extends LogMessageImplementation {
         if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.seAuditDataNotFound")); }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1OctetString)) {
-            throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.seAuditDataWrongDatatype"),  nextElement.getClass()));
+//            throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.seAuditDataWrongDatatype"),  nextElement.getClass()));
+            this.allErrors.add(new LogMessageParsingError(String.format(properties.getString("de.konfidas.ttc.messages.seAuditDataWrongDatatype"),  nextElement.getClass())));
+            return;
         }
 
         ASN1Primitive element = logMessageIterator.next();

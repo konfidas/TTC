@@ -167,7 +167,7 @@ public abstract class LogMessageImplementation implements LogMessage {
      * @throws IOException
      * @throws ExtendLengthValueExceedsInteger Wird geworfen, falls element mit einer extended length kodiert ist, die mehr als 4 bytes erfordert
      */
-    private int getEncodedLength(ASN1Primitive element) throws IOException, ExtendLengthValueExceedsInteger {
+    private int getEncodedLength(ASN1Primitive element) throws IOException {
         byte[] elementContent = element.getEncoded();
 
         if ( elementContent[1] == (byte) 0b10000000) {
@@ -188,7 +188,7 @@ public abstract class LogMessageImplementation implements LogMessage {
         }
     }
 
-    byte[] getEncodedValue(ASN1Primitive element) throws IOException, ExtendLengthValueExceedsInteger {
+    byte[] getEncodedValue(ASN1Primitive element) throws IOException {
         byte[] elementContent = element.getEncoded();
         int elementLength = this.getEncodedLength(element);
         logger.debug(String.valueOf(elementContent.length));
@@ -257,7 +257,7 @@ public abstract class LogMessageImplementation implements LogMessage {
         dtbsStream.write(this.getEncodedValue(element));
     }
 
-    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws  IOException {
         if (!logMessageIterator.hasNext()) {this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.certifiedDataTypeNotFound")));}
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1ObjectIdentifier)) {
