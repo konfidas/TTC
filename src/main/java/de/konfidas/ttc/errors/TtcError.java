@@ -1,11 +1,11 @@
-package de.konfidas.ttc.exceptions;
+package de.konfidas.ttc.errors;
 
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class TtcException extends Exception{
-    protected TtcException(String message, Throwable cause){
+public class TtcError extends Exception{
+    protected TtcError(String message, Throwable cause){
         super(message, cause);
     }
 

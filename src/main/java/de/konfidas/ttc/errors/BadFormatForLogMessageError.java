@@ -1,14 +1,16 @@
-package de.konfidas.ttc.exceptions;
+package de.konfidas.ttc.errors;
+
+import de.konfidas.ttc.exceptions.TtcException;
 
 /**
- * Diese Exception zeigt eine Fehlerhafte LogMessage an. Sie wird geworfen, wenn eine LogMessage nicht geparst werden kann.
+ * Dieser Error zeigt eine Fehlerhafte LogMessage an. Sie wird verwendet, wenn eine LogMessage nicht geparst werden kann.
  */
-public class BadFormatForLogMessageException extends TtcException {
+public class BadFormatForLogMessageError extends TtcError {
 
-    public BadFormatForLogMessageException(String message) {
+    public BadFormatForLogMessageError(String message) {
         super(message, null);
     }
-    public BadFormatForLogMessageException(String message, Throwable cause) {
+    public BadFormatForLogMessageError(String message, Throwable cause) {
         super(message, cause);
     }
 

@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Random;
 
+import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 
 public class TestAuditLogMessages extends TestCaseBasisWithCA {
@@ -153,10 +154,12 @@ public class TestAuditLogMessages extends TestCaseBasisWithCA {
             String filename = auditLogMessageBuilder.getFilename();
 
             AuditLogMessage auditLogMessage = new AuditLogMessage(auditMessage, filename);
-            fail();
-        } catch (LogMessageImplementation.LogMessageParsingException e){
-            //expected
-        } catch (IllegalAccessException| NoSuchMethodException| InvocationTargetException e) {
+            assertTrue(auditLogMessage.allErrors.size()>0);
+            assertTrue(auditLogMessage.allErrors.get(0) instanceof LogMessageImplementation.LogMessageParsingError );
+//        } catch (LogMessageImplementation.LogMessageParsingException e){
+//            //expected
+//        } catch (IllegalAccessException| NoSuchMethodException| InvocationTargetException ) {
+        } catch ( Exception e) {
             fail();
             e.printStackTrace();
         }
