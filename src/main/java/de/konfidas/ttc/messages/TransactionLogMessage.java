@@ -82,7 +82,7 @@ public class TransactionLogMessage extends LogMessageImplementation {
         this.additionalInternalData = additionalInternalData;
     }
 
-    public TransactionLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
+    public TransactionLogMessage(byte[] content, String filename)  {
         super(content, filename);
     }
 
@@ -96,7 +96,7 @@ public class TransactionLogMessage extends LogMessageImplementation {
     }
 
     @Override
-    void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
+    void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException{
         parseOperationType( dtbsStream, logMessageAsASN1List, logMessageIterator);
         parseClientID( dtbsStream, logMessageAsASN1List, logMessageIterator);
         parseProcessData( dtbsStream, logMessageAsASN1List, logMessageIterator);
@@ -108,14 +108,14 @@ public class TransactionLogMessage extends LogMessageImplementation {
 
     }
 
-    void parseOperationType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.certifiedDataNotFound")); }
+    void parseOperationType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator)  throws IOException{
+        if (!logMessageIterator.hasNext()) this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.certifiedDataNotFound")));
 
         ASN1Primitive nextElement =  logMessageAsASN1List.get(logMessageIterator.nextIndex());
 
-        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.operationTypeInCertifiedDataWrongType"),  nextElement.getClass())); }
+        if (!(nextElement instanceof DLTaggedObject)) this.allErrors.add(new LogMessageParsingError(String.format(properties.getString("de.konfidas.ttc.messages.operationTypeInCertifiedDataWrongType"),  nextElement.getClass())));
 
-        if (((DLTaggedObject) nextElement).getTagNo()!=0){ throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.operationTypeInCertifiedDataWrongTag"), ((DLTaggedObject) nextElement).getTagNo())); }
+        if (((DLTaggedObject) nextElement).getTagNo()!=0) this.allErrors.add(new LogMessageParsingError(String.format(properties.getString("de.konfidas.ttc.messages.operationTypeInCertifiedDataWrongTag"), ((DLTaggedObject) nextElement).getTagNo())));
 
         DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
         DERPrintableString innerElement = DERPrintableString.getInstance(element,false);
@@ -124,13 +124,13 @@ public class TransactionLogMessage extends LogMessageImplementation {
 
     }
 
-    void parseClientID(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.clientIDInCertifiedDataNotFound")); }
+    void parseClientID(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException{
+        if (!logMessageIterator.hasNext()) this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.clientIDInCertifiedDataNotFound")));
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.clientIDInCertifiedDataWrongTag"), nextElement.getClass())); }
+        if (!(nextElement instanceof DLTaggedObject)) this.allErrors.add(new LogMessageParsingError(String.format(properties.getString("de.konfidas.ttc.messages.clientIDInCertifiedDataWrongTag"), nextElement.getClass())));
 
-        if (((DLTaggedObject) nextElement).getTagNo() != 1){ throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.clientIDInCertifiedDataWrongTag2"), + ((DLTaggedObject) nextElement).getTagNo())); }
+        if (((DLTaggedObject) nextElement).getTagNo() != 1) this.allErrors.add(new LogMessageParsingError(String.format(properties.getString("de.konfidas.ttc.messages.clientIDInCertifiedDataWrongTag2"), + ((DLTaggedObject) nextElement).getTagNo())));
 
         DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
 
@@ -140,14 +140,14 @@ public class TransactionLogMessage extends LogMessageImplementation {
 
     }
 
-    void parseProcessData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.processDataInCertifiedDataNotFound")); }
+    void parseProcessData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException{
+        if (!logMessageIterator.hasNext())this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.processDataInCertifiedDataNotFound")));
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if ((!(nextElement instanceof DLTaggedObject)&&!(nextElement instanceof BERTaggedObject ))) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.processDataInCertifiedDataWrongTag"),  nextElement.getClass())); }
+        if ((!(nextElement instanceof DLTaggedObject)&&!(nextElement instanceof BERTaggedObject ))) this.allErrors.add(new LogMessageParsingError(String.format(properties.getString("de.konfidas.ttc.messages.processDataInCertifiedDataWrongTag"),  nextElement.getClass())));
 
 
-        if (((ASN1TaggedObject) nextElement).getTagNo() != 2){ throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.processDataInCertifiedDataWrongTag2"), ((DLTaggedObject) nextElement).getTagNo())); }
+        if (((ASN1TaggedObject) nextElement).getTagNo() != 2) this.allErrors.add(new LogMessageParsingError(String.format(properties.getString("de.konfidas.ttc.messages.processDataInCertifiedDataWrongTag2"), ((DLTaggedObject) nextElement).getTagNo())));
 
         ASN1TaggedObject element = (ASN1TaggedObject)logMessageIterator.next();
         ASN1OctetString innerElement = ASN1OctetString.getInstance(element,false);
@@ -157,13 +157,13 @@ public class TransactionLogMessage extends LogMessageImplementation {
 
     }
 
-    void parseProcessType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.processTypeInCertifiedDataNotFound")); }
+    void parseProcessType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws  IOException{
+        if (!logMessageIterator.hasNext())  this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.processTypeInCertifiedDataNotFound")));
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.processTyoeInCertifiedDataWrongType"), nextElement.getClass())); }
+        if (!(nextElement instanceof DLTaggedObject)) this.allErrors.add(new LogMessageParsingError(String.format(properties.getString("de.konfidas.ttc.messages.processTyoeInCertifiedDataWrongType"), nextElement.getClass())));
 
-        if (((DLTaggedObject) nextElement).getTagNo() != 3){ throw new LogMessageParsingException(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.processTypeInCertifiedDataWrongTag"), ((DLTaggedObject) nextElement).getTagNo())); }
+        if (((DLTaggedObject) nextElement).getTagNo() != 3) this.allErrors.add(new LogMessageParsingError(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.processTypeInCertifiedDataWrongTag"), ((DLTaggedObject) nextElement).getTagNo())));
 
         DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
         DERPrintableString innerElement = DERPrintableString.getInstance(element, false);
@@ -173,7 +173,7 @@ public class TransactionLogMessage extends LogMessageImplementation {
 
     }
 
-    void parseAdditionalExternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
+    void parseAdditionalExternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException{
 
         if (!logMessageIterator.hasNext()) {
             logger.debug(String.format("additionalExternalData in certifiedData not found for message: {}.",this.getFileName())); //NON-NLS
@@ -203,13 +203,13 @@ public class TransactionLogMessage extends LogMessageImplementation {
 
     }
 
-    void parseTransactionNumber(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.transactionNumberInCertifiedDataNotFound")); }
+    void parseTransactionNumber(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException{
+        if (!logMessageIterator.hasNext()) this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.transactionNumberInCertifiedDataNotFound")));
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLTaggedObject)) { throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.transactionNumberInCertifiedDataWrongTag"), nextElement.getClass())); }
+        if (!(nextElement instanceof DLTaggedObject))this.allErrors.add(new LogMessageParsingError(String.format(properties.getString("de.konfidas.ttc.messages.transactionNumberInCertifiedDataWrongTag"), nextElement.getClass())));
 
-        if (((DLTaggedObject) nextElement).getTagNo() != 5){ throw new LogMessageParsingException(String.format(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.transactionNumberInCertifiedDataWrongType2"), ((DLTaggedObject) nextElement).getTagNo()))); }
+        if (((DLTaggedObject) nextElement).getTagNo() != 5) this.allErrors.add(new LogMessageParsingError((String.format(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.transactionNumberInCertifiedDataWrongType2"), ((DLTaggedObject) nextElement).getTagNo())))));
 
         DLTaggedObject element = (DLTaggedObject)logMessageIterator.next();
         ASN1Integer innerElement = ASN1Integer.getInstance(element,false);
@@ -219,7 +219,7 @@ public class TransactionLogMessage extends LogMessageImplementation {
 
     }
 
-    void parseAdditionalInternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
+    void parseAdditionalInternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException{
         if (!logMessageIterator.hasNext()) {
 //            throw new LogMessageParsingException("additionalExternalData in certifiedData  not found");
 //TODO: Logging
@@ -252,15 +252,12 @@ return;
     }
 
     @Override
-    void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException {
+    void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) {
 
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.seAuditDataNotFound")); }
+        if (!logMessageIterator.hasNext()) this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.seAuditDataNotFound")));
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if(nextElement instanceof  ASN1OctetString){
-            throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.seAuditDataElementNotFound"));
+        if(nextElement instanceof  ASN1OctetString) this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.seAuditDataElementNotFound")));
         }
-
-    }
 
 
     @Override

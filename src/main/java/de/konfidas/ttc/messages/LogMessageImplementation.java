@@ -94,7 +94,7 @@ public abstract class LogMessageImplementation implements LogMessage {
         this(Files.readAllBytes(file.toPath()), file.getName());
     }
 
-    public LogMessageImplementation(byte[] content, String filename) throws BadFormatForLogMessageException {
+    public LogMessageImplementation(byte[] content, String filename)  {
         this.filename = filename;
         parse(content);
     }
@@ -201,7 +201,7 @@ public abstract class LogMessageImplementation implements LogMessage {
         return elementContent[0];
     }
 
-    void parse(byte[] content) throws LogMessageParsingException {
+    void parse(byte[] content)  {
         this.encoded = content;
 
         try (ByteArrayOutputStream dtbsStream = new ByteArrayOutputStream()) {
@@ -241,7 +241,7 @@ public abstract class LogMessageImplementation implements LogMessage {
         }
     }
 
-    private void parseVersionNumber(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+    private void parseVersionNumber(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws  IOException {
         if (!logMessageIterator.hasNext()) { this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.versionElementNotFound")));}
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1Integer)) {
@@ -274,7 +274,7 @@ public abstract class LogMessageImplementation implements LogMessage {
 
     }
 
-    private void parseSerialNumber(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+    private void parseSerialNumber(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws  IOException {
         if (!logMessageIterator.hasNext()) {
             this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.serialNumberNotFound")));
         return;
@@ -292,7 +292,7 @@ public abstract class LogMessageImplementation implements LogMessage {
 
     }
 
-    private void parseSignatureAlgorithm(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+    private void parseSignatureAlgorithm(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws  IOException {
         if (!logMessageIterator.hasNext()) {
             this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.signatureAlgorithmNotFound")));
             return;
@@ -332,10 +332,10 @@ public abstract class LogMessageImplementation implements LogMessage {
 
     }
 
-    abstract void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException;
+    abstract void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException;
 
 
-    private void parseSignatureCounter(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+    private void parseSignatureCounter(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException {
         if (!logMessageIterator.hasNext()) {
             this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.sigantureCounterNotFound")));
         return;
@@ -353,7 +353,7 @@ public abstract class LogMessageImplementation implements LogMessage {
     }
 
 
-    private void parseTime(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException, LogMessageParsingException, ParseException {
+    private void parseTime(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException, ParseException {
         if (!logMessageIterator.hasNext()) {
             this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.logTimeNotFound")));
         return;
@@ -378,7 +378,7 @@ public abstract class LogMessageImplementation implements LogMessage {
         }
     }
 
-    private void parseSignature(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
+    private void parseSignature(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException {
         if (!logMessageIterator.hasNext()) {
             this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.signatureNotFound")));
         return;
@@ -395,7 +395,7 @@ public abstract class LogMessageImplementation implements LogMessage {
     }
 
 
-    abstract void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException;
+    abstract void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException;
 
 
     public class LogMessageParsingException extends BadFormatForLogMessageException {

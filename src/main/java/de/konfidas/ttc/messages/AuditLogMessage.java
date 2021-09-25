@@ -30,9 +30,9 @@ public class AuditLogMessage extends LogMessageImplementation {
     }
 
     @Override
-        void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException{
+        void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException{
 
-            if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.certifiedDataElementNotFound")); }
+            if (!logMessageIterator.hasNext()) this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.certifiedDataElementNotFound")));
             ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
             if (getEncodedTag(nextElement) >= 127 ) {
                 this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.certifiedDataElementNotFound")));
@@ -42,8 +42,8 @@ public class AuditLogMessage extends LogMessageImplementation {
 
 
     @Override
-    void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws LogMessageParsingException, IOException {
-        if (!logMessageIterator.hasNext()) { throw new LogMessageParsingException(properties.getString("de.konfidas.ttc.messages.seAuditDataNotFound")); }
+    void parseSeAuditData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws  IOException {
+        if (!logMessageIterator.hasNext()) this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.seAuditDataNotFound")));
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1OctetString)) {
 //            throw new LogMessageParsingException(String.format(properties.getString("de.konfidas.ttc.messages.seAuditDataWrongDatatype"),  nextElement.getClass()));
