@@ -26,11 +26,10 @@ public class StartAuditSystemLogMessage extends SystemLogMessage {
 
 
     @Override
-        protected void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException {
+        protected void parseSystemOperationDataContent(ASN1InputStream stream) throws IOException {
 
         ASN1Primitive systemOperationData = stream.readObject();
-        if (systemOperationData.getEncoded().length>2)
-            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorSystemOperationDataShallNotContainData"));
+        if (systemOperationData.getEncoded().length>2) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorSystemOperationDataShallNotContainData")));
 
     }
 

@@ -1,10 +1,12 @@
 package de.konfidas.ttc.messages;
 
+import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.ASN1Primitive;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public interface LogMessage {
@@ -20,6 +22,8 @@ public interface LogMessage {
     Collection<ASN1Primitive> getSignatureAlgorithmParameters();
 
     byte[] getSeAuditData();
+
+
 
     byte[] getEncoded();
 }

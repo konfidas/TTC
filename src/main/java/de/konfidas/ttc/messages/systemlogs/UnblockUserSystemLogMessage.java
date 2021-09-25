@@ -56,10 +56,10 @@ public class UnblockUserSystemLogMessage extends SystemLogMessage {
 
 
     @Override
-    protected void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogMessage.SystemLogParsingException, IOException {
+    protected void parseSystemOperationDataContent(ASN1InputStream stream) throws IOException {
 
         ASN1Primitive systemOperationData = stream.readObject();
-        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"));
+        if (!(systemOperationData instanceof ASN1Sequence)) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent")));
 
             List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
             ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
@@ -67,20 +67,20 @@ public class UnblockUserSystemLogMessage extends SystemLogMessage {
             try {
                 //userID einlesen
                 DLTaggedObject nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-                if (nextElement.getTagNo() != 1) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorUserIDNotFound"));
+                if (nextElement.getTagNo() != 1) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorUserIDNotFound")));
 
                 this.userId = (DLTaggedObject) systemOperationDataIterator.next();
                 this.userIDAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.userId);
 
                 //unblockResult einlesen
                 nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-                if (nextElement.getTagNo() != 2) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorUnblockResultNotFound"));
+                if (nextElement.getTagNo() != 2) this.allErrors.add( new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorUnblockResultNotFound"))) ;
 
                 this.unblockResult = (DLTaggedObject) systemOperationDataIterator.next();
                 this.unblockResultsAsBigInteger = DLTaggedObjectConverter.dLTaggedObjectFromEnumerationToBigInteger(this.unblockResult);
             }
             catch (NoSuchElementException ex){
-                throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.earlyEndOfSystemOperationData"), ex);
+                this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.earlyEndOfSystemOperationData"), ex));
             }
 
 

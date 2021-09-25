@@ -61,6 +61,7 @@ public class AuthenticateSmaersAdminSystemLogMessage extends SystemLogMessage {
 
     public void setAuthenticationResult(DLTaggedObject authenticationResult) {
         this.authenticationResult = authenticationResult;
+
     }
 
     public DLTaggedObject getRemainingRetries() {
@@ -121,10 +122,14 @@ public class AuthenticateSmaersAdminSystemLogMessage extends SystemLogMessage {
 
 
     @Override
-        protected void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException {
+        protected void parseSystemOperationDataContent(ASN1InputStream stream) throws  IOException {
 
         ASN1Primitive systemOperationData = stream.readObject();
-        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"));
+        if (!(systemOperationData instanceof ASN1Sequence)){
+            this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent")));
+        }
+
+//            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"));
 
         List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
         ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
@@ -132,7 +137,7 @@ public class AuthenticateSmaersAdminSystemLogMessage extends SystemLogMessage {
         try {
             //userID einlesen
             DLTaggedObject nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 1) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorUserIDNotFound"));
+            if (nextElement.getTagNo() != 1) allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorUserIDNotFound")));
 
             this.userId = (DLTaggedObject) systemOperationDataIterator.next();
             this.userIDAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.userId);
@@ -147,7 +152,7 @@ public class AuthenticateSmaersAdminSystemLogMessage extends SystemLogMessage {
 
             //authenticationResult einlesen
              nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 3) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorAuthenticationResultNotFound"));
+            if (nextElement.getTagNo() != 3) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorAuthenticationResultNotFound")));
 
             this.authenticationResult = (DLTaggedObject) systemOperationDataIterator.next();
             this.authenticationResultAsBoolean = DLTaggedObjectConverter.dLTaggedObjectToBoolean(this.authenticationResult);
@@ -163,7 +168,7 @@ public class AuthenticateSmaersAdminSystemLogMessage extends SystemLogMessage {
 
         }
         catch (NoSuchElementException ex){
-            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData"), ex);
+            this.allErrors.add( new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData"), ex));
         }
     }
 

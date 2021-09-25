@@ -78,6 +78,7 @@ public abstract class LogMessageImplementation implements LogMessage {
     byte[] serialNumber;
     String signatureAlgorithm = "";
     final ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<>();
+    protected ArrayList<TtcError> allErrors = new ArrayList<>();
 
     LogTime logTime;
 
@@ -88,7 +89,6 @@ public abstract class LogMessageImplementation implements LogMessage {
     byte[] dtbs;
     final String filename;
 
-    ArrayList<TtcError> allErrors = new ArrayList<>();
 
     public LogMessageImplementation(File file) throws IOException, BadFormatForLogMessageException {
         this(Files.readAllBytes(file.toPath()), file.getName());
