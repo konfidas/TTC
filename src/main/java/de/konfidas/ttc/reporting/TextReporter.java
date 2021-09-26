@@ -1,5 +1,6 @@
 package de.konfidas.ttc.reporting;
 
+import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.exceptions.LogMessageValidationException;
 import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
@@ -133,6 +134,7 @@ public class TextReporter implements Reporter<String> {
         for(LogMessageArchive l: logs){
             sw.write("    "+l.getFileName());
             sw.write(System.lineSeparator());
+
         }
 
     }
