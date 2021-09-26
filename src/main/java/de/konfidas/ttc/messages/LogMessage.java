@@ -20,6 +20,7 @@ public interface LogMessage {
     int getVersion();
     oid getCertifiedDataType();
     Collection<ASN1Primitive> getSignatureAlgorithmParameters();
+    ArrayList<TtcError> getAllErrors();
 
     byte[] getSeAuditData();
 

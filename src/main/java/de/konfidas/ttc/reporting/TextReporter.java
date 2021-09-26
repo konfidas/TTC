@@ -131,17 +131,20 @@ public class TextReporter implements Reporter<String> {
         sw.write(properties.getString("de.konfidas.ttc.reporting.reportCoversTheFollowingArchives"));
         sw.write(System.lineSeparator());
 
-        for(LogMessageArchive l: logs){
-            sw.write("    "+l.getFileName());
+        for (LogMessageArchive l : logs) {
+            sw.write("    " + l.getFileName());
             sw.write(System.lineSeparator());
-            sw.write("Die folgenden Fehler wurden für das Gesamtarchiv gefunden:");
-            sw.write(System.lineSeparator());
-            for (TtcError error: l.getAllErrors()){
-                sw.write(error.toString());
+            if (l.getAllErrors().size() > 0) {
+                sw.write("Die folgenden Fehler wurden für das Gesamtarchiv gefunden:");
                 sw.write(System.lineSeparator());
+                for (TtcError error : l.getAllErrors()) {
+                    sw.write(error.toString());
+                    sw.write(System.lineSeparator());
+                }
             }
-        }
+            else sw.write("Es wurden keine Fehler bei der Erstellung des Gesamtarchivs gefunden. Es können aber Fehler in einzelnen Logs aufgetreten sein.");
 
+        }
     }
 
 

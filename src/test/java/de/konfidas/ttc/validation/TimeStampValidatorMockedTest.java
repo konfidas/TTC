@@ -67,6 +67,11 @@ public class TimeStampValidatorMockedTest {
         }
 
         @Override
+        public ArrayList<TtcError> getAllErrors() {
+            return new ArrayList<TtcError>();
+        }
+
+        @Override
         public LogTime getLogTime() {
             return time;
         }

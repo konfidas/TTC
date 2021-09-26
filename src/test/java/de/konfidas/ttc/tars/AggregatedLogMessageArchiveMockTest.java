@@ -62,6 +62,11 @@ public class AggregatedLogMessageArchiveMockTest {
             this(encoded, BigInteger.ONE);
         }
 
+        @Override
+        public ArrayList<TtcError> getAllErrors() {
+            return new ArrayList<TtcError>();
+        }
+
         public LogMessageMock(byte[]encoded, BigInteger signatureCounter){
             this.encoded = encoded;
             this.signatureCounter = signatureCounter;

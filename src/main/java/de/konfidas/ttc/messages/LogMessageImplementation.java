@@ -89,6 +89,8 @@ public abstract class LogMessageImplementation implements LogMessage {
     byte[] dtbs;
     final String filename;
 
+    public ArrayList<TtcError> getAllErrors(){return allErrors;}
+
 
     public LogMessageImplementation(File file) throws IOException, BadFormatForLogMessageException {
         this(Files.readAllBytes(file.toPath()), file.getName());

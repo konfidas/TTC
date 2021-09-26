@@ -75,6 +75,11 @@ public class SignatureCounterValidatorMockedTest {
         }
 
         @Override
+        public ArrayList<TtcError> getAllErrors() {
+            return new ArrayList<TtcError>();
+        }
+
+        @Override
         public BigInteger getSignatureCounter() {
             return signatureCounter;
         }
