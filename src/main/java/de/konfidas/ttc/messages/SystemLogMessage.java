@@ -45,6 +45,7 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
         // systemOperationData has tag 0x81 (i.e. context-specific, not-constructed, but contains a constructed element
         // so BouncyCastle does not parse the content (because the tag does not signal, that there is ASN1 Structure within to parse.
         // for this reason, we have to manually parse the content, which we do here:
+        int a = this.allErrors.size();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         systemOperationData.encodeTo(baos);
         byte[] content = baos.toByteArray();
