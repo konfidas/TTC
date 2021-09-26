@@ -63,9 +63,10 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
 
 
     void parseOperationType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException {
-        if (!logMessageIterator.hasNext()) {
-            this.allErrors.add(new OperationTypeParsingError(properties.getString("de.konfidas.ttc.messages.operationsTypeElementNotFound")));
-            ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
+        if (!logMessageIterator.hasNext()) this.allErrors.add(new OperationTypeParsingError(properties.getString("de.konfidas.ttc.messages.operationsTypeElementNotFound")));
+
+
+        ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
             if (!(nextElement instanceof DLTaggedObject)) {
                 this.allErrors.add(new OperationTypeParsingError(String.format(properties.getString("de.konfidas.ttc.messages.operationsTypeInvalidType"), nextElement.getClass())));
                 return;
@@ -82,7 +83,7 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
             dtbsStream.write(element.getEncoded());
             operationType = element;
 
-        }
+
     }
 
     void parseSystemOperationDataElement(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException {
