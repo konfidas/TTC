@@ -1,5 +1,6 @@
 package de.konfidas.ttc.tars;
 
+import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.utilities.oid;
@@ -30,6 +31,11 @@ public class AggregatedLogMessageArchiveMockTest {
         @Override
         public Map<String, X509Certificate> getClientCertificates() {
             return client;
+        }
+
+        @Override
+        public ArrayList<TtcError> getAllErrors() {
+            return new ArrayList<TtcError>();
         }
 
         @Override

@@ -128,6 +128,10 @@ public class UpdateTimeSystemLogMessage extends SystemLogMessage {
             this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"), ex));
         }
 
+        catch (Exception ex){
+            this.allErrors.add(new SystemLogParsingError("Error during parseSystemOperationDataContent of an UpdateTimeSystemLog", ex));
+        }
+
     }
 
 

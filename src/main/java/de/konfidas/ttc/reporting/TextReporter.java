@@ -134,7 +134,12 @@ public class TextReporter implements Reporter<String> {
         for(LogMessageArchive l: logs){
             sw.write("    "+l.getFileName());
             sw.write(System.lineSeparator());
-
+            sw.write("Die folgenden Fehler wurden für das Gesamtarchiv gefunden:");
+            sw.write(System.lineSeparator());
+            for (TtcError error: l.getAllErrors()){
+                sw.write(error.toString());
+                sw.write(System.lineSeparator());
+            }
         }
 
     }
