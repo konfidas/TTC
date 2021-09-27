@@ -69,11 +69,9 @@ public class TextReporter implements Reporter<String> {
         sw.write(System.lineSeparator());
         for(ValidationException v : validationErrors){
             if(!(v instanceof LogMessageValidationException)){
-
                 if(!issuesToIgnore.contains(v.getClass())) {
                     sw.write("    "+ v.toString());
                 }
-            }
         }
 
     }
@@ -135,15 +133,30 @@ public class TextReporter implements Reporter<String> {
             sw.write("    " + l.getFileName());
             sw.write(System.lineSeparator());
             if (l.getAllErrors().size() > 0) {
-                sw.write("Die folgenden Fehler wurden für das Gesamtarchiv gefunden:");
+                sw.write(properties.getString("de.konfidas.ttc.reporting.reportCoversTheFollowingErrorsFound"));
                 sw.write(System.lineSeparator());
                 for (TtcError error : l.getAllErrors()) {
                     sw.write(error.toString());
                     sw.write(System.lineSeparator());
                 }
             }
-            else sw.write("Es wurden keine Fehler bei der Erstellung des Gesamtarchivs gefunden. Es können aber Fehler in einzelnen Logs aufgetreten sein.");
+            else sw.write(properties.getString("de.konfidas.ttc.reporting.NoErrorsInTAR"));
 
+            for (LogMessage lm : l.getSortedLogMessages()){
+
+                if ((lm.getAllErrors().size() >0 ) || (!skipLegitLogMessages)){
+                    sw.write(String.format("Die LogMeasse %s wurde gelesen. Dabei wurden %d Fehler gefunden.", lm.getFileName(), lm.getAllErrors().size()));
+                    sw.write(System.lineSeparator());
+
+                    for (TtcError error: lm.getAllErrors()){
+                        sw.write(error.toString());
+                        sw.write(System.lineSeparator());
+                    }
+
+
+                }
+
+            }
         }
     }
 
