@@ -1,5 +1,6 @@
 package de.konfidas.ttc.validation;
 
+import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.messages.logtime.UnixLogTime;
@@ -47,6 +48,11 @@ public class TimeStampValidatorMockedTest {
         }
 
         @Override
+        public ArrayList<TtcError> getAllErrors() {
+            return new ArrayList<TtcError>();
+        }
+
+        @Override
         public String getFileName() {
             return "";
         }
@@ -58,6 +64,11 @@ public class TimeStampValidatorMockedTest {
         LogMessageMock(LogTime time, BigInteger signatureCounter){
             this.time = time;
             this.signatureCounter = signatureCounter;
+        }
+
+        @Override
+        public ArrayList<TtcError> getAllErrors() {
+            return new ArrayList<TtcError>();
         }
 
         @Override

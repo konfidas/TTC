@@ -1,5 +1,7 @@
 package de.konfidas.ttc.tars;
 
+import de.konfidas.ttc.errors.BadFormatForLogMessageError;
+import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.exceptions.*;
 import de.konfidas.ttc.messages.LogMessageFactory;
 import de.konfidas.ttc.messages.LogMessage;
@@ -32,8 +34,15 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
     final ArrayList<LogMessage> all_log_messages = new ArrayList<>();
     final HashMap<String, X509Certificate> allClientCertificates = new HashMap<>();
     final HashMap<String, X509Certificate> allIntermediateCertificates = new HashMap<>();
+    protected ArrayList<TtcError> all_errors = new ArrayList<TtcError>();
+
     Boolean infoCSVPresent = false;
     String filename;
+
+    @Override
+    public ArrayList<TtcError> getAllErrors() {
+        return all_errors;
+    }
 
     public LogMessageArchiveImplementation() throws IOException, BadFormatForTARException {
         this(null);
@@ -120,8 +129,7 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
             }
         }
         catch (FileNotFoundException | BadFormatForLogMessageException e) {
-            e.printStackTrace();
-            System.exit(1);
+            this.all_errors.add(new BadFormatForLogMessageError("Fehler bei der Erstellung des TAR Archivs",e));
         }
 
         if (!infoCSVPresent){throw new BadFormatForTARException(properties.getString("de.konfidas.ttc.tars.infoCSVNotFound"),null);}

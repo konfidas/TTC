@@ -1,8 +1,10 @@
 package de.konfidas.ttc.tars;
 
+import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.messages.LogMessage;
 
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -11,6 +13,9 @@ public interface LogMessageArchive {
     Map<? extends String, ? extends X509Certificate> getClientCertificates();
     Collection<? extends LogMessage> getLogMessages();
     String getFileName();
+    ArrayList<TtcError> getAllErrors();
+//            ll_errors = new ArrayList<TtcError>();
+
 
     /**
      * A lazy getter, returning the Collection of LogMessages in a sorted manner. The messages are sorted

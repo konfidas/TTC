@@ -1,5 +1,6 @@
 package de.konfidas.ttc.tars;
 
+import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.LogMessageImplementation;
 
@@ -16,6 +17,15 @@ public class AggregatedLogMessageArchive implements LogMessageArchive {
     ArrayList<LogMessage> logMessages;
     HashMap<String, X509Certificate> clientCertificates;
     HashMap<String, X509Certificate> intermediateCertificates;
+
+
+    protected ArrayList<TtcError> all_errors = new ArrayList<TtcError>();
+
+    @Override
+    public ArrayList<TtcError> getAllErrors() {
+        return all_errors;
+    }
+
 
     @Override
     public Map<String, X509Certificate> getIntermediateCertificates() {

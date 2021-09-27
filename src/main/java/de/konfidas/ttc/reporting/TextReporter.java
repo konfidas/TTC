@@ -1,5 +1,6 @@
 package de.konfidas.ttc.reporting;
 
+import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.exceptions.LogMessageValidationException;
 import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
@@ -66,17 +67,16 @@ public class TextReporter implements Reporter<String> {
     void printNonLogMessageValidationExceptions(StringWriter sw, Collection<ValidationException> validationErrors) throws IOException {
         sw.write(properties.getString("de.konfidas.ttc.reporting.introductionGeneralErrors"));
         sw.write(System.lineSeparator());
-        for(ValidationException v : validationErrors){
-            if(!(v instanceof LogMessageValidationException)){
-
-                if(!issuesToIgnore.contains(v.getClass())) {
-                    sw.write("    "+ v.toString());
+        for (ValidationException v : validationErrors) {
+            if (!(v instanceof LogMessageValidationException)) {
+                if (!issuesToIgnore.contains(v.getClass())) {
+                    sw.write("    " + v.toString());
                 }
             }
+
         }
-
     }
-
+    
     void printLogMessageDetails(StringWriter sw, Collection<LogMessageArchive> logs, ValidationResult vResult) throws IOException {
         HashMap<LogMessage, LinkedList<LogMessageValidationException>> map = new HashMap<>();
         for(ValidationException e: vResult.getValidationErrors()){
@@ -130,11 +130,35 @@ public class TextReporter implements Reporter<String> {
         sw.write(properties.getString("de.konfidas.ttc.reporting.reportCoversTheFollowingArchives"));
         sw.write(System.lineSeparator());
 
-        for(LogMessageArchive l: logs){
-            sw.write("    "+l.getFileName());
+        for (LogMessageArchive l : logs) {
+            sw.write("    " + l.getFileName());
             sw.write(System.lineSeparator());
-        }
+            if (l.getAllErrors().size() > 0) {
+                sw.write(properties.getString("de.konfidas.ttc.reporting.reportCoversTheFollowingErrorsFound"));
+                sw.write(System.lineSeparator());
+                for (TtcError error : l.getAllErrors()) {
+                    sw.write(error.toString());
+                    sw.write(System.lineSeparator());
+                }
+            }
+            else sw.write(properties.getString("de.konfidas.ttc.reporting.NoErrorsInTAR"));
 
+            for (LogMessage lm : l.getSortedLogMessages()){
+
+                if ((lm.getAllErrors().size() >0 ) || (!skipLegitLogMessages)){
+                    sw.write(String.format("Die LogMeasse %s wurde gelesen. Dabei wurden %d Fehler gefunden.", lm.getFileName(), lm.getAllErrors().size()));
+                    sw.write(System.lineSeparator());
+
+                    for (TtcError error: lm.getAllErrors()){
+                        sw.write(error.toString());
+                        sw.write(System.lineSeparator());
+                    }
+
+
+                }
+
+            }
+        }
     }
 
 

@@ -56,10 +56,10 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
 
 
     @Override
-        protected void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException {
+        protected void parseSystemOperationDataContent(ASN1InputStream stream) throws IOException {
 
         ASN1Primitive systemOperationData = stream.readObject();
-        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"));
+        if (!(systemOperationData instanceof ASN1Sequence)) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent")));
 
         List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
         ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
@@ -67,14 +67,14 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
         try {
             //userID einlesen
             DLTaggedObject nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 1) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContentUserIDNotFound"));
+            if (nextElement.getTagNo() != 1) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContentUserIDNotFound")));
 
             this.userId = (DLTaggedObject) systemOperationDataIterator.next();
             this.userIDAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.userId);
 
             //oldVersion einlesen
              nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 3) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContentOldVersionNotFound"));
+            if (nextElement.getTagNo() != 3) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContentOldVersionNotFound")));
 
             this.oldVersion = (DLTaggedObject) systemOperationDataIterator.next();
 
@@ -85,28 +85,29 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
                 List<ASN1Primitive> deviceInformationSetAsASN1List = Collections.list(((ASN1Sequence) this.oldVersion.getObject()).getObjects());
                 ListIterator<ASN1Primitive> deviceInformationSetIterator = deviceInformationSetAsASN1List.listIterator();
 
-                if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorDeviceInformationSetEndedEarly")); }
+                if (!deviceInformationSetIterator.hasNext()) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorDeviceInformationSetEndedEarly")));
 
                 List<ASN1Primitive> componentInformationSetAsASN1 = Collections.list(((ASN1Sequence) deviceInformationSetAsASN1List.get(deviceInformationSetIterator.nextIndex())).getObjects());
                 ListIterator<ASN1Primitive> componentInformationSetItertator = componentInformationSetAsASN1.listIterator();
 
                 //component Name
-                if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorComponentInformationSetOfUpdateTimeEndedEarly")); }
+                if (!deviceInformationSetIterator.hasNext()) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorComponentInformationSetOfUpdateTimeEndedEarly")));
                 ASN1Primitive element = deviceInformationSetIterator.next();
                 this.newVersionComponentName = ((ASN1String) element).getString();
 
                 //manufacturer
-                if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorComponentInformationSetOfUpdateTimeEndedEarly")); }
+                if (!deviceInformationSetIterator.hasNext()) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorComponentInformationSetOfUpdateTimeEndedEarly")));
                 element = deviceInformationSetIterator.next();
                 this.newVersionManufacturer = ((ASN1String) element).getString();
 
                 //model
-                if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorComponentInformationSetOfUpdateTimeEndedEarly")); }
+                if (!deviceInformationSetIterator.hasNext()) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorComponentInformationSetOfUpdateTimeEndedEarly")));
                 element = deviceInformationSetIterator.next();
                 this.newVersionModel = ((ASN1String) element).getString();
 
                 //version
-                if (!deviceInformationSetIterator.hasNext()) { throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorComponentInformationSetOfUpdateTimeEndedEarly")); }
+                if (!deviceInformationSetIterator.hasNext()) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorComponentInformationSetOfUpdateTimeEndedEarly")));
+
                 element = deviceInformationSetIterator.next();
                 this.newVersionVersion = ((ASN1String) element).getString();                //version
 
@@ -116,14 +117,14 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
                 }
 
             }
-            else throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContentOldVersionDoesNotStartWithSequence"));
+            else this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContentOldVersionDoesNotStartWithSequence")));
 
 
 
 
         }
         catch (NoSuchElementException ex){
-            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContentEarlyEnd"), ex);
+            this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContentEarlyEnd"), ex));
         }
     }
 

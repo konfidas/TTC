@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.Random;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestTransactionLogs extends TestCaseBasisWithCA {
@@ -67,12 +68,11 @@ public static String[][] provideParameters() {
                 .finalizeMessage();
 
         String filename = builder.getFilename();
-        try {
+
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-            fail("Transaction Log Message parsing successful, but expected to fail");
-        } catch (LogMessageImplementation.LogMessageParsingException e) {
-            //Expected
-        }
+            assertTrue(transactionLogMessage.allErrors.size()>0);
+            assertTrue(transactionLogMessage.allErrors.get(0) instanceof LogMessageImplementation.LogMessageParsingError);
+
     }
 
     @ParameterizedTest
@@ -96,12 +96,11 @@ public static String[][] provideParameters() {
                 .finalizeMessage();
 
         String filename = builder.getFilename();
-        try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-            fail("Transaction Log Message parsing successful, but expected to fail");
-        } catch (LogMessageImplementation.LogMessageParsingException e) {
-            //Expected
-        }
+            assertTrue(transactionLogMessage.allErrors.size()>0);
+            assertTrue(transactionLogMessage.allErrors.get(0) instanceof LogMessageImplementation.LogMessageParsingError);
+
+
     }
 
     @ParameterizedTest
@@ -125,12 +124,9 @@ public static String[][] provideParameters() {
                 .finalizeMessage();
 
         String filename = builder.getFilename();
-        try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-            fail("Transaction Log Message parsing successful, but expected to fail");
-        } catch (LogMessageImplementation.LogMessageParsingException e) {
-            //Expected
-        }
+            assertTrue(transactionLogMessage.allErrors.size()>0);
+            assertTrue(transactionLogMessage.allErrors.get(0) instanceof LogMessageImplementation.LogMessageParsingError);
     }
 
     @ParameterizedTest
@@ -154,12 +150,9 @@ public static String[][] provideParameters() {
                 .finalizeMessage();
 
         String filename = builder.getFilename();
-        try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-            fail("Transaction Log Message parsing successful, but expected to fail");
-        } catch (LogMessageImplementation.LogMessageParsingException e) {
-            //Expected
-        }
+            assertTrue(transactionLogMessage.allErrors.size()>0);
+            assertTrue(transactionLogMessage.allErrors.get(0) instanceof LogMessageImplementation.LogMessageParsingError);
     }
 
     @ParameterizedTest
@@ -184,11 +177,9 @@ public static String[][] provideParameters() {
                 .finalizeMessage();
 
         String filename = builder.getFilename();
-        try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessageImplementation.LogMessageParsingException e) {
-            fail("Transaction Log Message parsing with Additional External Data failed");
-        }
+            assertTrue(transactionLogMessage.allErrors.size()>0);
+            assertTrue(transactionLogMessage.allErrors.get(0) instanceof LogMessageImplementation.LogMessageParsingError);
     }
 
     @ParameterizedTest
@@ -213,11 +204,9 @@ public static String[][] provideParameters() {
                 .finalizeMessage();
 
         String filename = builder.getFilename();
-        try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessageImplementation.LogMessageParsingException e) {
-            fail("Transaction Log Message parsing with Additional Internal Data failed");
-        }
+            assertTrue(transactionLogMessage.allErrors.size()>0);
+            assertTrue(transactionLogMessage.allErrors.get(0) instanceof LogMessageImplementation.LogMessageParsingError);
     }
 
     @ParameterizedTest
@@ -243,12 +232,9 @@ public static String[][] provideParameters() {
                 .finalizeMessage();
 
         String filename = builder.getFilename();
-        try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessageImplementation.LogMessageParsingException e) {
-            fail("Transaction Log Message parsing with Additional Internal Data and AdditionalExternalData failed");
-
-        }
+            assertTrue(transactionLogMessage.allErrors.size()>0);
+            assertTrue(transactionLogMessage.allErrors.get(0) instanceof LogMessageImplementation.LogMessageParsingError);
 
 
     }
@@ -273,13 +259,9 @@ public static String[][] provideParameters() {
                 .finalizeMessage();
 
         String filename = builder.getFilename();
-        try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
-        } catch (LogMessageImplementation.LogMessageParsingException e) {
-            //Expected
-            return;
-        }
-        fail("Transaction Log Message parsing successful, but expected to fail");
+            assertTrue(transactionLogMessage.allErrors.size()>0);
+            assertTrue(transactionLogMessage.allErrors.get(0) instanceof LogMessageImplementation.LogMessageParsingError);
 
     }
 
@@ -307,14 +289,11 @@ public static String[][] provideParameters() {
                 .finalizeMessage();
 
         String filename = builder.getFilename();
-        try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
             byte[] processDataFromBuiltTransactionLog = transactionLogMessage.getProcessData();
             assert (processDataFromBuiltTransactionLog.length == sizeProcessDataInByte);
+            assertTrue(transactionLogMessage.allErrors.size()==0);
 
-        } catch (LogMessageImplementation.LogMessageParsingException e) {
-            fail("Transaction Log Message parsing failed with one element that has extended length");
-        }
     }
 
 
@@ -344,13 +323,11 @@ public static String[][] provideParameters() {
                 .finalizeMessage();
 
         String filename = builder.getFilename();
-        try {
             TransactionLogMessage transactionLogMessage = new TransactionLogMessage(startTransactionLog, filename);
             byte[] processDataFromBuiltTransactionLog = transactionLogMessage.getProcessData();
             assert (processDataFromBuiltTransactionLog.length == randomSizeProcessDataInByte);
-        } catch (LogMessageImplementation.LogMessageParsingException e) {
-            fail("Transaction Log Message parsing failed with random process data (ha extended length)");
-        }
+            assertTrue(transactionLogMessage.allErrors.size()==0);
+
     }
 
 

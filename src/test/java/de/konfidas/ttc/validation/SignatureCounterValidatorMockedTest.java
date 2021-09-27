@@ -1,5 +1,6 @@
 package de.konfidas.ttc.validation;
 
+import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.messages.logtime.UnixLogTime;
@@ -41,6 +42,11 @@ public class SignatureCounterValidatorMockedTest {
         }
 
         @Override
+        public ArrayList<TtcError> getAllErrors() {
+            return new ArrayList<TtcError>();
+        }
+
+        @Override
         public Collection<? extends LogMessage> getSortedLogMessages() {
             return messages;
         }
@@ -66,6 +72,11 @@ public class SignatureCounterValidatorMockedTest {
         @Override
         public LogTime getLogTime() {
             return null;
+        }
+
+        @Override
+        public ArrayList<TtcError> getAllErrors() {
+            return new ArrayList<TtcError>();
         }
 
         @Override

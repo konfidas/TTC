@@ -1,5 +1,6 @@
 package de.konfidas.ttc.validation;
 
+import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.exceptions.CertificateLoadException;
 import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
@@ -49,6 +50,11 @@ public class CertificateValidatorTest {
         @Override
         public Collection<? extends LogMessage> getSortedLogMessages() {
             return null;
+        }
+
+        @Override
+        public ArrayList<TtcError> getAllErrors() {
+            return new ArrayList<TtcError>();
         }
 
         @Override

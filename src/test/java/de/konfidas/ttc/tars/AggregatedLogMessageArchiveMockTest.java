@@ -1,5 +1,6 @@
 package de.konfidas.ttc.tars;
 
+import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.utilities.oid;
@@ -33,6 +34,11 @@ public class AggregatedLogMessageArchiveMockTest {
         }
 
         @Override
+        public ArrayList<TtcError> getAllErrors() {
+            return new ArrayList<TtcError>();
+        }
+
+        @Override
         public Collection<LogMessage> getLogMessages() {
             return messages;
         }
@@ -54,6 +60,11 @@ public class AggregatedLogMessageArchiveMockTest {
 
         public LogMessageMock(byte[]encoded){
             this(encoded, BigInteger.ONE);
+        }
+
+        @Override
+        public ArrayList<TtcError> getAllErrors() {
+            return new ArrayList<TtcError>();
         }
 
         public LogMessageMock(byte[]encoded, BigInteger signatureCounter){

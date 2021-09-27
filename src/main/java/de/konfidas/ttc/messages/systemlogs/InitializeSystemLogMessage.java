@@ -38,9 +38,9 @@ public class InitializeSystemLogMessage extends SystemLogMessage {
 
 
     @Override
-    protected void parseSystemOperationDataContent(ASN1InputStream stream) throws SystemLogParsingException, IOException {
+    protected void parseSystemOperationDataContent(ASN1InputStream stream) throws  IOException {
         ASN1Primitive systemOperationData = stream.readObject();
-        if (!(systemOperationData instanceof ASN1Sequence)) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"));
+        if (!(systemOperationData instanceof ASN1Sequence))this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent")));
 
         List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
         ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
@@ -48,14 +48,14 @@ public class InitializeSystemLogMessage extends SystemLogMessage {
         try {
             //description einlesen
             DLTaggedObject nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 1) throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorDescriptionNotFound"));
+            if (nextElement.getTagNo() != 1) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorDescriptionNotFound")));
 
             this.description = (DLTaggedObject) systemOperationDataIterator.next();
             this.descriptionAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.description);
 
         }
         catch (NoSuchElementException ex){
-            throw new SystemLogParsingException(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData"), ex);
+            this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData"), ex));
         }
 
     }
