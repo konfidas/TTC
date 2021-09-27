@@ -67,15 +67,16 @@ public class TextReporter implements Reporter<String> {
     void printNonLogMessageValidationExceptions(StringWriter sw, Collection<ValidationException> validationErrors) throws IOException {
         sw.write(properties.getString("de.konfidas.ttc.reporting.introductionGeneralErrors"));
         sw.write(System.lineSeparator());
-        for(ValidationException v : validationErrors){
-            if(!(v instanceof LogMessageValidationException)){
-                if(!issuesToIgnore.contains(v.getClass())) {
-                    sw.write("    "+ v.toString());
+        for (ValidationException v : validationErrors) {
+            if (!(v instanceof LogMessageValidationException)) {
+                if (!issuesToIgnore.contains(v.getClass())) {
+                    sw.write("    " + v.toString());
                 }
+            }
+
         }
-
     }
-
+    
     void printLogMessageDetails(StringWriter sw, Collection<LogMessageArchive> logs, ValidationResult vResult) throws IOException {
         HashMap<LogMessage, LinkedList<LogMessageValidationException>> map = new HashMap<>();
         for(ValidationException e: vResult.getValidationErrors()){
