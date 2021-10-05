@@ -1,4 +1,6 @@
-MIT License
+
+
+Adopted MIT License
 
 Copyright (c) 2021 konfidas UG
 
@@ -19,3 +21,8 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Independent of the rights granted by the license above, each publication about 
+this software shall contain an attribution to this page. This attribution can e.g. 
+be achieved by a statement like "This software has been developed based on the 
+software provided under https://github.com/konfidas/TTC/" 
