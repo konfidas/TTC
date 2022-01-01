@@ -71,6 +71,7 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
 
             while ((entry = myTarFile.getNextTarEntry()) != null) {
                 /* Get the name of the file */
+
                 individualFileName = entry.getName();
 
                 /* Get Size of the file and create a byte array for the size */

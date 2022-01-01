@@ -69,6 +69,26 @@ public class LogMessageFactory {
             return new UpdateTimeSystemLogMessage(content, fileName);
         }
 
+        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_logOut.+log")) {
+            logger.debug("{} seems to be an Logut System log. Processing it now.", fileName);//NON-NLS
+            return new LogoutSystemLogMessage(content, fileName);
+        }
+
+        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_enterSecureState.+log")) {
+            logger.debug("{} seems to be an enterSecureState System log. Processing it now.", fileName);//NON-NLS
+            return new EnterSecureStateSystemLogMessage(content, fileName);
+        }
+
+        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_configureLogging.+log")) {
+            logger.debug("{} seems to be an configureLogging System log. Processing it now.", fileName);//NON-NLS
+            return new ConfigureLoggingSystemLogMessage(content, fileName);
+        }
+
+        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_selfTest.+log")) {
+            logger.debug("{} seems to be an selfTest System log. Processing it now.", fileName);//NON-NLS
+            return new SelfTestSystemLogMessage(content, fileName);
+        }
+
 //        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")) {
 //            logger.debug("{} scheint ein systemLog zu sein. Starte Verarbeitung ", fileName);
 //            return new SystemLogMessage(content, fileName);
@@ -80,5 +100,6 @@ public class LogMessageFactory {
         }
 
         throw new BadFormatForLogMessageException(String.format(properties.getString("de.konfidas.ttc.messages.fileNameUnknownTypeOfLogMessages"),fileName));
+
     }
 }

@@ -6,6 +6,7 @@ import de.konfidas.ttc.messages.logtime.GeneralizedLogTime;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.messages.logtime.UnixLogTime;
 import de.konfidas.ttc.messages.logtime.UtcLogTime;
+import de.konfidas.ttc.utilities.DLTaggedObjectConverter;
 import org.bouncycastle.asn1.*;
 
 import java.io.IOException;
@@ -60,13 +61,14 @@ public class DisableSecureElementSystemLogMessage extends SystemLogMessage {
             this.timeOfDeactivation = (DLTaggedObject) systemOperationDataIterator.next();
             switch (typeOfTimeFromFilename){
                 case "Gen"://NON-NLS
-                    this.timeOfDeactivationAsLogTime = new GeneralizedLogTime((ASN1GeneralizedTime) this.timeOfDeactivation.getObject());
+//                    this.timeOfDeactivationAsLogTime = new GeneralizedLogTime((ASN1GeneralizedTime) this.timeOfDeactivation.getObject());
+                    this.timeOfDeactivationAsLogTime = new GeneralizedLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1GeneralizedTime(this.timeOfDeactivation));
                     break;
                 case "Utc"://NON-NLS
-                    this.timeOfDeactivationAsLogTime = new UtcLogTime((ASN1UTCTime) this.timeOfDeactivation.getObject());
+                    this.timeOfDeactivationAsLogTime = new UtcLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1UTCTime(this.timeOfDeactivation));
                     break;
                 case "Uni"://NON-NLS
-                    this.timeOfDeactivationAsLogTime = new UnixLogTime((ASN1Integer) this.timeOfDeactivation.getObject());
+                    this.timeOfDeactivationAsLogTime = new UnixLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1Integer(timeOfDeactivation));
                     break;
 
             }
