@@ -89,6 +89,11 @@ public class LogMessageFactory {
             return new SelfTestSystemLogMessage(content, fileName);
         }
 
+        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_deleteStoredData.+log")) {
+            logger.debug("{} seems to be an deleteStoredData System log. Processing it now.", fileName);//NON-NLS
+            return new DeleteStoredDataLogMessage(content, fileName);
+        }
+
 //        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")) {
 //            logger.debug("{} scheint ein systemLog zu sein. Starte Verarbeitung ", fileName);
 //            return new SystemLogMessage(content, fileName);
