@@ -19,35 +19,35 @@ import java.util.*;
  * ╔═══════════════════════╤══════╤═══════════════════════════════════════════════════════════════╤════════════╗
  * ║ Data field            │ Tag  │ Data Type                                                     │ Mandatory? ║
  * ╠═══════════════════════╪══════╪═══════════════════════════════════════════════════════════════╪════════════╣
- * ║ client                │ 0x81 │ PrintableString                                               │ m          ║
+ * ║ userOD                │ 0x81 │ PrintableString                                               │ m          ║
  * ╚═══════════════════════╧══════╧════════════════════════════════════════════════════════════════════════════╝
  * </pre>
  */
-public class DeregisterClientLogMessage extends SystemLogMessage {
+public class DeleteStoredDataLogMessage extends SystemLogMessage {
     static Locale locale = new Locale("de", "DE");//NON-NLS
     static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
-    public DLTaggedObject getClientID() {
-        return clientID;
+    public DLTaggedObject getUserID() {
+        return userID;
     }
 
-    public void setClientID(DLTaggedObject clientID) {
-        this.clientID = clientID;
+    public void setUserID(DLTaggedObject userID) {
+        this.userID = userID;
     }
 
-    public String getClientIDAsString() {
-        return clientIDAsString;
+    public String getUserIDAsString() {
+        return userIDAsString;
     }
 
-    public void setClientIDAsString(String clientIDAsString) {
-        this.clientIDAsString = clientIDAsString;
+    public void setUserIDAsString(String userIDAsString) {
+        this.userIDAsString = userIDAsString;
     }
 
-    DLTaggedObject clientID;
-    String clientIDAsString;
+    DLTaggedObject userID;
+    String userIDAsString;
 
 
-    public DeregisterClientLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
+    public DeleteStoredDataLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
         super(content, filename);
     }
 
@@ -62,13 +62,13 @@ public class DeregisterClientLogMessage extends SystemLogMessage {
         ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
 
         try {
-            //clientID einlesen
+            //userID einlesen
             DLTaggedObject nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
             if (nextElement.getTagNo() != 1)
                 this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorUserIDNotFound")));
 
-            this.clientID = (DLTaggedObject) systemOperationDataIterator.next();
-            this.clientIDAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.clientID);
+            this.userID = (DLTaggedObject) systemOperationDataIterator.next();
+            this.userIDAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.userID);
         } catch (NoSuchElementException ex) {
             this.allErrors.add( new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData"), ex));
         }
