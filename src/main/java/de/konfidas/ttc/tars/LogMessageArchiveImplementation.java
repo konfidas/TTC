@@ -83,7 +83,12 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
                 logger.debug("Will now process {}", individualFileName); //NON-NLS
 
                 if (individualFileName.matches("^(Gent_|Unixt_|Utc_).+_Sig-\\d+_Log-.+log") ) {//NON-NLS
-                    all_log_messages.add(LogMessageFactory.createLogMessage(individualFileName,content));
+                    try {
+                        all_log_messages.add(LogMessageFactory.createLogMessage(individualFileName, content));
+                    }
+                    catch ( BadFormatForLogMessageException e) {
+                        this.all_errors.add(new BadFormatForLogMessageError("Fehler bei der Erstellung des TAR Archivs",e));
+                    }
                 }
 
                 /**************
@@ -93,9 +98,9 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
                     logger.debug("found info.csv. Start processing now.");//NON-NLS
                     infoCSVPresent = true;
                     String info_string = new String(content, StandardCharsets.UTF_8);
-                    logger.debug("Description in info.csv: {}", StringUtils.substringsBetween(info_string, "description:\",\"", "\"," )[0]);//NON-NLS
-                    logger.debug("Manufacturer in info.csv: {}", StringUtils.substringsBetween(info_string, "manufacturer:\",\"", "\"," )[0]);//NON-NLS
-                    logger.debug("Version in info.csv: {}", StringUtils.substringsBetween(info_string, "version:\",\"", "\"" )[0]);//NON-NLS
+                    logger.debug("Description in info.csv: {}", StringUtils.substringsBetween(info_string, "description:\",", "," )[0]);//NON-NLS
+                    logger.debug("Manufacturer in info.csv: {}", StringUtils.substringsBetween(info_string, "manufacturer:\",", "," )[0]);//NON-NLS
+                    logger.debug("Version in info.csv: {}", StringUtils.substringAfter(info_string, "\"version:\"," ));//NON-NLS
                 }
                 /*********************
                  ** CVC Certificate *
@@ -129,7 +134,7 @@ public class LogMessageArchiveImplementation implements LogMessageArchive {
                 }
             }
         }
-        catch (FileNotFoundException | BadFormatForLogMessageException e) {
+        catch (FileNotFoundException e) {
             this.all_errors.add(new BadFormatForLogMessageError("Fehler bei der Erstellung des TAR Archivs",e));
         }
 
