@@ -193,8 +193,8 @@ public abstract class LogMessageImplementation implements LogMessage {
     byte[] getEncodedValue(ASN1Primitive element) throws IOException {
         byte[] elementContent = element.getEncoded();
         int elementLength = this.getEncodedLength(element);
-        logger.debug(String.valueOf(elementContent.length));
-        logger.debug(String.valueOf(elementLength));
+//        logger.debug(String.valueOf(elementContent.length));
+//        logger.debug(String.valueOf(elementLength));
         return Arrays.copyOfRange(elementContent, elementContent.length - elementLength, elementContent.length + 1);
     }
 

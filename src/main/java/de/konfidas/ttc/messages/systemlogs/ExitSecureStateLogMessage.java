@@ -8,19 +8,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 
 /**
  * Diese Klasse repräsentiert eine startAudit Message. systemOperationData Darf keine Daten enthalten
 
  */
-public class StartAuditSystemLogMessage extends SystemLogMessage {
+public class ExitSecureStateLogMessage extends SystemLogMessage {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     static Locale locale = new Locale("de", "DE"); //NON-NLS
     static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
-    public StartAuditSystemLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
+    public ExitSecureStateLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
         super(content, filename);
     }
 

@@ -13,7 +13,7 @@ import java.util.*;
 
 
 /**
- * Diese Klasse repräsentiert eine deregisterClient Message. Dabei werden in der Methode
+ * Diese Klasse repräsentiert eine unlockTransactionLogging Message. Dabei werden in der Methode
  * parseSystemOperationDataContent die folgenden Elemente aus systemOperationData geparst
  * <pre>
  * ╔═══════════════════════╤══════╤═══════════════════════════════════════════════════════════════╤════════════╗
@@ -23,7 +23,7 @@ import java.util.*;
  * ╚═══════════════════════╧══════╧════════════════════════════════════════════════════════════════════════════╝
  * </pre>
  */
-public class DeleteStoredDataLogMessage extends SystemLogMessage {
+public class UnlockTransactionLoggingLogMessage extends SystemLogMessage {
     static Locale locale = new Locale("de", "DE");//NON-NLS
     static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
@@ -47,7 +47,7 @@ public class DeleteStoredDataLogMessage extends SystemLogMessage {
     String userIDAsString;
 
 
-    public DeleteStoredDataLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
+    public UnlockTransactionLoggingLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
         super(content, filename);
     }
 

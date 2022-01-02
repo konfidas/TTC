@@ -83,6 +83,16 @@ public class LogMessageFactory {
             return new ConfigureLoggingSystemLogMessage(content, fileName);
         }
 
+        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_unlockTransactionLogging.+log")) {
+            logger.debug("{} seems to be an unlockTransactionLogging System log. Processing it now.", fileName);//NON-NLS
+            return new UnlockTransactionLoggingLogMessage(content, fileName);
+        }
+
+        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_lockTransactionLogging.+log")) {
+            logger.debug("{} seems to be an lockTransactionLogging System log. Processing it now.", fileName);//NON-NLS
+            return new LockTransactionLoggingLogMessage(content, fileName);
+        }
+
         if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_selfTest.+log")) {
             logger.debug("{} seems to be an selfTest System log. Processing it now.", fileName);//NON-NLS
             return new SelfTestSystemLogMessage(content, fileName);
@@ -98,15 +108,13 @@ public class LogMessageFactory {
             return new ExitSecureStateLogMessage(content, fileName);
         }
 
-//        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys.+log")) {
-//            logger.debug("{} scheint ein systemLog zu sein. Starte Verarbeitung ", fileName);
-//            return new SystemLogMessage(content, fileName);
-//        }
 
         if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Aud.+log")) {
             logger.debug("{} seems to be an auditLog. Processing it now.", fileName);//NON-NLS
             return new AuditLogMessage(content, fileName);
         }
+
+
 
         throw new BadFormatForLogMessageException(String.format(properties.getString("de.konfidas.ttc.messages.fileNameUnknownTypeOfLogMessages"),fileName));
 
