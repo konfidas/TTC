@@ -187,30 +187,25 @@ public class TransactionLogMessage extends LogMessageImplementation {
     void parseAdditionalExternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException {
 
         if (!logMessageIterator.hasNext()) {
-            logger.debug(String.format("additionalExternalData in certifiedData not found for message: {}.", this.getFileName())); //NON-NLS
+            this.allErrors.add(new LogMessageParsingError(String.format("early end of certifiedData while parsing: {}.", this.getFileName())));
+
             return;
         }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof DLTaggedObject)) {
-            logger.debug("additionalExternalData in certifiedData has to be DLTaggedObject, but is " + nextElement.getClass()); //NON-NLS
+            this.allErrors.add(new LogMessageParsingError(String.format("additionalExternalData in certifiedData has to be DLTaggedObject, but is {}", nextElement.getClass())));
+
             return;
 
         }
 
-        if (((DLTaggedObject) nextElement).getTagNo() != 4) {
-            logger.debug("additionalExternalData in certifiedData has to have a tag of 4 (int), but is " + ((DLTaggedObject) nextElement).getTagNo()); //NON-NLS
+        if (((DLTaggedObject) nextElement).getTagNo() == 4) {
+            //external Data shall not exist
+            this.allErrors.add(new LogMessageParsingError(String.format("found additionalExternalData in certifiedData while parsing {}", this.getFileName())));
+
             return;
         }
-
-        DLTaggedObject element = (DLTaggedObject) logMessageIterator.next();
-        ASN1OctetString innerElement = ASN1OctetString.getInstance(element, false);
-
-//        DEROctetString innerElement = (DEROctetString) element.getObject();
-
-        additionalExternalData = innerElement.getOctets();
-        dtbsStream.write(getEncodedValue(innerElement));
-
 
     }
 
@@ -238,32 +233,21 @@ public class TransactionLogMessage extends LogMessageImplementation {
 
     void parseAdditionalInternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException {
         if (!logMessageIterator.hasNext()) {
-//            throw new LogMessageParsingException("additionalExternalData in certifiedData  not found");
-//TODO: Logging
+            this.allErrors.add(new LogMessageParsingError(String.format("early end of certifiedData while parsing: {}.", this.getFileName())));
+
             return;
         }
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLTaggedObject)) {
-//            throw new LogMessageParsingException("additionalExternalData in certifiedData has to be DLTaggedObject, but is " + nextElement.getClass());
-//        TODO: logging
-            return;
-        }
 
+        try {
+            if (((DLTaggedObject) nextElement).getTagNo() == 6) {
+                // Data shall not exist
+                this.allErrors.add(new LogMessageParsingError(String.format("found additionalInternalData in certifiedData while parsing {}", this.getFileName())));
 
-        if (((DLTaggedObject) nextElement).getTagNo() != 6) {
-            //throw new LogMessageParsingException("additionalExternalData in certifiedData has to have a tag of 6 (int), but is " + ((DLTaggedObject) nextElement).getTagNo());
-//        logging
-            return;
-        }
-
-        DLTaggedObject element = (DLTaggedObject) logMessageIterator.next();
-//        DEROctetString innerElement = (DEROctetString) element.getObject();
-        ASN1OctetString innerElement = ASN1OctetString.getInstance(element, false);
-//
-
-        additionalInternalData = innerElement.getOctets();
-        dtbsStream.write(getEncodedValue(innerElement));
+                return;
+            }
+        } catch (ClassCastException ex) {}
 
     }
 

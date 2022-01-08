@@ -16,12 +16,11 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public abstract class SystemLogMessage extends LogMessageImplementation {
+    static Locale locale = new Locale("de", "DE"); //NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc", locale);//NON-NLS
     ASN1Primitive operationType;
     DLTaggedObject systemOperationData;
     ASN1Primitive additionalInternalData;
-
-    static Locale locale = new Locale("de", "DE"); //NON-NLS
-    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
 
     public SystemLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
@@ -29,17 +28,17 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
     }
 
     @Override
-    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws  IOException {
+    void parseCertifiedDataType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException {
 
-        super.parseCertifiedDataType(dtbsStream,logMessageAsASN1List,logMessageIterator);
-        if(this.certifiedDataType != oid.id_SE_API_system_log){
-            this.allErrors.add(new LogMessageImplementation.CertifiedDataTypeParsingError(String.format(properties.getString("de.konfidas.ttc.messages.invalidCertifiedDataType2"),this.certifiedDataType.getName()), null));
+        super.parseCertifiedDataType(dtbsStream, logMessageAsASN1List, logMessageIterator);
+        if (this.certifiedDataType != oid.id_SE_API_system_log) {
+            this.allErrors.add(new LogMessageImplementation.CertifiedDataTypeParsingError(String.format(properties.getString("de.konfidas.ttc.messages.invalidCertifiedDataType2"), this.certifiedDataType.getName()), null));
         }
     }
 
 
     @Override
-        void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws  IOException{
+    void parseCertifiedData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException {
         parseOperationType(dtbsStream, logMessageAsASN1List, logMessageIterator);
         parseSystemOperationDataElement(dtbsStream, logMessageAsASN1List, logMessageIterator);
         // systemOperationData has tag 0x81 (i.e. context-specific, not-constructed, but contains a constructed element
@@ -51,7 +50,7 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
         byte[] content = baos.toByteArray();
         content[0] = 0x30;
 
-        try(ASN1InputStream inputStreamDecoder = new ASN1InputStream(content)) {
+        try (ASN1InputStream inputStreamDecoder = new ASN1InputStream(content)) {
             parseSystemOperationDataContent(inputStreamDecoder);
         }
         // A clean solution would be, to fix the ASN1 definition of systemlogs and use a context-specific constructed tag here, i.e. 0xA1 instead of 0x81,
@@ -63,25 +62,26 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
 
 
     void parseOperationType(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException {
-        if (!logMessageIterator.hasNext()) this.allErrors.add(new OperationTypeParsingError(properties.getString("de.konfidas.ttc.messages.operationsTypeElementNotFound")));
+        if (!logMessageIterator.hasNext())
+            this.allErrors.add(new OperationTypeParsingError(properties.getString("de.konfidas.ttc.messages.operationsTypeElementNotFound")));
 
 
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-            if (!(nextElement instanceof DLTaggedObject)) {
-                this.allErrors.add(new OperationTypeParsingError(String.format(properties.getString("de.konfidas.ttc.messages.operationsTypeInvalidType"), nextElement.getClass())));
-                return;
-            }
+        if (!(nextElement instanceof DLTaggedObject)) {
+            this.allErrors.add(new OperationTypeParsingError(String.format(properties.getString("de.konfidas.ttc.messages.operationsTypeInvalidType"), nextElement.getClass())));
+            return;
+        }
 
-            ASN1Primitive element = logMessageIterator.next();
+        ASN1Primitive element = logMessageIterator.next();
 
-            int tag = ((DLTaggedObject) element).getTagNo();
-            if (tag != 0) {
-                this.allErrors.add(new OperationTypeParsingError(String.format(properties.getString("de.konfidas.ttc.messages.operationTypeNotFound"), tag)));
-                return;
-            }
+        int tag = ((DLTaggedObject) element).getTagNo();
+        if (tag != 0) {
+            this.allErrors.add(new OperationTypeParsingError(String.format(properties.getString("de.konfidas.ttc.messages.operationTypeNotFound"), tag)));
+            return;
+        }
 
-            dtbsStream.write(element.getEncoded());
-            operationType = element;
+        dtbsStream.write(element.getEncoded());
+        operationType = element;
 
 
     }
@@ -89,7 +89,8 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
     void parseSystemOperationDataElement(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException {
         if (!logMessageIterator.hasNext()) {
             this.allErrors.add(new SystemOperationDataParsingError(properties.getString("de.konfidas.ttc.message.systemOperationDataNotFound")));
-        return;}
+            return;
+        }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof DLTaggedObject)) {
             this.allErrors.add(new SystemOperationDataParsingError(String.format(properties.getString("de.konfidas.ttc.message.systemOperationDataWrongType"), nextElement.getClass())));
@@ -98,10 +99,10 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
 
         ASN1Primitive element = logMessageIterator.next();
 
-        int tag = ((DLTaggedObject) element).getTagNo() ;
-        if (tag != 1){
-            this.allErrors.add(new SystemOperationDataParsingError(String.format(properties.getString("de.konfidas.ttc.message.systemOperationDataWrongExpectedElement"),tag)));
-       return;
+        int tag = ((DLTaggedObject) element).getTagNo();
+        if (tag != 1) {
+            this.allErrors.add(new SystemOperationDataParsingError(String.format(properties.getString("de.konfidas.ttc.message.systemOperationDataWrongExpectedElement"), tag)));
+            return;
         }
 
 
@@ -109,33 +110,28 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
         systemOperationData = (DLTaggedObject) element;
     }
 
-    protected abstract void parseSystemOperationDataContent(ASN1InputStream stream) throws  IOException;
+    protected abstract void parseSystemOperationDataContent(ASN1InputStream stream) throws IOException;
 
     void parseAdditionalInternalData(ByteArrayOutputStream dtbsStream, List<ASN1Primitive> logMessageAsASN1List, ListIterator<ASN1Primitive> logMessageIterator) throws IOException {
         if (!logMessageIterator.hasNext()) {
-        this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.messages.additonalInternalDataNotFound")));
-        return;
+            this.allErrors.add(new LogMessageParsingError(String.format("early end of certifiedData while parsing: {}.", this.getFileName())));
+
+            return;
         }
+
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if (!(nextElement instanceof DLTaggedObject)) {
-            additionalInternalData = null;
-            return ;
-        }
 
-        ASN1Primitive element = logMessageIterator.next();
+        try {
+            if (((DLTaggedObject) nextElement).getTagNo() == 6) {
+                // Data shall not exist
+                this.allErrors.add(new LogMessageParsingError(String.format("found additionalInternalData in certifiedData while parsing {}", this.getFileName())));
 
-        if(!(element instanceof  DLTaggedObject)){
-            this.allErrors.add(new SystemLogParsingError(String.format(MessageFormat.format(properties.getString("de.konfidas.ttc.message.additionalInternalDataWrongType"), element.getClass()))));
-            return;
-        }
+                return;
+            }
 
-        int tag = ((DLTaggedObject) element).getTagNo() ;
-        if (tag != 2){
-            this.allErrors.add(new SystemLogParsingError(String.format(properties.getString("de.konfidas.ttc.message.additionalInternalDataWrongElement"),tag)));
-            return;
+        } catch (ClassCastException ex) {
+
         }
-        dtbsStream.write(element.getEncoded());
-        additionalInternalData = element;
     }
 
     @Override
@@ -146,49 +142,50 @@ public abstract class SystemLogMessage extends LogMessageImplementation {
             return;
         }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
-        if(nextElement instanceof  ASN1OctetString){
+        if (nextElement instanceof ASN1OctetString) {
             this.allErrors.add(new LogMessageParsingError(properties.getString("de.konfidas.ttc.message.seAuditDataNotFound ")));
             return;
         }
-        }
+    }
 
 
+    public class SystemLogParsingException extends LogMessageParsingException {
+        public SystemLogParsingException(String message) {super(message);}
 
-
-
-    public class SystemLogParsingException extends LogMessageParsingException{
-        public SystemLogParsingException(String message) { super(message); }
         public SystemLogParsingException(String message, Exception reason) {
             super(message, reason);
         }
 
     }
-    public class OperationTypeParsingException extends SystemLogParsingException{
+
+    public class OperationTypeParsingException extends SystemLogParsingException {
         public OperationTypeParsingException(String message) {
             super(message);
         }
     }
 
-    public class SystemOperationDataParsingException extends SystemLogParsingException{
+    public class SystemOperationDataParsingException extends SystemLogParsingException {
         public SystemOperationDataParsingException(String message) {
             super(message);
         }
     }
 
-    public class SystemLogParsingError extends LogMessageParsingError{
-        public SystemLogParsingError(String message) { super(message); }
+    public class SystemLogParsingError extends LogMessageParsingError {
+        public SystemLogParsingError(String message) {super(message);}
+
         public SystemLogParsingError(String message, Exception reason) {
             super(message, reason);
         }
 
     }
-    public class OperationTypeParsingError extends SystemLogParsingError{
+
+    public class OperationTypeParsingError extends SystemLogParsingError {
         public OperationTypeParsingError(String message) {
             super(message);
         }
     }
 
-    public class SystemOperationDataParsingError extends SystemLogParsingError{
+    public class SystemOperationDataParsingError extends SystemLogParsingError {
         public SystemOperationDataParsingError(String message) {
             super(message);
         }
