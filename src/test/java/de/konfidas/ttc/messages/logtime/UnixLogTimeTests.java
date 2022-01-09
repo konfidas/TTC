@@ -1,19 +1,21 @@
 package de.konfidas.ttc.messages.logtime;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Test;
+
 
 import java.security.SecureRandom;
 import java.security.Security;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.BeforeEach.*;
 
 public class UnixLogTimeTests {
     static SecureRandom rnd;
 
-    @Before
+    @BeforeEach
     public void initialize() {
         Security.addProvider(new BouncyCastleProvider());
         rnd = new SecureRandom();

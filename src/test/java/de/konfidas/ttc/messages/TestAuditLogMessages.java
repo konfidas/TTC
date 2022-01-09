@@ -6,18 +6,19 @@ import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.DERApplicationSpecific;
 import org.bouncycastle.asn1.DEROctetString;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+
 import java.lang.reflect.Method;
 import java.util.Random;
 
-import static junit.framework.TestCase.assertTrue;
-import static junit.framework.TestCase.fail;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 public class TestAuditLogMessages extends TestCaseBasisWithCA {
     @Test
