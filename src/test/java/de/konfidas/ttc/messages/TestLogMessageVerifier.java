@@ -4,12 +4,14 @@ import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.exceptions.LogMessageVerificationException;
 import de.konfidas.ttc.setup.TestCaseBasisWithCA;
 import org.bouncycastle.asn1.ASN1Integer;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 
-import static junit.framework.TestCase.fail;
 
 public class TestLogMessageVerifier extends TestCaseBasisWithCA {
     @Test
