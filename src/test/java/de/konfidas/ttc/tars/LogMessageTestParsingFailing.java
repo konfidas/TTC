@@ -12,7 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 
-public class LogMessageArchiveTestParsingFailing {
+public class LogMessageTestParsingFailing {
 
     @BeforeEach
     public void initialize() {
@@ -23,7 +23,7 @@ public class LogMessageArchiveTestParsingFailing {
     public void parseBrokenTAR_shouldThrowException() throws Exception {
 
         try {
-            new LogMessageArchiveImplementation(new File("parsingFailing.tar"));
+            new LogMessageArchiveImplementation(new File(File.separator + "testdata" + File.separator + "negative" + File.separator + "testdata_no_info_csv"));
             fail("The expected Exception was not thrown when parsing a broken TAR file.");
         } catch (BadFormatForTARException e) {
             assertTrue(true);
