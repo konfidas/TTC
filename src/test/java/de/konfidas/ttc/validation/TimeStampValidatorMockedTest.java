@@ -7,11 +7,10 @@ import de.konfidas.ttc.messages.logtime.UnixLogTime;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
-
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,11 +21,11 @@ import static org.junit.Assert.assertTrue;
 public class TimeStampValidatorMockedTest {
     ArrayList<LogMessage> messages;
 
-    public TimeStampValidatorMockedTest(){
+    public TimeStampValidatorMockedTest() {
         messages = new ArrayList<>();
     }
 
-    class TestTar implements LogMessageArchive{
+    class TestTar implements LogMessageArchive {
         @Override
         public Map<String, X509Certificate> getIntermediateCertificates() {
             return null;
@@ -57,11 +56,12 @@ public class TimeStampValidatorMockedTest {
             return "";
         }
     }
+
     static class LogMessageMock implements LogMessage {
         LogTime time;
         BigInteger signatureCounter;
 
-        LogMessageMock(LogTime time, BigInteger signatureCounter){
+        LogMessageMock(LogTime time, BigInteger signatureCounter) {
             this.time = time;
             this.signatureCounter = signatureCounter;
         }
@@ -132,14 +132,14 @@ public class TimeStampValidatorMockedTest {
         }
     }
 
-    @Before
-    public void clean(){
+    @BeforeEach
+    public void clean() {
         messages.clear();
     }
 
 
     @Test
-    public void testEmpty(){
+    public void testEmpty() {
         TimeStampValidator validator = new TimeStampValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -147,7 +147,7 @@ public class TimeStampValidatorMockedTest {
     }
 
     @Test
-    public void testTwoMessagesOk(){
+    public void testTwoMessagesOk() {
         TimeStampValidator validator = new TimeStampValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -158,14 +158,14 @@ public class TimeStampValidatorMockedTest {
     }
 
     @Test
-    public void testTwoMessagesNotOk(){
+    public void testTwoMessagesNotOk() {
         TimeStampValidator validator = new TimeStampValidator();
         LogMessageArchive tar = new TestTar();
 
         this.messages.add(new LogMessageMock(new UnixLogTime(2), BigInteger.ONE));
         this.messages.add(new LogMessageMock(new UnixLogTime(1), BigInteger.TWO));
 
-        assertTrue(validator.validate(tar).getValidationErrors().size()==1);
+        assertTrue(validator.validate(tar).getValidationErrors().size() == 1);
     }
 
 }
