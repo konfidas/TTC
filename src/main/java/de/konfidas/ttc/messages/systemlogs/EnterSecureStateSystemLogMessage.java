@@ -15,29 +15,30 @@ import java.util.*;
 
 
 /**
- * Diese Klasse repräsentiert eine disableSecureElementSystemLog Message. Dabei werden in der Methode
- * parseSystemOperationDataContent die folgenden Elemente aus systemOperationData geparst
+ * Diese Klasse repräsentiert eine enterSecureStateSystemLog Message. Dabei werden in der Methode
+ * parseSystemOperationDataContent die folgenden Elemente aus systemOperationData geparst. Das Datenfeld
+ * timeOfEvent muss nur dann vorhanden sein, wenn die System Log Message nachträglich gelogt wird.
  * <pre>
  * ╔═══════════════════════╤══════╤═══════════════════════════════════════════════════════════════╤════════════╗
  * ║ Data field            │ Tag  │ Data Type                                                     │ Mandatory? ║
  * ╠═══════════════════════╪══════╪═══════════════════════════════════════════════════════════════╪════════════╣
- * ║ timeOfDeactivation    │ 0x81 │ Time                                                          │ m          ║
+ * ║ timeOfEvent           │ 0x81 │ Time                                                          │ c          ║
  * ╚═══════════════════════╧══════╧════════════════════════════════════════════════════════════════════════════╝
  * </pre>
  */
-public class DisableSecureElementSystemLogMessage extends SystemLogMessage {
+public class EnterSecureStateSystemLogMessage extends SystemLogMessage {
 
 
     static Locale locale = new Locale("de", "DE");//NON-NLS
     static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
 
-    DLTaggedObject timeOfDeactivation;
+    DLTaggedObject timeOfEvent;
 
-    LogTime timeOfDeactivationAsLogTime;
+    LogTime timeOfEventAsLogTime;
 
 
-    public DisableSecureElementSystemLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
+    public EnterSecureStateSystemLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
         super(content, filename);
     }
 
@@ -54,28 +55,25 @@ public class DisableSecureElementSystemLogMessage extends SystemLogMessage {
         ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
 
         try {
-            //timeOfDeactivation einlesen
+            //read timeOfEvent if existing
             DLTaggedObject nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
             if (nextElement.getTagNo() != 1)  this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorTimeOfDeactivationNotFound")));
 
-            this.timeOfDeactivation = (DLTaggedObject) systemOperationDataIterator.next();
+            this.timeOfEvent = (DLTaggedObject) systemOperationDataIterator.next();
             switch (typeOfTimeFromFilename){
                 case "Gen"://NON-NLS
-//                    this.timeOfDeactivationAsLogTime = new GeneralizedLogTime((ASN1GeneralizedTime) this.timeOfDeactivation.getObject());
-                    this.timeOfDeactivationAsLogTime = new GeneralizedLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1GeneralizedTime(this.timeOfDeactivation));
+                    this.timeOfEventAsLogTime = new GeneralizedLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1GeneralizedTime(this.timeOfEvent));
                     break;
                 case "Utc"://NON-NLS
-                    this.timeOfDeactivationAsLogTime = new UtcLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1UTCTime(this.timeOfDeactivation));
+                    this.timeOfEventAsLogTime = new UtcLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1UTCTime(this.timeOfEvent));
                     break;
                 case "Uni"://NON-NLS
-                    this.timeOfDeactivationAsLogTime = new UnixLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1Integer(timeOfDeactivation));
+                    this.timeOfEventAsLogTime = new UnixLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1Integer(this.timeOfEvent));
                     break;
-
             }
-
         }
         catch (NoSuchElementException ex ){
-            this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.earlyEndOfSystemOperationData"), ex));
+        // It is possible that this exception occurs if the timeOfEvent is not existing (which is OK)
         }
         catch (ParseException ex){
             this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent"), ex));
