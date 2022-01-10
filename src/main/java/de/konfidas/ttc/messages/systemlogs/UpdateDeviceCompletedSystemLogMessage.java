@@ -73,6 +73,7 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
             this.userIDAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.userId);
 
             //oldVersion einlesen
+            //FIXME: this is actually newVersion
              nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
             if (nextElement.getTagNo() != 3) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContentOldVersionNotFound")));
 
