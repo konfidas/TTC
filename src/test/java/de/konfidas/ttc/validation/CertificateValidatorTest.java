@@ -7,11 +7,13 @@ import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import de.konfidas.ttc.utilities.CertificateHelper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.jupiter.api.Disabled;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.Arguments;
+import java.util.stream.Stream;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,8 +24,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 
 public class CertificateValidatorTest {
     Map<String, X509Certificate> client = new HashMap<>();
@@ -63,12 +66,12 @@ public class CertificateValidatorTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setup(){
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    @Before
+    @BeforeEach
     public void clean(){
         client.clear();
         intermediates.clear();
@@ -76,7 +79,6 @@ public class CertificateValidatorTest {
     }
 
     @Test
-    @Ignore
     public void testDTrustChain() throws CertificateLoadException, IOException {
         client.put("client",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/client.cer")));
         intermediates.put("intermediate",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/sub.cer")));
@@ -97,7 +99,6 @@ public class CertificateValidatorTest {
     }
 
     @Test
-    @Ignore
     public void testDTrustChain_missingTrustAnchor() throws CertificateLoadException, IOException {
         client.put("client",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/client.cer")));
         intermediates.put("intermediate",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/sub.cer")));
@@ -115,7 +116,6 @@ public class CertificateValidatorTest {
 
 
     @Test
-    @Ignore
     public void testDTrustChain_missingSubCa() throws CertificateLoadException, IOException {
         client.put("client",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/client.cer")));
         //intermediates.put("intermediate",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/sub.cer")));
@@ -132,7 +132,6 @@ public class CertificateValidatorTest {
     }
 
     @Test
-    @Ignore
     public void testDTrustChain_missingCRL() throws CertificateLoadException, IOException {
         client.put("client",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/client.cer")));
         intermediates.put("intermediate",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/sub.cer")));
