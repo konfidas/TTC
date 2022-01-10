@@ -4,53 +4,34 @@ import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
 import de.konfidas.ttc.validation.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import java.util.stream.Stream;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.Security;
-import java.util.Arrays;
-import java.util.Collection;
+
 import java.util.Collections;
 
-import static org.junit.Assert.fail;
 
-@RunWith(Parameterized.class)
 public class TextReporterTest {
 
     final static File correctTarFiles = new File("testdata/positive/");
 
-    final File file;
 
-    @Before
+    @BeforeEach
     public void initialize() {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-
-    @Parameterized.Parameters
-    public static Collection<File> filesToTest(){
-        if(!correctTarFiles.isDirectory() || correctTarFiles.listFiles() == null){
-            fail("not a directory.");
-        }
-        return Arrays.asList(correctTarFiles.listFiles());
-    }
-
-
-    public TextReporterTest(File file){
-        this.file = file;
-    }
-
-    @Ignore
-    @Test
-    public void createReport() throws IOException, BadFormatForTARException, Reporter.ReporterException {
-        LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
-
-//        File reportFile = new File("./Report_"+this.file.getName()+".html");
+    @ParameterizedTest(name = "TextReporterTest. Rest {index} => file={0}")
+    @MethodSource("filesToTest")
+    public void createReport(File file) throws IOException, BadFormatForTARException, Reporter.ReporterException {
+        LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(file);
 
 
         Validator v = new AggregatedValidator()
@@ -67,6 +48,12 @@ public class TextReporterTest {
         // reporter.ignoreIssue(SignatureCounterValidator.SignatureCounterMissingException.class);
 
         System.out.println(reporter.createReport(Collections.singleton(tar), result, false));
+    }
+
+    public static Stream<Arguments> filesToTest(){
+        return Stream.of(
+                //FIXME: Add the rest of the files here to test
+                Arguments.of(new File("testdata/positive/4b5ba740-06fe-4506-9afc-e9f1eabadaa4.tar")));
     }
 
 }
