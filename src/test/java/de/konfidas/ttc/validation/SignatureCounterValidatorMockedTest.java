@@ -3,12 +3,11 @@ package de.konfidas.ttc.validation;
 import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
-import de.konfidas.ttc.messages.logtime.UnixLogTime;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
@@ -21,11 +20,11 @@ import static org.junit.Assert.assertTrue;
 public class SignatureCounterValidatorMockedTest {
     ArrayList<LogMessage> messages;
 
-    public SignatureCounterValidatorMockedTest(){
+    public SignatureCounterValidatorMockedTest() {
         messages = new ArrayList<>();
     }
 
-    class TestTar implements LogMessageArchive{
+    class TestTar implements LogMessageArchive {
         @Override
         public Map<String, X509Certificate> getIntermediateCertificates() {
             return null;
@@ -56,14 +55,16 @@ public class SignatureCounterValidatorMockedTest {
             return "";
         }
     }
+
     static class LogMessageMock implements LogMessage {
         BigInteger signatureCounter;
         byte[] serial;
-        LogMessageMock(BigInteger signatureCounter){
-            this(signatureCounter,new byte[0]);
+
+        LogMessageMock(BigInteger signatureCounter) {
+            this(signatureCounter, new byte[0]);
         }
 
-        LogMessageMock(BigInteger signatureCounter, byte[] serial){
+        LogMessageMock(BigInteger signatureCounter, byte[] serial) {
             this.signatureCounter = signatureCounter;
             this.serial = serial;
         }
@@ -135,14 +136,14 @@ public class SignatureCounterValidatorMockedTest {
         }
     }
 
-    @Before
-    public void clean(){
+    @BeforeEach
+    public void clean() {
         messages.clear();
     }
 
 
     @Test
-    public void testEmpty(){
+    public void testEmpty() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -150,7 +151,7 @@ public class SignatureCounterValidatorMockedTest {
     }
 
     @Test
-    public void testTwoMessagesOk(){
+    public void testTwoMessagesOk() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -161,7 +162,7 @@ public class SignatureCounterValidatorMockedTest {
     }
 
     @Test
-    public void testTwoMessagesOk2(){
+    public void testTwoMessagesOk2() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -172,44 +173,43 @@ public class SignatureCounterValidatorMockedTest {
     }
 
     @Test
-    public void testDuplicateCounter(){
+    public void testDuplicateCounter() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
         this.messages.add(new LogMessageMock(BigInteger.ONE));
         this.messages.add(new LogMessageMock(BigInteger.ONE));
 
-        assertTrue(validator.validate(tar).getValidationErrors().size()==1);
+        assertTrue(validator.validate(tar).getValidationErrors().size() == 1);
     }
 
     @Test
-    public void testMissingOne(){
+    public void testMissingOne() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
         this.messages.add(new LogMessageMock(BigInteger.TWO));
 
-        assertTrue(validator.validate(tar).getValidationErrors().size()==1);
+        assertTrue(validator.validate(tar).getValidationErrors().size() == 1);
     }
 
 
-
     @Test
-    public void testMissingCounter(){
+    public void testMissingCounter() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
         this.messages.add(new LogMessageMock(BigInteger.ONE));
         this.messages.add(new LogMessageMock(BigInteger.valueOf(3)));
 
-        assertTrue(validator.validate(tar).getValidationErrors().size()==1);
+        assertTrue(validator.validate(tar).getValidationErrors().size() == 1);
     }
 
 
     // Testing multiple serial numbers in one tar:
 
     @Test
-    public void testDuplicateCounterInDifferentSerials(){
+    public void testDuplicateCounterInDifferentSerials() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -220,7 +220,7 @@ public class SignatureCounterValidatorMockedTest {
     }
 
     @Test
-    public void testOk2(){
+    public void testOk2() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -234,7 +234,7 @@ public class SignatureCounterValidatorMockedTest {
 
 
     @Test
-    public void testOk3(){
+    public void testOk3() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -247,7 +247,7 @@ public class SignatureCounterValidatorMockedTest {
     }
 
     @Test
-    public void testMissingCounterDifferentSerials(){
+    public void testMissingCounterDifferentSerials() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -260,7 +260,7 @@ public class SignatureCounterValidatorMockedTest {
     }
 
     @Test
-    public void testMissingCounterDifferentSerialsTwice(){
+    public void testMissingCounterDifferentSerialsTwice() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -273,7 +273,7 @@ public class SignatureCounterValidatorMockedTest {
     }
 
     @Test
-    public void testMissingOneDifferentSerialsTwice(){
+    public void testMissingOneDifferentSerialsTwice() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -284,7 +284,7 @@ public class SignatureCounterValidatorMockedTest {
     }
 
     @Test
-    public void testMissingOneDifferentSerials(){
+    public void testMissingOneDifferentSerials() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -296,7 +296,7 @@ public class SignatureCounterValidatorMockedTest {
     }
 
     @Test
-    public void testDuplicateCounterDifferentSerials(){
+    public void testDuplicateCounterDifferentSerials() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
@@ -311,7 +311,7 @@ public class SignatureCounterValidatorMockedTest {
 
 
     @Test
-    public void testDuplicateCounterDifferentSerialsTwice(){
+    public void testDuplicateCounterDifferentSerialsTwice() {
         SignatureCounterValidator validator = new SignatureCounterValidator();
         LogMessageArchive tar = new TestTar();
 
