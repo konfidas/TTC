@@ -5,9 +5,6 @@ import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.provider.MethodSource;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +14,11 @@ import java.io.IOException;
 import java.security.Security;
 import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.ParameterizedTest;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.params.provider.Arguments;
-
 import java.util.stream.Stream;
 
 
@@ -34,7 +31,7 @@ public class SignatureCounterValidatorTest {
     }
 
 
-    @ParameterizedTest(name = "{index} => file={0}")
+    @ParameterizedTest(name = "SignatureCounterValidatorTest. Rest {index} => file={0}")
     @MethodSource("parseProvider")
     public void parse(File file, int expectedNumberOfErrors) {
         logger.debug("");
@@ -56,6 +53,7 @@ public class SignatureCounterValidatorTest {
     }
     private static Stream<Arguments>  parseProvider() {
         return Stream.of(
+                //FIXME: Add the rest of the files here to test
                 Arguments.of(new File("testdata/positive/4b5ba740-06fe-4506-9afc-e9f1eabadaa4.tar"),1));
     }
 }

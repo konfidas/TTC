@@ -155,7 +155,7 @@ public class HtmlReporter implements Reporter<String> {
 
     void printValidators(StringWriter sw, Collection<Validator> validators) throws IOException {
         sw.write(properties.getString("de.konfidas.ttc.reporting.headlineValidators"));
-        sw.write(properties.getString("de.konfidas.ttc.reporting.reportUsedValidators "));
+        sw.write(properties.getString("de.konfidas.ttc.reporting.reportUsedValidators"));
         sw.write("<ul>");//NON-NLS
 
         for(Validator v: validators){
