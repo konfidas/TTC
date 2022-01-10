@@ -4,11 +4,16 @@ import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import java.util.stream.Stream;
+
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,38 +22,29 @@ import java.io.IOException;
 import java.security.Security;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.fail;
 
-@RunWith(Parameterized.class)
 public class TimeStampValidatorTest {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-    final File file;
-    final int expectedNumberOfErrors;
 
-    @Before
+    @BeforeEach
     public void initialize() {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    @Parameterized.Parameters
-    public static LinkedList<Object[]> filesToTest() {
-        LinkedList<Object[]> parameters = new LinkedList<>();
 
-        parameters.add(new Object[]{new File("testdata/positive/positive_bdr_tse_web.tar"),0});
-
-        return parameters;
+    public static Stream<Arguments> filesToTest(){
+        return Stream.of(
+                //FIXME: Add the rest of the files here to test
+                Arguments.of(new File("testdata/positive/positive_bdr_tse_web.tar"),0));
     }
 
-    public TimeStampValidatorTest(File file, int expectedNumberOfErrors) {
-        this.file = file;
-        this.expectedNumberOfErrors = expectedNumberOfErrors;
-    }
-
-    @Ignore
-    @Test
-    public void parse() {
+    @ParameterizedTest()
+    @MethodSource("filesToTest")
+    public void parse(File file, int expectedNumberOfErrors) {
         logger.debug("");
         logger.debug("============================================================================");
         logger.debug("testing tar file {}:", file.getName());
