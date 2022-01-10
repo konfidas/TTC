@@ -5,7 +5,7 @@ import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.ASN1Primitive;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
@@ -19,7 +19,7 @@ public class AggregatedLogMessageArchiveMockTest {
         HashMap<String, X509Certificate> client;
         ArrayList<LogMessage> messages;
 
-        TestTarMock(){
+        TestTarMock() {
             messages = new ArrayList<>();
         }
 
@@ -54,11 +54,11 @@ public class AggregatedLogMessageArchiveMockTest {
         }
     }
 
-    class LogMessageMock implements LogMessage{
+    class LogMessageMock implements LogMessage {
         byte[] encoded;
         BigInteger signatureCounter;
 
-        public LogMessageMock(byte[]encoded){
+        public LogMessageMock(byte[] encoded) {
             this(encoded, BigInteger.ONE);
         }
 
@@ -67,13 +67,13 @@ public class AggregatedLogMessageArchiveMockTest {
             return new ArrayList<TtcError>();
         }
 
-        public LogMessageMock(byte[]encoded, BigInteger signatureCounter){
+        public LogMessageMock(byte[] encoded, BigInteger signatureCounter) {
             this.encoded = encoded;
             this.signatureCounter = signatureCounter;
         }
 
-        public boolean equals(Object o){
-            if(o instanceof  LogMessage){
+        public boolean equals(Object o) {
+            if (o instanceof LogMessage) {
                 return Arrays.equals(this.getEncoded(), ((LogMessage) o).getEncoded());
             }
             return false;
@@ -147,7 +147,7 @@ public class AggregatedLogMessageArchiveMockTest {
 
 
     @Test
-    public void testTwoTars(){
+    public void testTwoTars() {
         TestTarMock tar1 = new TestTarMock();
         tar1.messages.add(new LogMessageMock(new byte[]{0x01, 0x02}));
 
@@ -171,7 +171,7 @@ public class AggregatedLogMessageArchiveMockTest {
     }
 
     @Test
-    public void testDuplicateContentFound(){
+    public void testDuplicateContentFound() {
         TestTarMock tar1 = new TestTarMock();
         tar1.messages.add(new LogMessageMock(new byte[]{0x01, 0x02}));
 
@@ -188,7 +188,7 @@ public class AggregatedLogMessageArchiveMockTest {
 
 
     @Test
-    public void testDuplicateContentInOneTarFound(){
+    public void testDuplicateContentInOneTarFound() {
         TestTarMock tar1 = new TestTarMock();
         tar1.messages.add(new LogMessageMock(new byte[]{0x01, 0x02}));
         tar1.messages.add(new LogMessageMock(new byte[]{0x01, 0x02}));
@@ -201,7 +201,7 @@ public class AggregatedLogMessageArchiveMockTest {
     }
 
     @Test
-    public void testTwoTarsSorted(){
+    public void testTwoTarsSorted() {
         TestTarMock tar1 = new TestTarMock();
         tar1.messages.add(new LogMessageMock(new byte[]{0x01, 0x02}, BigInteger.ONE));
 
@@ -210,8 +210,8 @@ public class AggregatedLogMessageArchiveMockTest {
 
 
         AggregatedLogMessageArchive aTar = new AggregatedLogMessageArchive()
-            .addArchive(tar1)
-            .addArchive(tar2);
+                .addArchive(tar1)
+                .addArchive(tar2);
 
         assertTrue(aTar.getLogMessages().size() == 2);
         assertTrue(aTar.getSortedLogMessages().get(0).getSignatureCounter().equals(BigInteger.ONE));
@@ -219,7 +219,7 @@ public class AggregatedLogMessageArchiveMockTest {
     }
 
     @Test
-    public void testTwoTarsSorted2(){
+    public void testTwoTarsSorted2() {
         TestTarMock tar1 = new TestTarMock();
         tar1.messages.add(new LogMessageMock(new byte[]{0x01, 0x02}, BigInteger.TWO));
 
@@ -237,11 +237,10 @@ public class AggregatedLogMessageArchiveMockTest {
     }
 
     @Test
-    public void testTwoTarsSorted3(){
+    public void testTwoTarsSorted3() {
         TestTarMock tar1 = new TestTarMock();
         tar1.messages.add(new LogMessageMock(new byte[]{0x01, 0x02}, BigInteger.TWO));
         tar1.messages.add(new LogMessageMock(new byte[]{0x01, 0x03}, BigInteger.ONE));
-
 
 
         AggregatedLogMessageArchive aTar = new AggregatedLogMessageArchive()
@@ -253,7 +252,7 @@ public class AggregatedLogMessageArchiveMockTest {
     }
 
     @Test
-    public void testTwoTarsSorted4(){
+    public void testTwoTarsSorted4() {
         TestTarMock tar1 = new TestTarMock();
         tar1.messages.add(new LogMessageMock(new byte[]{0x01, 0x02}, BigInteger.ONE));
         tar1.messages.add(new LogMessageMock(new byte[]{0x01, 0x03}, BigInteger.TWO));
@@ -268,4 +267,3 @@ public class AggregatedLogMessageArchiveMockTest {
 
 
 }
-
