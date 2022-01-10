@@ -1,74 +1,54 @@
 package de.konfidas.ttc.tars;
 
-import de.konfidas.ttc.exceptions.BadFormatForTARException;
-import de.konfidas.ttc.exceptions.ValidationException;
-import de.konfidas.ttc.validation.AggregatedValidator;
-import de.konfidas.ttc.validation.CertificateFileNameValidator;
-import de.konfidas.ttc.validation.LogMessageSignatureValidator;
-import de.konfidas.ttc.validation.Validator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.security.Security;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@RunWith(Parameterized.class)
+
 public class LogMessageArchiveTestParsingSuccessfully {
-    final static Logger logger = LoggerFactory.getLogger(LogMessageArchiveTestParsingSuccessfully.class);
-    final static File correctTarFiles = new File("testdata/positive/");
+    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    final static File correctLogs = new File("testdata" + File.separator + "positive" + File.separator + "can_parse");
 
-    final File file;
-
-    @Before
+    @BeforeEach
     public void initialize() {
         Security.addProvider(new BouncyCastleProvider());
     }
 
 
-    @Parameterized.Parameters
-    public static Collection<File> filesToTest(){
-
-        logger.debug("checking for Tars in "+correctTarFiles.getName());
-        if(!correctTarFiles.isDirectory() || correctTarFiles.listFiles() == null){
-            fail("not a directory.");
-        }
-        return Arrays.asList(correctTarFiles.listFiles());
-    }
-
-
-    public LogMessageArchiveTestParsingSuccessfully(File file){
-        this.file = file;
-    }
-
-    @Ignore
-    @Test
-    public void parse() throws IOException, BadFormatForTARException {
+    @ParameterizedTest
+    @MethodSource("filesToTest")
+    public void parseTAR_shouldNotThrowException(File tarFile) throws Exception {
         logger.debug("");
         logger.debug("============================================================================");
-        logger.debug("testing tar file {}:", file.getName());
+        logger.debug("parsing log message {}:", tarFile.getName());
 
-        LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
-//        LogMessageReporter testReporter = new LogMessageReporter();
+        try {
+            new LogMessageArchiveImplementation(tarFile);
+            assertTrue(true);
+        } catch (Exception e) {
+            fail("A " + e.getClass() + " was thrown, but should not have been.");
+        }
 
-//        logger.debug(testReporter.createReport(Collections.singleton(tar), null).toString());
+    }
 
-        Validator v = new AggregatedValidator()
-                .add(new CertificateFileNameValidator())
-                .add(new LogMessageSignatureValidator());
-
-        Collection<ValidationException> errors = v.validate(tar).getValidationErrors();
-        assertTrue(errors.isEmpty());
+    static Stream<File> filesToTest() {
+        logger.debug("checking for Tars in " + correctLogs.getName());
+        if (!correctLogs.isDirectory()) {
+            fail(correctLogs.getAbsolutePath() + " is not a directory.");
+        }
+        if (correctLogs.listFiles() == null) {
+            fail("The directory of test TAR files is empty in: " + correctLogs.getAbsolutePath());
+        }
+        return Stream.of(correctLogs.listFiles());
     }
 }

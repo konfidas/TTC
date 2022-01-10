@@ -16,41 +16,39 @@ import java.io.File;
 import java.security.Security;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 
-public class LogMessageTestParsingSuccessfully {
+public class LogMessageTestValidationFailing {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-    final static File correctLogs = new File("testdata" + File.separator + "positive" + File.separator + "can_parse");
+    final static File brokenTarFiles = new File("testdata" + File.separator + "negative" + File.separator + "validation_errors");
 
     @BeforeEach
     public void initialize() {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-
     @ParameterizedTest
     @MethodSource("filesToTest")
-    public void parseTAR_shouldNotThrowException(File tarFile) throws Exception {
+    public void validateTARwithErrors_shouldShowValidationErrors(File tarFile) throws Exception {
         logger.debug("");
         logger.debug("============================================================================");
-        logger.debug("parsing log message {}:", tarFile.getName());
+        logger.debug("testing tar file {}:", tarFile.getName());
 
-        assertTrue(((Validator) new AggregatedValidator()
+        assertFalse(((Validator) new AggregatedValidator()
                 .add(new CertificateFileNameValidator())
                 .add(new LogMessageSignatureValidator())).validate(new LogMessageArchiveImplementation(tarFile)).getValidationErrors().isEmpty());
-
     }
 
     static Stream<File> filesToTest() {
-        logger.debug("checking for Tars in " + correctLogs.getName());
-        if (!correctLogs.isDirectory()) {
-            fail(correctLogs.getAbsolutePath() + " is not a directory.");
+        logger.debug("checking for Tars in " + brokenTarFiles.getName());
+        if (!brokenTarFiles.isDirectory()) {
+            fail(brokenTarFiles.getAbsolutePath() + " is not a directory.");
         }
-        if (correctLogs.listFiles() == null) {
-            fail("The directory of test TAR files is empty in: " + correctLogs.getAbsolutePath());
+        if (brokenTarFiles.listFiles() == null) {
+            fail("The directory of test TAR files is empty in: " + brokenTarFiles.getAbsolutePath());
         }
-        return Stream.of(correctLogs.listFiles());
+        return Stream.of(brokenTarFiles.listFiles());
     }
 }
