@@ -4,11 +4,11 @@ import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.provider.MethodSource;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,40 +16,27 @@ import java.io.File;
 import java.io.IOException;
 import java.security.Security;
 import java.util.Collection;
-import java.util.LinkedList;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
-@RunWith(Parameterized.class)
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+
+import java.util.stream.Stream;
+
+
 public class SignatureCounterValidatorTest {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-    final File file;
-    final int expectedNumberOfErrors;
-
-    @Before
+    @BeforeEach
     public void initialize() {
         Security.addProvider(new BouncyCastleProvider());
     }
 
 
-    @Parameterized.Parameters
-    public static LinkedList<Object[]> filesToTest() {
-        LinkedList<Object[]> parameters = new LinkedList<>();
-
-        parameters.add(new Object[]{new File("testdata/positive/positive_bdr_tse_web.tar"),1});
-
-        return parameters;
-    }
-
-    public SignatureCounterValidatorTest(File file, int expectedNumberOfErrors) {
-        this.file = file;
-        this.expectedNumberOfErrors = expectedNumberOfErrors;
-    }
-
-    @Ignore
-    @Test
-    public void parse() {
+    @ParameterizedTest(name = "{index} => file={0}")
+    @MethodSource("parseProvider")
+    public void parse(File file, int expectedNumberOfErrors) {
         logger.debug("");
         logger.debug("============================================================================");
         logger.debug("testing tar file {}:", file.getName());
@@ -57,7 +44,7 @@ public class SignatureCounterValidatorTest {
         try {
             SignatureCounterValidator validator = new SignatureCounterValidator();
 
-            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(this.file);
+            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(file);
 
             Collection<ValidationException>  errors = validator.validate(tar).getValidationErrors();
 
@@ -66,5 +53,9 @@ public class SignatureCounterValidatorTest {
         } catch (IOException | BadFormatForTARException e) {
             fail();
         }
+    }
+    private static Stream<Arguments>  parseProvider() {
+        return Stream.of(
+                Arguments.of(new File("testdata/positive/4b5ba740-06fe-4506-9afc-e9f1eabadaa4.tar"),1));
     }
 }
