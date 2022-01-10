@@ -1,6 +1,10 @@
 package de.konfidas.ttc.messages;
 
 import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
+import de.konfidas.ttc.validation.AggregatedValidator;
+import de.konfidas.ttc.validation.CertificateFileNameValidator;
+import de.konfidas.ttc.validation.LogMessageSignatureValidator;
+import de.konfidas.ttc.validation.Validator;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,12 +37,9 @@ public class LogMessageTestParsingSuccessfully {
         logger.debug("============================================================================");
         logger.debug("parsing log message {}:", tarFile.getName());
 
-        try {
-            new LogMessageArchiveImplementation(tarFile);
-            assertTrue(true);
-        } catch (Exception e) {
-            fail("A " + e.getClass() + " was thrown, but should not have been.");
-        }
+        assertTrue(((Validator) new AggregatedValidator()
+                .add(new CertificateFileNameValidator())
+                .add(new LogMessageSignatureValidator())).validate(new LogMessageArchiveImplementation(tarFile)).getValidationErrors().isEmpty());
 
     }
 
