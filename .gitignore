@@ -35,7 +35,6 @@ hs_err_pid*
 
 # All IntelliJ project files
 .idea/
-.idea/**/
 
 ## File-based project format:
 *.iws
