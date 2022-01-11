@@ -8,38 +8,41 @@ import de.konfidas.ttc.tars.LogMessageArchive;
 import de.konfidas.ttc.validation.ValidationResult;
 import de.konfidas.ttc.validation.Validator;
 import org.apache.commons.codec.binary.Hex;
-import java.io.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.util.*;
 
 public class HtmlReporter implements Reporter<String> {
 
     static Locale locale = new Locale("de", "DE"); //NON-NLS
-    static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale); //NON-NLS
+    static ResourceBundle properties = ResourceBundle.getBundle("ttc", locale); //NON-NLS
     boolean skipLegitLogMessages;
     HashSet<Class<? extends ValidationException>> issuesToIgnore;
 
-    public HtmlReporter(){
+    public HtmlReporter() {
         this.issuesToIgnore = new HashSet<>();
         skipLegitLogMessages = false;
     }
 
-    HtmlReporter skipLegitLogMessages(){
+    HtmlReporter skipLegitLogMessages() {
         skipLegitLogMessages = true;
         return this;
     }
 
-    HtmlReporter skipLegitLogMessages(boolean skipLegitLogMessages){
+    HtmlReporter skipLegitLogMessages(boolean skipLegitLogMessages) {
         this.skipLegitLogMessages = skipLegitLogMessages;
         return this;
     }
 
-    HtmlReporter ignoreIssue(Class<? extends ValidationException> t){
+    HtmlReporter ignoreIssue(Class<? extends ValidationException> t) {
         issuesToIgnore.add(t);
         return this;
     }
 
-    HtmlReporter ignoreIssues(Collection<Class<? extends ValidationException>> c){
+    HtmlReporter ignoreIssues(Collection<Class<? extends ValidationException>> c) {
         issuesToIgnore.addAll(c);
         return this;
     }
@@ -47,11 +50,11 @@ public class HtmlReporter implements Reporter<String> {
     @Override
     public String createReport(Collection<LogMessageArchive> logs, ValidationResult vResult, Boolean skipLegitLogMessages) throws ReporterException {
         this.skipLegitLogMessages = skipLegitLogMessages;
-        try(StringWriter sw = new StringWriter()){
+        try (StringWriter sw = new StringWriter()) {
             printHeader(sw);
 
             printTars(sw, logs);
-            printValidators(sw,vResult.getValidators());
+            printValidators(sw, vResult.getValidators());
 
             printErrorNum(sw, vResult.getValidationErrors());
 
@@ -62,7 +65,7 @@ public class HtmlReporter implements Reporter<String> {
             printFooter(sw);
             return sw.toString();
         } catch (IOException e) {
-            throw new ReporterException(properties.getString("de.konfidas.ttc.reporting.errorCreatingHTMLReport"),e);
+            throw new ReporterException(properties.getString("de.konfidas.ttc.reporting.errorCreatingHTMLReport"), e);
         }
 
     }
@@ -70,16 +73,16 @@ public class HtmlReporter implements Reporter<String> {
     void printNonLogMessageValidationExceptions(StringWriter sw, Collection<ValidationException> validationErrors) throws IOException {
         sw.write(properties.getString("de.konfidas.ttc.reporting.HtmlHeadlineGeneralErrors"));
         long numberOfGeneralValidationExceptions = validationErrors.stream().filter(c -> !(c instanceof LogMessageValidationException)).count();
-        if (numberOfGeneralValidationExceptions>0)
+        if (numberOfGeneralValidationExceptions > 0)
             sw.write(properties.getString("de.konfidas.ttc.reporting.htmlReportIntroductionToIssues"));
         else
             sw.write(properties.getString("de.konfidas.ttc.reporting.htmlReportNone"));
 
         sw.write("<ul>");//NON-NLS
-        for(ValidationException v : validationErrors){
-            if(!(v instanceof LogMessageValidationException)){
+        for (ValidationException v : validationErrors) {
+            if (!(v instanceof LogMessageValidationException)) {
 
-                if(!issuesToIgnore.contains(v.getClass())) {
+                if (!issuesToIgnore.contains(v.getClass())) {
                     sw.write("<li>" + v.toString() + "</li>");//NON-NLS
                 }
             }
@@ -90,9 +93,9 @@ public class HtmlReporter implements Reporter<String> {
 
     void printLogMessageDetails(StringWriter sw, Collection<LogMessageArchive> logs, ValidationResult vResult) throws IOException {
         HashMap<LogMessage, LinkedList<LogMessageValidationException>> map = new HashMap<>();
-        for(ValidationException e: vResult.getValidationErrors()){
-            if(e instanceof LogMessageValidationException){
-                if(!issuesToIgnore.contains(e.getClass())) {
+        for (ValidationException e : vResult.getValidationErrors()) {
+            if (e instanceof LogMessageValidationException) {
+                if (!issuesToIgnore.contains(e.getClass())) {
                     if (map.containsKey(((LogMessageValidationException) e).getLogMessage())) {
                         map.get(((LogMessageValidationException) e).getLogMessage()).add((LogMessageValidationException) e);
                     } else {
@@ -105,24 +108,24 @@ public class HtmlReporter implements Reporter<String> {
         }
         sw.write(properties.getString("de.konfidas.ttc.reporting.htmlHeadlineForLogMessageErrors"));
 
-        if(skipLegitLogMessages){
+        if (skipLegitLogMessages) {
             sw.write(properties.getString("de.konfidas.ttc.reporting.htmlReportLegitMessagesWereSkipped"));
         }
 
-        for(LogMessageArchive tar : logs){
-            for (LogMessage lm : tar.getSortedLogMessages()){
-                if(!map.containsKey(lm)){
-                    if(!skipLegitLogMessages) {
+        for (LogMessageArchive tar : logs) {
+            for (LogMessage lm : tar.getSortedLogMessages()) {
+                if (!map.containsKey(lm)) {
+                    if (!skipLegitLogMessages) {
                         sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.logMessageIsValid"), lm.getFileName()));
                     }
-                }else{
+                } else {
                     sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.introductionErrorsHTMLReport"), lm.getFileName()));
                     sw.write("<ul>");//NON-NLS
-                    for(LogMessageValidationException e : map.get(lm)) {
+                    for (LogMessageValidationException e : map.get(lm)) {
                         sw.write("<li>" + e.toString() + "</li>");//NON-NLS
                     }
                     sw.write("</ul>");//NON-NLS
-                    sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.clickForCompleteContentOfLogMessage"),lm.getFileName()));
+                    sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.clickForCompleteContentOfLogMessage"), lm.getFileName()));
                     sw.write("<div class=\"panel\">");//NON-NLS
 
                     sw.write("<table>");//NON-NLS
@@ -137,7 +140,7 @@ public class HtmlReporter implements Reporter<String> {
     }
 
     void printErrorNum(StringWriter sw, Collection<ValidationException> validationErrors) throws IOException {
-        sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.introductionNumberOfErrors"),validationErrors.size()));
+        sw.write(String.format(properties.getString("de.konfidas.ttc.reporting.introductionNumberOfErrors"), validationErrors.size()));
     }
 
     void printTars(StringWriter sw, Collection<LogMessageArchive> logs) throws IOException {
@@ -145,8 +148,8 @@ public class HtmlReporter implements Reporter<String> {
         sw.write(properties.getString("de.konfidas.ttc.reporting.reportCoversTheFollowingArchives"));
         sw.write("<ul>");//NON-NLS
 
-        for(LogMessageArchive l: logs){
-            sw.write("<li>"+l.getFileName()+"</li>");//NON-NLS
+        for (LogMessageArchive l : logs) {
+            sw.write("<li>" + l.getFileName() + "</li>");//NON-NLS
         }
 
         sw.write("</ul>");//NON-NLS
@@ -155,11 +158,11 @@ public class HtmlReporter implements Reporter<String> {
 
     void printValidators(StringWriter sw, Collection<Validator> validators) throws IOException {
         sw.write(properties.getString("de.konfidas.ttc.reporting.headlineValidators"));
-        sw.write(properties.getString("de.konfidas.ttc.reporting.reportUsedValidators "));
+        sw.write(properties.getString("de.konfidas.ttc.reporting.reportUsedValidators"));
         sw.write("<ul>");//NON-NLS
 
-        for(Validator v: validators){
-            sw.write("<li>"+v.getClass()+"</li>");//NON-NLS
+        for (Validator v : validators) {
+            sw.write("<li>" + v.getClass() + "</li>");//NON-NLS
         }
         sw.write("</ul>");//NON-NLS
     }
@@ -190,17 +193,17 @@ public class HtmlReporter implements Reporter<String> {
 
     static void printLogMessage(LogMessage msg, StringWriter sw) throws IOException {
 
-        sw.write("<tr><td>version:</td><td>"+ msg.getVersion()+"</td></tr>");//NON-NLS
-        sw.write("<tr><td>certifiedDataType:</td><td>"+ msg.getCertifiedDataType().toString()+"</td></tr>");//NON-NLS
+        sw.write("<tr><td>version:</td><td>" + msg.getVersion() + "</td></tr>");//NON-NLS
+        sw.write("<tr><td>certifiedDataType:</td><td>" + msg.getCertifiedDataType().toString() + "</td></tr>");//NON-NLS
 
-        if (msg instanceof TransactionLogMessage){
+        if (msg instanceof TransactionLogMessage) {
             reportCertifiedDataOfTransactionLogMessage((TransactionLogMessage) msg, sw);
         }
-        sw.write("serialNumber: "+Hex.encodeHexString(msg.getSerialNumber()));//NON-NLS
+        sw.write("serialNumber: " + Hex.encodeHexString(msg.getSerialNumber()));//NON-NLS
 
-        sw.write("<tr><td>signatureCounter:</td><td>"+ msg.getSignatureCounter().toString()+"</td></tr>");//NON-NLS
-        sw.write("<tr><td>LogTimeFormat:</td><td>"+ msg.getLogTime().getType().toString()+"</td></tr>");//NON-NLS
-        sw.write("<tr><td>LogTime:</td><td>"+ msg.getLogTime().toString()+"</td></tr>");//NON-NLS
+        sw.write("<tr><td>signatureCounter:</td><td>" + msg.getSignatureCounter().toString() + "</td></tr>");//NON-NLS
+        sw.write("<tr><td>LogTimeFormat:</td><td>" + msg.getLogTime().getType().toString() + "</td></tr>");//NON-NLS
+        sw.write("<tr><td>LogTime:</td><td>" + msg.getLogTime().toString() + "</td></tr>");//NON-NLS
 
 
     }
