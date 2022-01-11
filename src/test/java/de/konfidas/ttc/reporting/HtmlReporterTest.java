@@ -1,60 +1,39 @@
 package de.konfidas.ttc.reporting;
 
 import de.konfidas.ttc.exceptions.BadFormatForTARException;
-import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
 import de.konfidas.ttc.validation.*;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.security.Security;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-@RunWith(Parameterized.class)
+
 public class HtmlReporterTest {
 
-    final static File correctTarFiles = new File("testdata/positive/");
+    final static File correctLogs = new File("testdata" + File.separator + "positive" + File.separator + "can_parse");
 
-    final File file;
-
-    @Before
+    @BeforeEach
     public void initialize() {
         Security.addProvider(new BouncyCastleProvider());
+        ResourceBundle properties = ResourceBundle.getBundle("ttc", new Locale("de", "DE"));
     }
 
-
-    @Parameterized.Parameters
-    public static Collection<File> filesToTest(){
-        if(!correctTarFiles.isDirectory() || correctTarFiles.listFiles() == null){
-            fail("not a directory.");
-        }
-        return Arrays.asList(correctTarFiles.listFiles());
-    }
-
-
-    public HtmlReporterTest(File file){
-        this.file = file;
-    }
-
-    @Ignore
-    @Test
-    public void createReport() throws IOException, BadFormatForTARException, Reporter.ReporterException {
-        LogMessageArchiveImplementation tar  = new LogMessageArchiveImplementation(this.file);
-
-
-        File reportFile = new File("./Report_"+this.file.getName()+".html");
-
+    @ParameterizedTest
+    @MethodSource("filesToTest")
+    public void createHtmlReport_ShouldNotBeNull(File file) throws IOException, BadFormatForTARException, Reporter.ReporterException {
+        LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(file);
 
         Validator v = new AggregatedValidator()
                 .add(new CertificateFileNameValidator())
@@ -63,9 +42,21 @@ public class HtmlReporterTest {
 
         ValidationResult result = v.validate(tar);
 
-        HtmlReporter reporter = new HtmlReporter().skipLegitLogMessages();
-        Files.writeString(reportFile.toPath(), reporter.createReport(Collections.singleton(tar),result,true));
+        try {
+            assertNotNull("HTML report for " + tar.getFileName() + " is null.", new HtmlReporter().skipLegitLogMessages().createReport(Collections.singleton(tar), result, true));
+        } catch (Exception e) {
+            fail("HTML report for " + tar.getFileName() + " threw Exception " + e.getMessage());
+        }
+    }
 
+    static Stream<File> filesToTest() {
+        if (!correctLogs.isDirectory()) {
+            fail(correctLogs.getAbsolutePath() + " is not a directory.");
+        }
+        if (correctLogs.listFiles() == null) {
+            fail("The directory of test TAR files is empty in: " + correctLogs.getAbsolutePath());
+        }
+        return Stream.of(correctLogs.listFiles());
     }
 
 }
