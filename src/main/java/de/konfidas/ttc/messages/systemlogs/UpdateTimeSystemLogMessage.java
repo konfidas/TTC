@@ -6,6 +6,7 @@ import de.konfidas.ttc.messages.logtime.GeneralizedLogTime;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.messages.logtime.UnixLogTime;
 import de.konfidas.ttc.messages.logtime.UtcLogTime;
+import de.konfidas.ttc.utilities.DLTaggedObjectConverter;
 import org.bouncycastle.asn1.*;
 
 import java.io.IOException;
@@ -91,15 +92,18 @@ public class UpdateTimeSystemLogMessage extends SystemLogMessage {
             if (nextElement.getTagNo() != 1) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.timeBeforeUpdateNotFoud")));
 
             this.timeBeforeUpdate = (DLTaggedObject) systemOperationDataIterator.next();
+            byte[] timeBeforeUpdateAsByte = this.timeBeforeUpdate.getEncoded();
+            timeBeforeUpdateAsByte = Arrays.copyOfRange(timeBeforeUpdateAsByte,2,timeBeforeUpdateAsByte.length);
+
             switch (typeOfTimeFromFilename){
                 case "Gen"://NON-NLS
-                    this.timeBeforeUpdateAsLogTime = new GeneralizedLogTime((ASN1GeneralizedTime) this.timeBeforeUpdate.getObject());
+                    this.timeBeforeUpdateAsLogTime = new GeneralizedLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1GeneralizedTime(this.timeBeforeUpdate));
                     break;
                 case "Utc"://NON-NLS
-                    this.timeBeforeUpdateAsLogTime = new UtcLogTime((ASN1UTCTime) this.timeBeforeUpdate.getObject());
+                    this.timeBeforeUpdateAsLogTime = new UtcLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1UTCTime(this.timeBeforeUpdate));
                     break;
                 case "Uni"://NON-NLS
-                    this.timeBeforeUpdateAsLogTime = new UnixLogTime((ASN1Integer) this.timeBeforeUpdate.getObject());
+                    this.timeBeforeUpdateAsLogTime = new UnixLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1Integer(this.timeBeforeUpdate));
                     break;
 
             }
@@ -111,13 +115,14 @@ public class UpdateTimeSystemLogMessage extends SystemLogMessage {
             this.timeAfterUpdate = (DLTaggedObject) systemOperationDataIterator.next();
             switch (typeOfTimeFromFilename){
                 case "Gen"://NON-NLS
-                    this.timeAfterUpdateAsLogTime = new GeneralizedLogTime((ASN1GeneralizedTime) this.timeAfterUpdate.getObject());
+                    this.timeAfterUpdateAsLogTime = new GeneralizedLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1GeneralizedTime( this.timeAfterUpdate));
                     break;
                 case "Utc"://NON-NLS
-                    this.timeAfterUpdateAsLogTime = new UtcLogTime((ASN1UTCTime) this.timeAfterUpdate.getObject());
+                    this.timeAfterUpdateAsLogTime = new UtcLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1UTCTime(this.timeAfterUpdate));
                     break;
                 case "Uni"://NON-NLS
-                    this.timeAfterUpdateAsLogTime = new UnixLogTime((ASN1Integer) this.timeAfterUpdate.getObject());
+                    this.timeAfterUpdateAsLogTime = new UnixLogTime(DLTaggedObjectConverter.dLTaggedObjectToASN1Integer(this.timeAfterUpdate));
+                    int a =0;
                     break;
 
         }}
