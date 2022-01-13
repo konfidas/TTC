@@ -1,7 +1,7 @@
 package de.konfidas.ttc.setup;
 
 import org.bouncycastle.operator.OperatorCreationException;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class TestCaseBasisWithCA {
@@ -73,7 +73,7 @@ public class TestCaseBasisWithCA {
         return clientCertKeyPair;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setupCA()  {
 
         logger.debug("============================================================================");

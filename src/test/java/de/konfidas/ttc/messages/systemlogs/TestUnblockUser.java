@@ -1,22 +1,22 @@
 package de.konfidas.ttc.messages.systemlogs;
 
-import org.apache.commons.io.FileUtils;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.jupiter.api.Disabled;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.security.Security;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
-import static org.junit.Assert.fail;
+//import org.apache.commons.io.FileUtils;
+//import org.bouncycastle.jce.provider.BouncyCastleProvider;
+//import org.junit.Before;
+//import org.junit.Test;
+//import org.junit.jupiter.api.Disabled;
+//import org.junit.runner.RunWith;
+//import org.junit.runners.Parameterized;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+//
+//import java.io.File;
+//import java.security.Security;
+//import java.util.Arrays;
+//import java.util.Collection;
+//import java.util.Collections;
+//
+//import static org.junit.Assert.fail;
 
 //FIXME
 //

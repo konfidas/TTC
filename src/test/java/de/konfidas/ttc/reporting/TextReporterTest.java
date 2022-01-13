@@ -16,8 +16,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class TextReporterTest {

@@ -4,14 +4,15 @@ import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.security.Security;
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
 public class SignatureCounterValidatorTest {
@@ -22,6 +23,7 @@ public class SignatureCounterValidatorTest {
     }
 
     @Test
+    @Disabled
     public void validateSignatureCounter_ShouldFind3Errors() {
 
         try {
