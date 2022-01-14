@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
-public class LogMessageArchiveTestParsingSuccessfully {
+public class LogMessageArchiveParsingSuccessfullyTest {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     final static File correctLogs = new File("testdata" + File.separator + "positive" + File.separator + "can_parse");
 

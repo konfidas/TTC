@@ -12,17 +12,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
-public class LogMessageArchiveTestInconsistentCertificate {
+public class LogMessageArchiveMissingInfoCSVTest {
+
     @BeforeEach
     public void initialize() {
         Security.addProvider(new BouncyCastleProvider());
     }
 
     @Test
-    public void parseTARWithInconsistentCertificate_shouldThrowException() throws Exception {
+    public void parseTARWithMissingInfoCSV_shouldThrowException() throws Exception {
 
         try {
-            new LogMessageArchiveImplementation(new File(File.separator + "testdata" + File.separator + "negative" + File.separator + "inconsistent_certificates" + File.separator + "inconsistent_certificates.tar"));
+            new LogMessageArchiveImplementation(new File(File.separator + "testdata" + File.separator + "negative" + File.separator + "testdata_no_info_csv" + File.separator + "testdata_no_info_csv.tar"));
             fail("The expected Exception was not thrown when parsing a broken TAR file.");
         } catch (BadFormatForTARException e) {
             assertTrue(true);
