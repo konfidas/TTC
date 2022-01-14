@@ -11,11 +11,11 @@ import java.io.File;
 import java.security.Security;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
-public class LogMessageArchiveTestParsingSuccessfully {
+public class LogMessageArchiveParsingSuccessfullyTest {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     final static File correctLogs = new File("testdata" + File.separator + "positive" + File.separator + "can_parse");
 

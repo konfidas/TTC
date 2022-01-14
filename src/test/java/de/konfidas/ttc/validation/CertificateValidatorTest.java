@@ -1,151 +1,34 @@
 package de.konfidas.ttc.validation;
 
-import de.konfidas.ttc.errors.TtcError;
 import de.konfidas.ttc.exceptions.CertificateLoadException;
-import de.konfidas.ttc.exceptions.ValidationException;
-import de.konfidas.ttc.messages.LogMessage;
-import de.konfidas.ttc.tars.LogMessageArchive;
 import de.konfidas.ttc.utilities.CertificateHelper;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.Security;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.cert.CertificateExpiredException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CertificateValidatorTest {
-    Map<String, X509Certificate> client = new HashMap<>();
-    Map<String, X509Certificate> intermediates = new HashMap<>();
-    Collection<X509Certificate> trusted = new ArrayList<>();
 
-    class TestTarMock implements LogMessageArchive {
-
-        @Override
-        public Map<String, X509Certificate> getIntermediateCertificates() {
-            return intermediates;
-        }
-
-        @Override
-        public Map<String, X509Certificate> getClientCertificates() {
-            return client;
-        }
-
-        @Override
-        public Collection<LogMessage> getLogMessages() {
-            return null;
-        }
-
-        @Override
-        public Collection<? extends LogMessage> getSortedLogMessages() {
-            return null;
-        }
-
-        @Override
-        public ArrayList<TtcError> getAllErrors() {
-            return new ArrayList<TtcError>();
-        }
-
-        @Override
-        public String getFileName() {
-            return "";
-        }
-    }
-
-    @BeforeClass
-    public static void setup(){
+    @BeforeEach
+    public void initialize() {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    @Before
-    public void clean(){
-        client.clear();
-        intermediates.clear();
-        trusted.clear();
-    }
-
     @Test
-    @Ignore
-    public void testDTrustChain() throws CertificateLoadException, IOException {
-        client.put("client",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/client.cer")));
-        intermediates.put("intermediate",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/sub.cer")));
-        trusted.add(CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/root.cer")));
-
-        TestTarMock tar = new TestTarMock();
-
-        CertificateValidator validator = new CertificateValidator(trusted);
-        validator.setEnableRevocationChecking(false);
-
-        Collection<ValidationException> errors = validator.validate(tar).getValidationErrors();
-
-        for(ValidationException e : errors){
-            e.printStackTrace();
+    public void testLoadExpiredCertificate_ShouldThrowException() throws CertificateLoadException, IOException {
+        try {
+            CertificateHelper.loadCertificate(new File("testdata" + File.separator + "certificates" + File.separator + "outdated_certificate" + File.separator + "sub.cer"));
+            fail("The expected CertificateExpiredException was not thrown.");
+        } catch (CertificateLoadException e) {
+            assertEquals(CertificateExpiredException.class, e.getCause().getClass());
         }
-
-        assertTrue(errors.isEmpty());
-    }
-
-    @Test
-    @Ignore
-    public void testDTrustChain_missingTrustAnchor() throws CertificateLoadException, IOException {
-        client.put("client",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/client.cer")));
-        intermediates.put("intermediate",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/sub.cer")));
-        // trusted.add(CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/root.cer")));
-
-        TestTarMock tar = new TestTarMock();
-
-        CertificateValidator validator = new CertificateValidator(trusted);
-        validator.setEnableRevocationChecking(false);
-
-        Collection<ValidationException> errors = validator.validate(tar).getValidationErrors();
-
-        assertFalse(errors.isEmpty());
-    }
-
-
-    @Test
-    @Ignore
-    public void testDTrustChain_missingSubCa() throws CertificateLoadException, IOException {
-        client.put("client",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/client.cer")));
-        //intermediates.put("intermediate",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/sub.cer")));
-         trusted.add(CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/root.cer")));
-
-        TestTarMock tar = new TestTarMock();
-
-        CertificateValidator validator = new CertificateValidator(trusted);
-        validator.setEnableRevocationChecking(false);
-
-        Collection<ValidationException> errors = validator.validate(tar).getValidationErrors();
-
-        assertFalse(errors.isEmpty());
-    }
-
-    @Test
-    @Ignore
-    public void testDTrustChain_missingCRL() throws CertificateLoadException, IOException {
-        client.put("client",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/client.cer")));
-        intermediates.put("intermediate",CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/sub.cer")));
-        trusted.add(CertificateHelper.loadCertificate(new File("testdata/certificates/dtrust/root.cer")));
-
-        TestTarMock tar = new TestTarMock();
-
-        CertificateValidator validator = new CertificateValidator(trusted);
-        //validator.setEnableRevocationChecking(false);
-
-        Collection<ValidationException> errors = validator.validate(tar).getValidationErrors();
-
-        assertFalse(errors.isEmpty());
     }
 
 }

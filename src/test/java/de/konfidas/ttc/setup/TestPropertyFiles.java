@@ -15,7 +15,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 
-public class PropertyFiles {
+public class TestPropertyFiles {
 
     @Test
     public void testContentOfPropertyFilesIsExistingDE() throws IOException {

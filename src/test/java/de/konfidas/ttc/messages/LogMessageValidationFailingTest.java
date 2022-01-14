@@ -16,11 +16,11 @@ import java.io.File;
 import java.security.Security;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 
 
-public class LogMessageTestValidationFailing {
+public class LogMessageValidationFailingTest {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     final static File brokenTarFiles = new File("testdata" + File.separator + "negative" + File.separator + "validation_errors");
 

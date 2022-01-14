@@ -11,9 +11,10 @@ import java.io.File;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class CertificateValidatorTestCertConsistency {
+
+public class CertificateValidatorCertConsistencyTest {
     final static File good1File = new File("testdata/certificates/good1.cer");
     final static File broken1File = new File("testdata/certificates/ADDON1DB43EAF69CAB07036CBF51C4EF78FAD15C532288B1A6D6B7C3E2475ED171766.cer");
 
