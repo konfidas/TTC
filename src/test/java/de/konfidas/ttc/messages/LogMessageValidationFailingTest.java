@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.fail;
 
 
-public class LogMessageTestValidationFailing {
+public class LogMessageValidationFailingTest {
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
     final static File brokenTarFiles = new File("testdata" + File.separator + "negative" + File.separator + "validation_errors");
 
