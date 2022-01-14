@@ -3,22 +3,31 @@ package de.konfidas.ttc.messages;
 import de.konfidas.ttc.exceptions.BadFormatForLogMessageException;
 import de.konfidas.ttc.setup.TestCaseBasisWithCA;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.Random;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TestTransactionLogs extends TestCaseBasisWithCA {
 
     final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-public static String[][] provideParameters() {
-    return new String[][] { { "de.konfidas.ttc.messages.StartTransactionLogMessageBuilder", "StartTransaction"}, { "de.konfidas.ttc.messages.UpdateTransactionLogMessageBuilder", "UpdateTransaction"},{ "de.konfidas.ttc.messages.FinishTransactionLogMessageBuilder", "FinishTransaction"}};
-}
+    static Stream<Arguments> provideParameters() {
+        return Stream.of(
+                Arguments.of("de.konfidas.ttc.messages.StartTransactionLogMessageBuilder", "StartTransaction"),
+                Arguments.of( "de.konfidas.ttc.messages.UpdateTransactionLogMessageBuilder", "UpdateTransaction"),
+                Arguments.of("de.konfidas.ttc.messages.FinishTransactionLogMessageBuilder", "FinishTransaction")
+        );
+    }
 
     @ParameterizedTest
     @MethodSource("provideParameters")
