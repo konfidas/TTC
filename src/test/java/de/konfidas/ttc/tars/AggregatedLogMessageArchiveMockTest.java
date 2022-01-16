@@ -11,7 +11,7 @@ import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 import java.util.*;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AggregatedLogMessageArchiveMockTest {
     class TestTarMock implements LogMessageArchive {

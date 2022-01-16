@@ -1,70 +1,38 @@
 package de.konfidas.ttc.validation;
 
-import de.konfidas.ttc.exceptions.BadFormatForTARException;
 import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.tars.LogMessageArchiveImplementation;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.security.Security;
 import java.util.Collection;
-import java.util.LinkedList;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-@RunWith(Parameterized.class)
+
 public class SignatureCounterValidatorTest {
-    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
-    final File file;
-    final int expectedNumberOfErrors;
-
-    @Before
+    @BeforeEach
     public void initialize() {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-
-    @Parameterized.Parameters
-    public static LinkedList<Object[]> filesToTest() {
-        LinkedList<Object[]> parameters = new LinkedList<>();
-
-        parameters.add(new Object[]{new File("testdata/positive/positive_bdr_tse_web.tar"),1});
-
-        return parameters;
-    }
-
-    public SignatureCounterValidatorTest(File file, int expectedNumberOfErrors) {
-        this.file = file;
-        this.expectedNumberOfErrors = expectedNumberOfErrors;
-    }
-
-    @Ignore
     @Test
-    public void parse() {
-        logger.debug("");
-        logger.debug("============================================================================");
-        logger.debug("testing tar file {}:", file.getName());
+    @Disabled
+    public void validateSignatureCounter_ShouldFind3Errors() {
 
         try {
-            SignatureCounterValidator validator = new SignatureCounterValidator();
+            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(new File("testdata" + File.separator + "negative" + File.separator + "signature_validation_errors" + File.separator + "6e6c6a42-5c8d-4a9c-9572-26c10619d020.tar"));
+            Collection<ValidationException> errors = new SignatureCounterValidator().validate(tar).getValidationErrors();
+            assertEquals(3, errors.size());
 
-            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(this.file);
-
-            Collection<ValidationException>  errors = validator.validate(tar).getValidationErrors();
-
-            assert(errors.size() == expectedNumberOfErrors);
-
-        } catch (IOException | BadFormatForTARException e) {
-            fail();
+        } catch (Exception e) {
+            fail("An Exception was thrown but should not have been: " + e.getMessage());
         }
     }
 }
