@@ -19,6 +19,21 @@ class LockTransactionLoggingLogMessageTest {
     static ResourceBundle properties = ResourceBundle.getBundle("ttc", locale);
 
     @Test
+    public void testLockTransactionLogMessage_SetUserIdAsString_ShouldGetUserIdAsString() throws BadFormatForLogMessageException {
+        LockTransactionLoggingLogMessage message = new LockTransactionLoggingLogMessage(new byte[0], null);
+        message.setUserIDAsString("foobar");
+        assertEquals("foobar", message.getUserIDAsString());
+    }
+
+    @Test
+    public void testLockTransactionLogMessage_SetUserId_ShouldGetUserId() throws BadFormatForLogMessageException {
+        DLTaggedObject object = mock(DLTaggedObject.class);
+        LockTransactionLoggingLogMessage message = new LockTransactionLoggingLogMessage(new byte[0], null);
+        message.setUserID(object);
+        assertEquals(object, message.getUserID());
+    }
+
+    @Test
     public void testLockTransactionLogMessage_FilenameIsNull_ShouldBeOk() throws BadFormatForLogMessageException {
         new LockTransactionLoggingLogMessage(new byte[0], null);
     }
