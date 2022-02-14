@@ -104,7 +104,7 @@ public class SignatureCounterValidatorMockedTest {
         }
 
         @Override
-        public byte[] getDTBS() {
+        public byte[] getDtbs() {
             return new byte[0];
         }
 

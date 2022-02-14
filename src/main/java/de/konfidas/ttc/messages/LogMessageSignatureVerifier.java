@@ -48,7 +48,7 @@ public class LogMessageSignatureVerifier {
             Signature st = Signature.getInstance(algoName, BouncyCastleProvider.PROVIDER_NAME);
             st.initVerify(cert.getPublicKey());
 
-            st.update(msg.getDTBS());
+            st.update(msg.getDtbs());
 
             byte[] signatureValue = msg.getSignatureValue();
             st.verify(signatureValue);

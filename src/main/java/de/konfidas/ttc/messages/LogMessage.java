@@ -15,7 +15,7 @@ public interface LogMessage {
     byte[] getSerialNumber();
     String getFileName();
     String getSignatureAlgorithm();
-    byte[] getDTBS();
+    byte[] getDtbs();
     byte[] getSignatureValue();
     int getVersion();
     oid getCertifiedDataType();
@@ -23,8 +23,6 @@ public interface LogMessage {
     ArrayList<TtcError> getAllErrors();
 
     byte[] getSeAuditData();
-
-
 
     byte[] getEncoded();
 }

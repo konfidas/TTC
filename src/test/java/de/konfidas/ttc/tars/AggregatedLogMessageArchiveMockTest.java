@@ -105,7 +105,7 @@ public class AggregatedLogMessageArchiveMockTest {
         }
 
         @Override
-        public byte[] getDTBS() {
+        public byte[] getDtbs() {
             return new byte[0];
         }
 

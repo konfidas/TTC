@@ -98,7 +98,7 @@ public class LogMessagePrinter {
         return_value.append(String.format("signatureValue:: %s", Hex.encodeHexString(msg.getSignatureValue())));//NON-NLS
         return_value.append(System.lineSeparator());
 
-        return_value.append(String.format("dtbs:: %s", Hex.encodeHexString(msg.getDTBS())));//NON-NLS
+        return_value.append(String.format("dtbs:: %s", Hex.encodeHexString(msg.getDtbs())));//NON-NLS
         return_value.append(System.lineSeparator());
 
         return(return_value.toString());

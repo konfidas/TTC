@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
@@ -273,7 +274,7 @@ public class TransactionLogMessage extends LogMessageImplementation {
     }
 
     @Override
-    public Collection<ASN1Primitive> getSignatureAlgorithmParameters() {
+    public ArrayList<ASN1Primitive> getSignatureAlgorithmParameters() {
         return this.signatureAlgorithmParameters;
     }
 

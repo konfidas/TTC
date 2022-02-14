@@ -22,6 +22,10 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 
 /**
  * Diese Klasse repräsentiert eine LogMessage. Der Konstruktur erhält den Inhalt der LogMessage und den Dateinamen, aus der
@@ -68,26 +72,25 @@ public abstract class LogMessageImplementation implements LogMessage {
     static Locale locale = new Locale("de", "DE"); //NON-NLS
     static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
 
-
     final static String[] allowedCertifiedDataType = {"0.4.0.127.0.7.3.7.1.1", "0.4.0.127.0.7.3.7.1.2", "0.4.0.127.0.7.3.7.1.3"};
     final static String[] allowedAlgorithms = {"0.4.0.127.0.7.1.1.4.1.2", "0.4.0.127.0.7.1.1.4.1.3", "0.4.0.127.0.7.1.1.4.1.4", "0.4.0.127.0.7.1.1.4.1.5", "0.4.0.127.0.7.1.1.4.1.8", "0.4.0.127.0.7.1.1.4.1.9", "0.4.0.127.0.7.1.1.4.1.10", "0.4.0.127.0.7.1.1.4.1.11", "0.4.0.127.0.7.1.1.4.4.1", "0.4.0.127.0.7.1.1.4.4.2", "0.4.0.127.0.7.1.1.4.4.3", "0.4.0.127.0.7.1.1.4.4.4", "0.4.0.127.0.7.1.1.4.4.5", "0.4.0.127.0.7.1.1.4.4.6", "0.4.0.127.0.7.1.1.4.4.7", "0.4.0.127.0.7.1.1.4.4.8"};
 
-    int version = 0;
-    oid certifiedDataType;
-    final ArrayList<ASN1Primitive> certifiedData = new ArrayList<>();
-    byte[] serialNumber;
-    String signatureAlgorithm = "";
-    final ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<>();
-    protected ArrayList<TtcError> allErrors = new ArrayList<>();
+    @Getter int version = 0;
+    @Getter oid certifiedDataType;
+    @Getter final ArrayList<ASN1Primitive> certifiedData = new ArrayList<>();
+    @Getter byte[] serialNumber;
+    @Getter String signatureAlgorithm = "";
+    @Getter final ArrayList<ASN1Primitive> signatureAlgorithmParameters = new ArrayList<>();
+    @Getter protected ArrayList<TtcError> allErrors = new ArrayList<>();
 
-    LogTime logTime;
+    @Getter LogTime logTime;
 
-    byte[] encoded;
-    byte[] signatureValue;
-    BigInteger signatureCounter = new BigInteger("5");
-    byte[] seAuditData;
-    byte[] dtbs;
-    final String filename;
+    @Getter byte[] encoded;
+    @Getter byte[] signatureValue;
+    @Getter BigInteger signatureCounter = new BigInteger("5");
+    @Getter byte[] seAuditData;
+    @Getter byte[] dtbs;
+    @Getter final String fileName;
 
     public ArrayList<TtcError> getAllErrors(){return allErrors;}
 
@@ -96,8 +99,8 @@ public abstract class LogMessageImplementation implements LogMessage {
         this(Files.readAllBytes(file.toPath()), file.getName());
     }
 
-    public LogMessageImplementation(byte[] content, String filename)  {
-        this.filename = filename;
+    public LogMessageImplementation(byte[] content, String fileName)  {
+        this.fileName = fileName;
         parse(content);
     }
 
@@ -105,58 +108,7 @@ public abstract class LogMessageImplementation implements LogMessage {
      * @return die toString Methode wurde überschrieben. Sie gibt den Dateinamen zurück, aus dem die LogMessage stammt
      */
     public String toString() {
-        return this.filename;
-    }
-
-    @Override
-    public byte[] getSerialNumber() {
-        return this.serialNumber;
-    }
-
-    @Override
-    public String getFileName() {
-        return this.filename;
-    }
-
-    @Override
-    public byte[] getSignatureValue() {
-        return this.signatureValue;
-    }
-
-    @Override
-    public byte[] getDTBS() {
-        return this.dtbs;
-    }
-
-    @Override
-    public byte[] getSeAuditData() {
-        return this.seAuditData;
-    }
-
-    @Override
-    public String getSignatureAlgorithm() {
-        return this.signatureAlgorithm;
-    }
-
-    @Override
-    public LogTime getLogTime(){return logTime; }
-
-    @Override
-    public BigInteger getSignatureCounter() { return signatureCounter; }
-
-    @Override
-    public Collection<ASN1Primitive> getSignatureAlgorithmParameters(){
-        return this.signatureAlgorithmParameters;
-    }
-
-    @Override
-    public oid getCertifiedDataType(){
-        return this.certifiedDataType;
-    }
-
-    @Override
-    public int getVersion(){
-        return version;
+        return this.fileName;
     }
 
     /**
@@ -402,22 +354,22 @@ public abstract class LogMessageImplementation implements LogMessage {
 
     public class LogMessageParsingException extends BadFormatForLogMessageException {
         public LogMessageParsingException(String message) {
-            super(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), filename,message, null));
+            super(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), fileName,message, null));
         }
 
         public LogMessageParsingException(String message, Exception reason) {
-            super(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), filename,message, reason));
+            super(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), fileName,message, reason));
         }
     }
 
 
     public class LogMessageParsingError extends BadFormatForLogMessageError {
         public LogMessageParsingError(String message) {
-            super(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), filename,message, null));
+            super(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), fileName,message, null));
         }
 
         public LogMessageParsingError(String message, Exception reason) {
-            super(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), filename,message, reason));
+            super(MessageFormat.format(properties.getString("de.konfidas.ttc.messages.parsingOfMessageFailedWithReason"), fileName,message, reason));
         }
     }
 
