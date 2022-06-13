@@ -119,6 +119,11 @@ public class LogMessageFactory {
             return new AuditLogMessage(content, fileName);
         }
 
+        if (fileName.matches("^(Gent_|Unixt_|Utc_)\\d+_Sig-\\d+_Log-Sys_updateDeviceCompleted.+log$")) {
+            logger.debug("{} seems to be an updateDeviceCompleted System log. Processing it now.", fileName);//NON-NLS
+            return new UpdateDeviceCompletedSystemLogMessage(content, fileName);
+        }
+
         throw new BadFormatForLogMessageException(String.format(properties.getString("de.konfidas.ttc.messages.fileNameUnknownTypeOfLogMessages"),fileName));
 
     }
