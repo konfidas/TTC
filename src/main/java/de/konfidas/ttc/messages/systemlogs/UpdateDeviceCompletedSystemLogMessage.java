@@ -178,7 +178,7 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
             if (componentInformationSetIterator.hasNext()) {
                 nextElement = (DLTaggedObject) componentInformationSetAsASN1.get(componentInformationSetIterator.nextIndex());
                 if (nextElement.getTagNo() != 4) {
-                    this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataCertificationIdNotFound")));
+                    this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataUnknownTag")));
                 }
                 DLTaggedObject certificationId = (DLTaggedObject) componentInformationSetIterator.next();
                 component.certificationId = DLTaggedObjectConverter.dLTaggedObjectToString(certificationId);
