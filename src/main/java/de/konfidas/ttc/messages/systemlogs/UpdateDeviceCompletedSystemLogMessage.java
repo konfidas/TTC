@@ -78,14 +78,14 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
     }
 
     @Override
-    protected void parseSystemOperationDataContent(ASN1InputStream stream) throws IOException {
+    protected void parseSystemOperationDataContent(final ASN1InputStream stream) throws IOException {
 
-        ASN1Primitive systemOperationData = stream.readObject();
+        final ASN1Primitive systemOperationData = stream.readObject();
         if (!(systemOperationData instanceof ASN1Sequence))
             this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent")));
 
-        List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
-        ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
+        final List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
+        final ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
 
         try {
             //read updateResult
@@ -131,9 +131,9 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
         }
     }
 
-    private void parseDeviceInformationSet(ASN1Sequence deviceInformationSet) {
-        List<ASN1Primitive> deviceInformationSetAsASN1List = Collections.list(deviceInformationSet.getObjects());
-        ListIterator<ASN1Primitive> deviceInformationSetIterator = deviceInformationSetAsASN1List.listIterator();
+    private void parseDeviceInformationSet(final ASN1Sequence deviceInformationSet) {
+        final List<ASN1Primitive> deviceInformationSetAsASN1List = Collections.list(deviceInformationSet.getObjects());
+        final ListIterator<ASN1Primitive> deviceInformationSetIterator = deviceInformationSetAsASN1List.listIterator();
 
         if (!deviceInformationSetIterator.hasNext()) {
             this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorDeviceInformationSetEndedEarly")));
@@ -142,17 +142,17 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
         this.deviceInformationSet = new ArrayList<>();
 
         while (deviceInformationSetIterator.hasNext()) {
-            List<ASN1Primitive> componentInformationSetAsASN1 = Collections.list(((ASN1Sequence) deviceInformationSetAsASN1List.get(deviceInformationSetIterator.nextIndex())).getObjects());
-            ListIterator<ASN1Primitive> componentInformationSetIterator = componentInformationSetAsASN1.listIterator();
+            final List<ASN1Primitive> componentInformationSetAsASN1 = Collections.list(((ASN1Sequence) deviceInformationSetAsASN1List.get(deviceInformationSetIterator.nextIndex())).getObjects());
+            final ListIterator<ASN1Primitive> componentInformationSetIterator = componentInformationSetAsASN1.listIterator();
 
-            var component = new ComponentInformationSet();
+            final ComponentInformationSet component = new ComponentInformationSet();
 
             //componentName
             var nextElement = (DLTaggedObject) componentInformationSetAsASN1.get(componentInformationSetIterator.nextIndex());
             if (nextElement.getTagNo() != 0) {
                 this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataComponentNameNotFound")));
             }
-            DLTaggedObject componentName = (DLTaggedObject) componentInformationSetIterator.next();
+            final DLTaggedObject componentName = (DLTaggedObject) componentInformationSetIterator.next();
             component.componentName = DLTaggedObjectConverter.dLTaggedObjectToString(componentName);
 
             //manufacturer
@@ -160,7 +160,7 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
             if (nextElement.getTagNo() != 1) {
                 this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataManufacturerNotFound")));
             }
-            DLTaggedObject manufacturer = (DLTaggedObject) componentInformationSetIterator.next();
+            final DLTaggedObject manufacturer = (DLTaggedObject) componentInformationSetIterator.next();
             component.manufacturer = DLTaggedObjectConverter.dLTaggedObjectToString(manufacturer);
 
             //model
@@ -168,7 +168,7 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
             if (nextElement.getTagNo() != 2) {
                 this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataModelNotFound")));
             }
-            DLTaggedObject model = (DLTaggedObject) componentInformationSetIterator.next();
+            final DLTaggedObject model = (DLTaggedObject) componentInformationSetIterator.next();
             component.model = DLTaggedObjectConverter.dLTaggedObjectToString(model);
 
             //version
@@ -176,7 +176,7 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
             if (nextElement.getTagNo() != 3) {
                 this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataVersionNotFound")));
             }
-            DLTaggedObject version = (DLTaggedObject) componentInformationSetIterator.next();
+            final DLTaggedObject version = (DLTaggedObject) componentInformationSetIterator.next();
             component.version = DLTaggedObjectConverter.dLTaggedObjectToString(version);
 
             //certificationId
@@ -185,7 +185,7 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
                 if (nextElement.getTagNo() != 4) {
                     this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataUnknownTag")));
                 }
-                DLTaggedObject certificationId = (DLTaggedObject) componentInformationSetIterator.next();
+                final DLTaggedObject certificationId = (DLTaggedObject) componentInformationSetIterator.next();
                 component.certificationId = DLTaggedObjectConverter.dLTaggedObjectToString(certificationId);
             }
 

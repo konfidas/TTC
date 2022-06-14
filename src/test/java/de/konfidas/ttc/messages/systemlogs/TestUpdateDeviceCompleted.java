@@ -38,7 +38,6 @@ class TestUpdateDeviceCompleted {
     final byte[] content =  FileUtils.readFileToByteArray(syslog);
 
     final UpdateDeviceCompletedSystemLogMessage message = new UpdateDeviceCompletedSystemLogMessage(content, syslog.getName());
-    System.out.println(message);
     assertEquals(0, message.getAllErrors().size());
   }
 }
