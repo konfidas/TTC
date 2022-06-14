@@ -63,6 +63,8 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
 
     static final ArrayList<String> requiredComponentNames = new ArrayList<>(Arrays.asList("device", "CSP", "SMAERS", "storage"));
 
+    static final ArrayList<Integer> possibleUpdateResults = new ArrayList<>(Arrays.asList(0, 1, 2));
+
     static class ComponentInformationSet {
         String componentName;
         String manufacturer;
@@ -94,6 +96,9 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
 
             this.updateResult = (DLTaggedObject) systemOperationDataIterator.next();
             this.updateResultAsBigInteger = DLTaggedObjectConverter.dLTaggedObjectToASN1Integer(this.updateResult).getValue();
+            if (!possibleUpdateResults.contains(this.updateResultAsBigInteger.intValue())) {
+                this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataUpdateResultIncorrect")));
+            }
 
             nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
 
