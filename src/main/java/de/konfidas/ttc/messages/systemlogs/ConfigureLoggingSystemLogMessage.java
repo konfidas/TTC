@@ -22,12 +22,12 @@ import java.util.*;
  * ╟───────────────────────┼──────┼───────────────────────────────────────────────────────────────┼────────────╢
  * ║ result                │ 0x82 │ Boolean                                                       │ m          ║
  * ╟───────────────────────┼──────┼───────────────────────────────────────────────────────────────┼────────────╢
- * ║ parameters            │ 0x83 │ OCTECTSTRING                                                  │ c          ║
- * ╚═══════════════════════╧══════╧══════════════════════════════════╧═════════════════════════════════════════╝
+ * ║ parameters            │ 0x83 │ OCTET STRING                                                  │ c          ║
+ * ╚═══════════════════════╧══════╧═══════════════════════════════════════════════════════════════╧════════════╝
  * </pre>
  */
 public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
-    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    static final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
 
     static Locale locale = new Locale("de", "DE");//NON-NLS
@@ -42,7 +42,6 @@ public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
 
     String componentNameAsString;
     Boolean resultAsBoolean;
-//    String reasonForFailureAsString;
 
 
     public ConfigureLoggingSystemLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
@@ -72,7 +71,9 @@ public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
 
             //result
             nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 3) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorResultNotFound")));
+            if (nextElement.getTagNo() != 2) {
+                this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorResultNotFound")));
+            }
 
             this.result = (DLTaggedObject) systemOperationDataIterator.next();
             this.resultAsBoolean = DLTaggedObjectConverter.dLTaggedObjectToBoolean(this.result);
