@@ -209,7 +209,7 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
         }
 
         this.deviceInformationSet.forEach(component -> {
-            if (!this.requiredComponentNames.contains(component.componentName)) {
+            if (!requiredComponentNames.contains(component.componentName)) {
                 this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataComponentMissing")));
             }
         });
