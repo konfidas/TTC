@@ -108,8 +108,6 @@ public class UpdateDeviceCompletedSystemLogMessage extends SystemLogMessage {
                 this.reasonForFailureAsString = DLTaggedObjectConverter.dLTaggedObjectToString(this.reasonForFailure);
             }
 
-            nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-
             //read newVersion
             if (nextElement.getTagNo() != 3) {
                 this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataNewVersionNotFound")));
