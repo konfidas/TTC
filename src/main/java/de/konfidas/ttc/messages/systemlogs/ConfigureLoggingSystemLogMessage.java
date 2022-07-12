@@ -22,12 +22,12 @@ import java.util.*;
  * ╟───────────────────────┼──────┼───────────────────────────────────────────────────────────────┼────────────╢
  * ║ result                │ 0x82 │ Boolean                                                       │ m          ║
  * ╟───────────────────────┼──────┼───────────────────────────────────────────────────────────────┼────────────╢
- * ║ parameters            │ 0x83 │ OCTECTSTRING                                                  │ c          ║
- * ╚═══════════════════════╧══════╧══════════════════════════════════╧═════════════════════════════════════════╝
+ * ║ parameters            │ 0x83 │ OCTET STRING                                                  │ c          ║
+ * ╚═══════════════════════╧══════╧═══════════════════════════════════════════════════════════════╧════════════╝
  * </pre>
  */
 public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
-    final static Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    static final Logger logger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
 
 
     static Locale locale = new Locale("de", "DE");//NON-NLS
@@ -37,12 +37,22 @@ public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
     DLTaggedObject componentName;
     DLTaggedObject result;
     DLTaggedObject parameters;
-    List<ASN1Primitive> loggingParameter;
 
 
     String componentNameAsString;
     Boolean resultAsBoolean;
-//    String reasonForFailureAsString;
+
+    ArrayList<LoggingParameter> loggingParameterSet;
+
+    static class LoggingParameter {
+        final String eventName;
+        final Boolean enabled;
+
+        public LoggingParameter(final String eventName, final Boolean enabled) {
+            this.eventName = eventName;
+            this.enabled = enabled;
+        }
+    }
 
 
     public ConfigureLoggingSystemLogMessage(byte[] content, String filename) throws BadFormatForLogMessageException {
@@ -54,13 +64,13 @@ public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
     @Override
     protected void parseSystemOperationDataContent(ASN1InputStream stream) throws IOException {
 
-        ASN1Primitive systemOperationData = stream.readObject();
+        final ASN1Primitive systemOperationData = stream.readObject();
         if (!(systemOperationData instanceof ASN1Sequence)) {
             this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParsingSystemOperationDataContent")));
         }
 
-        List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
-        ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
+        final List<ASN1Primitive> systemOperationDataAsAsn1List = Collections.list(((ASN1Sequence) systemOperationData).getObjects());
+        final ListIterator<ASN1Primitive> systemOperationDataIterator = systemOperationDataAsAsn1List.listIterator();
 
         try {
             //componentName einlesen
@@ -72,11 +82,14 @@ public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
 
             //result
             nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
-            if (nextElement.getTagNo() != 3) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorResultNotFound")));
+            if (nextElement.getTagNo() != 2) {
+                this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorResultNotFound")));
+            }
 
             this.result = (DLTaggedObject) systemOperationDataIterator.next();
             this.resultAsBoolean = DLTaggedObjectConverter.dLTaggedObjectToBoolean(this.result);
 
+            this.loggingParameterSet = new ArrayList<>();
 
             //parameters
             nextElement = (DLTaggedObject) systemOperationDataAsAsn1List.get(systemOperationDataIterator.nextIndex());
@@ -84,37 +97,45 @@ public class ConfigureLoggingSystemLogMessage extends SystemLogMessage {
 
             this.parameters = (DLTaggedObject) systemOperationDataIterator.next();
 
+            if (this.parameters.getObject() instanceof ASN1OctetString) {
+                final var parameterOctetString = ASN1OctetString.getInstance(this.parameters.getObject());
 
-            //parameters is a Sequence in itself. Parsing follows
+                final var parametersSequence = ASN1Sequence.getInstance(parameterOctetString.getOctets());
 
-            if (this.parameters.getObject() instanceof ASN1Sequence) {
+                ArrayList<ASN1Sequence> parametersAsASN1List = Collections.list(parametersSequence.getObjects());
 
-                List<ASN1Primitive> parametersAsASN1List = Collections.list(((ASN1Sequence) this.parameters.getObject()).getObjects());
-                ListIterator<ASN1Primitive> parametersSetIterator = parametersAsASN1List.listIterator();
+                for (ASN1Sequence parameter : parametersAsASN1List) {
+                    final List<ASN1Primitive> loggingParameters = Collections.list(parameter.getObjects());
+                    final ListIterator<ASN1Primitive> parameterIterator = loggingParameters.listIterator();
 
-                while (parametersSetIterator.hasNext()) {
-                    ASN1Primitive loggingParameter = parametersSetIterator.next();
-                    this.loggingParameter.add(loggingParameter);
-                }
-
-                for (ASN1Primitive loggingParameter : this.loggingParameter) {
-                    if (!(loggingParameter instanceof ASN1Sequence)) this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorLoggingParameterNotOfTypeASN1Sequence")));
-                    else {
-                        List<ASN1Primitive> parametersContentAsASN1List = Collections.list(((ASN1Sequence) loggingParameter).getObjects());
-                        ListIterator<ASN1Primitive> parametersContentSetIterator = parametersContentAsASN1List.listIterator();
-//TODO HIER WEITER
-
+                    nextElement = (DLTaggedObject) loggingParameters.get(parameterIterator.nextIndex());
+                    if (nextElement.getTagNo() != 0) {
+                        this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEventNameNotFound")));
                     }
+
+                    final var eventNameTaggedObject = (DLTaggedObject) parameterIterator.next();
+                    final String eventName = DLTaggedObjectConverter.dLTaggedObjectToString(eventNameTaggedObject);
+
+                    nextElement = (DLTaggedObject) loggingParameters.get(parameterIterator.nextIndex());
+                    if (nextElement.getTagNo() != 1) {
+                        this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEnabledNotFound")));
+                    }
+
+                    final var enabledTaggedObject = (DLTaggedObject) parameterIterator.next();
+                    final Boolean enabled = DLTaggedObjectConverter.dLTaggedObjectToBoolean(enabledTaggedObject);
+
+                    if (parameterIterator.hasNext()) {
+                        this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorLoggingParameterUnknownTag")));
+                    }
+
+                    final var newLoggingParameter = new LoggingParameter(eventName, enabled);
+                    this.loggingParameterSet.add(newLoggingParameter);
                 }
-
-
-            } else this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParamtersDoesNotStartWithSequence")));
-
-
+            } else {
+                this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorParametersDoesNotStartWithOctetString")));
+            }
         } catch (NoSuchElementException ex) {
             this.allErrors.add(new SystemLogParsingError(properties.getString("de.konfidas.ttc.messages.systemlogs.errorEarlyEndOfSystemOperationData"), ex));
         }
     }
-
-
 }
