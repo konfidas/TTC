@@ -37,7 +37,7 @@ public class CertificateFileNameValidator implements Validator {
 
         String keyHashFromFilename = filename.split("_")[0].toUpperCase();
 
-        if (!(certSubjectClean.equals(keyHashFromFilename))){
+        if (!(certSubjectClean.contains(keyHashFromFilename))){
             throw new CertificateInconsistentToFilenameException.FilenameToSubjectMismatchException(certSubjectClean, keyHashFromFilename);
         }
 

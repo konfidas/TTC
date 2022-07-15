@@ -11,7 +11,7 @@ import java.io.File;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class CertificateValidatorCertConsistencyTest {
@@ -35,24 +35,17 @@ public class CertificateValidatorCertConsistencyTest {
     @Test
     public void testWrongSubject() throws Exception {
         X509Certificate good1Cert = CertificateHelper.loadCertificate(good1File.toPath());
-        try {
+        assertThrows(CertificateInconsistentToFilenameException.FilenameToSubjectMismatchException.class, () -> {
             CertificateFileNameValidator.validateCertificateAgainstFilename(good1Cert, "00B6400083CDCB70BDBEEBFA86DEA3951394567DFE693D3C849C787947715F5C");
-            fail();
-        } catch (CertificateInconsistentToFilenameException.FilenameToSubjectMismatchException e) {
-            // expected.
-        }
+        });
     }
 
     @Test
     public void testWrongPubkey() throws Exception {
         X509Certificate good1Cert = CertificateHelper.loadCertificate(broken1File.toPath());
-        try {
-//            CertificateFileNameValidator.validateCertificateAgainstFilename(good1Cert, "ADDON1DB43EAF69CAB07036CBF51C4EF78FAD15C532288B1A6D6B7C3E2475ED171766");
-            CertificateFileNameValidator.validateCertificateAgainstFilename(good1Cert, "123456789");
 
-            fail();
-        } catch (CertificateInconsistentToFilenameException.FilenameToPubKeyMismatchException e) {
-            // expected.
-        }
+        assertThrows(CertificateInconsistentToFilenameException.FilenameToPubKeyMismatchException.class, () -> {
+            CertificateFileNameValidator.validateCertificateAgainstFilename(good1Cert, "123456789");
+        });
     }
 }
