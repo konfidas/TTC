@@ -283,13 +283,6 @@ public abstract class LogMessageImplementation implements LogMessage {
         }
         ASN1Primitive nextElement = logMessageAsASN1List.get(logMessageIterator.nextIndex());
         if (!(nextElement instanceof ASN1OctetString)) {
-            System.out.println("2");
-            System.out.println(nextElement.getClass().getName());
-            if (nextElement.getClass().getName().equals("org.bouncycastle.asn1.DLTaggedObject")) {
-                final var temp = (DLTaggedObject) nextElement;
-                System.out.println(temp.getTagNo());
-            }
-
             this.allErrors.add(new LogMessageParsingError(String.format(properties.getString("de.konfidas.ttc.messages.serialNumberOfWrongType"), nextElement.getClass())));
         return;
         }
