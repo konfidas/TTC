@@ -29,7 +29,7 @@ Die Motivation zu TTC entstammt der Arbeit mit verschiedenen TSE verschiedenere 
 TTC liegt aktuell als Alpha-Version vor. Die geplanten Funktionen sind noch nicht vollständig implementiert. 
 
 ## Lizenz 
-TTC steht unter der MIT Lizenz. 
+Dieses Projekt folgt keiner Standard-Lizenz. Für Lizenzfragen bitte nt@konfidas.de kontaktieren.
 
 ## Argumente 
 
