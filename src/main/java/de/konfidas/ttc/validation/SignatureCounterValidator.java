@@ -12,6 +12,8 @@ import java.util.*;
 
 public class SignatureCounterValidator implements Validator{
     final HashMap<String, BigInteger> nextSignatureCounters;
+    boolean forceSignatureCounterToStartWith1;
+
 
     static Locale locale = new Locale("de", "DE"); //NON-NLS
     static ResourceBundle properties = ResourceBundle.getBundle("ttc",locale);//NON-NLS
@@ -26,6 +28,12 @@ public class SignatureCounterValidator implements Validator{
 
     public SignatureCounterValidator(){
         nextSignatureCounters = new HashMap<>();
+        forceSignatureCounterToStartWith1 = false;
+    }
+
+    public SignatureCounterValidator(boolean _forceSignatureCounterToStartWith1){
+        nextSignatureCounters = new HashMap<>();
+        forceSignatureCounterToStartWith1 =_forceSignatureCounterToStartWith1;
     }
 
     @Override
@@ -42,8 +50,14 @@ public class SignatureCounterValidator implements Validator{
 
             BigInteger foundSignatureCounter = msg.getSignatureCounter();
             if(!nextSignatureCounters.containsKey(serial)){
+                if (forceSignatureCounterToStartWith1){
                 nextSignatureCounters.put(serial, BigInteger.ONE);
-                expectedSignatureCounter = BigInteger.ONE;
+                expectedSignatureCounter = BigInteger.ONE;}
+                else{
+                    nextSignatureCounters.put(serial, foundSignatureCounter);
+                    expectedSignatureCounter = foundSignatureCounter;
+                }
+
             }else{
                 expectedSignatureCounter = nextSignatureCounters.get(serial);
             }

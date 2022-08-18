@@ -35,4 +35,42 @@ public class SignatureCounterValidatorTest {
             fail("An Exception was thrown but should not have been: " + e.getMessage());
         }
     }
+
+    @Test
+    public void validateSignatureCounterStartingWithTwo_ShouldFindZeroErrors() {
+
+        try {
+            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(new File("testdata" + File.separator + "counter" + File.separator + "signatureCounterStartsWithTwo.tar"));
+            Collection<ValidationException> errors = new SignatureCounterValidator().validate(tar).getValidationErrors();
+            assertEquals(0, errors.size());
+
+        } catch (Exception e) {
+            fail("An Exception was thrown but should not have been: " + e.getMessage());
+        }
+    }
+    @Test
+    public void validateSignatureCounterStartingWithTwo_ShouldFindOneError() {
+
+        try {
+            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(new File("testdata" + File.separator + "counter" + File.separator + "signatureCounterStartsWithTwo.tar"));
+            Collection<ValidationException> errors = new SignatureCounterValidator(true).validate(tar).getValidationErrors();
+            assertEquals(1, errors.size());
+
+        } catch (Exception e) {
+            fail("An Exception was thrown but should not have been: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void validateSignatureCounterWithMissingCounters_ShouldFindThreeErrors() {
+
+        try {
+            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(new File("testdata" + File.separator + "counter" + File.separator + "ThreeMissingAreasOfSignatureCounter.tar"));
+            Collection<ValidationException> errors = new SignatureCounterValidator().validate(tar).getValidationErrors();
+            assertEquals(3, errors.size());
+
+        } catch (Exception e) {
+            fail("An Exception was thrown but should not have been: " + e.getMessage());
+        }
+    }
 }
