@@ -40,7 +40,7 @@ public class SignatureCounterValidatorTest {
     public void validateSignatureCounterStartingWithTwo_ShouldFindZeroErrors() {
 
         try {
-            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(new File("testdata" + File.separator + "counter" + File.separator + "signatureCounterStartsWithTwo.tar"));
+            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(new File("testdata" + File.separator + "counter" + File.separator + "SignatureCounterStartsWithTwo.tar"));
             Collection<ValidationException> errors = new SignatureCounterValidator().validate(tar).getValidationErrors();
             assertEquals(0, errors.size());
 
@@ -52,7 +52,7 @@ public class SignatureCounterValidatorTest {
     public void validateSignatureCounterStartingWithTwo_ShouldFindOneError() {
 
         try {
-            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(new File("testdata" + File.separator + "counter" + File.separator + "signatureCounterStartsWithTwo.tar"));
+            LogMessageArchiveImplementation tar = new LogMessageArchiveImplementation(new File("testdata" + File.separator + "counter" + File.separator + "SignatureCounterStartsWithTwo.tar"));
             Collection<ValidationException> errors = new SignatureCounterValidator(true).validate(tar).getValidationErrors();
             assertEquals(1, errors.size());
 
