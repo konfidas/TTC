@@ -1,11 +1,13 @@
 package de.konfidas.ttc.validation;
 
 import de.konfidas.ttc.errors.TtcError;
+import de.konfidas.ttc.exceptions.ValidationException;
 import de.konfidas.ttc.messages.LogMessage;
 import de.konfidas.ttc.messages.logtime.LogTime;
 import de.konfidas.ttc.tars.LogMessageArchive;
 import de.konfidas.ttc.utilities.oid;
 import org.bouncycastle.asn1.ASN1Primitive;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
@@ -188,7 +190,7 @@ public class SignatureCounterValidatorMockedTest {
 
     @Test
     public void testMissingOne() {
-        SignatureCounterValidator validator = new SignatureCounterValidator();
+        SignatureCounterValidator validator = new SignatureCounterValidator(true);
 
         ArrayList<LogMessage> messages = new ArrayList<LogMessage>();
         messages.add(new LogMessageMock(BigInteger.TWO));
@@ -291,7 +293,7 @@ public class SignatureCounterValidatorMockedTest {
 
     @Test
     public void testMissingOneDifferentSerialsTwice() {
-        SignatureCounterValidator validator = new SignatureCounterValidator();
+        SignatureCounterValidator validator = new SignatureCounterValidator(true);
 
         ArrayList<LogMessage> messages = new ArrayList<LogMessage>();
         messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x01}));
@@ -304,7 +306,7 @@ public class SignatureCounterValidatorMockedTest {
 
     @Test
     public void testMissingOneDifferentSerials() {
-        SignatureCounterValidator validator = new SignatureCounterValidator();
+        SignatureCounterValidator validator = new SignatureCounterValidator(true);
 
         ArrayList<LogMessage> messages = new ArrayList<LogMessage>();
         messages.add(new LogMessageMock(BigInteger.ONE, new byte[]{0x02}));
@@ -312,8 +314,9 @@ public class SignatureCounterValidatorMockedTest {
         messages.add(new LogMessageMock(BigInteger.TWO, new byte[]{0x02}));
         LogMessageArchive tar = new TestTar(messages);
 
+       Collection<ValidationException> errors= validator.validate(tar).getValidationErrors();
 
-        assertTrue(validator.validate(tar).getValidationErrors().size() == 1);
+        assertTrue(errors.size() == 1);
     }
 
     @Test

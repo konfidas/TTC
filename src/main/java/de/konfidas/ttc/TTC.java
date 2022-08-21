@@ -44,6 +44,7 @@ public class TTC {
         options.addOption("e", "errorsOnly", false, properties.getString("de.konfidas.ttc.help_errorsOnly"));//NON-NLS
         options.addOption("g", "generateHtmlReport", true, properties.getString("de.konfidas.ttc.help_htmlOut"));//NON-NLS
         options.addOption("v", "validator", true, properties.getString("de.konfidas.ttc.help_selectValidators"));//NON-NLS
+        options.addOption("f", "forceSignatureCounterToStartWithOne", true, properties.getString("de.konfidas.ttc.help_forceSignatureCounterToStartWithOne"));//NON-NLS
 
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd;
@@ -104,8 +105,25 @@ public class TTC {
             } else {
                 listOfValidators.add(new CertificateFileNameValidator());
                 listOfValidators.add(new TimeStampValidator());
-                listOfValidators.add(new SignatureCounterValidator());
                 listOfValidators.add(new LogMessageSignatureValidator());
+
+            }
+
+            if (cmd.hasOption("f")) {//NON-NLS
+                Boolean signatureCounterValidatorPresent = false;
+
+                for (Validator validator : listOfValidators) {
+
+                    if (validator.getClass().getName() == "SignatureCounterValidator")
+                        signatureCounterValidatorPresent = true;
+                }
+                if (!signatureCounterValidatorPresent) {
+                    logger.error(properties.getString("de.konfidas.ttc.OptionFMustNotBeuUser"));
+                    logger.error(properties.getString("de.konfidas.tts.programWillExit"));
+                    System.exit(1);
+                }
+                listOfValidators.add(new SignatureCounterValidator(true));
+
             }
 
             AggregatedValidator validator = new AggregatedValidator();
